@@ -35,8 +35,6 @@
     }
 }
 
-#Import-Module C:\Users\v0id\OneDrive\AppSec\PocketSIEM\Get-WinEventData.ps1
-
 $hostname = hostname
 $url = '<DOMAIN>'
 $DateAfter = (Get-Date).AddDays(-1)
