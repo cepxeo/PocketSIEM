@@ -62,8 +62,12 @@ $image = ""
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=4; StartTime = $DateAfter; EndTime = $DateBefore} -max 10 | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;;image=$image;details=$_.e_State}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams}
 
 # Load unsigned drivers (event)
-$event = "Driver loaded with unvalid signature"
+$event = "Not signed driver loaded"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=6; StartTime = $DateAfter; EndTime = $DateBefore} -max 10 | Get-WinEventData | ? { ($_.e_SignatureStatus -notmatch '^valid.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;;image=$_.e_ImageLoaded;details=$_.e_Signature}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams}
+
+# Load unsigned DLLs (event)
+$event = "Not signed DLL loaded"
+Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=7; StartTime = $DateAfter; EndTime = $DateBefore} -max 10 | Get-WinEventData | ? { ($_.e_SignatureStatus -notmatch '^valid.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;;image=$_.e_Image;details=$_.e_ImageLoaded}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams}
 
 # Registry object added or deleted (event)
 $event = "Registry object added or deleted"

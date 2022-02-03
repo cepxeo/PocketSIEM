@@ -439,7 +439,9 @@
 		<!--DATA: UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
 	<RuleGroup name="" groupRelation="or">
 		<ImageLoad onmatch="include">
-			<!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+			<ImageLoaded condition="begin with">C:\Users</ImageLoaded>
+			<ImageLoaded condition="contains">xll</ImageLoaded>
+			<Signed condition="contains">false</Signed>
 		</ImageLoad>
 	</RuleGroup>
 
