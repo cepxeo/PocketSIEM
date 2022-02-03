@@ -186,6 +186,7 @@ def get_events_host_logs(conn, host):
 def get_events_logs(conn):
     sql = """SELECT DISTINCT date,host,event,image,details
               FROM sysmon_events
+              group by details having count(details) < 10
               ORDER BY date DESC
               """
     cur = conn.cursor()
