@@ -4,8 +4,8 @@ import sigma_parse
 from flask_cors import CORS
 from glob import glob
 
-process_creation = []
-process_creation = sigma_parse.load_rules(process_creation)
+evil_patterns_process = []
+evil_patterns_process = sigma_parse.load_rules(evil_patterns_process, "sigma/rules/windows/process_creation")
 app = Flask(__name__)
 CORS(app)
 database = r"sqlite.db"
@@ -105,7 +105,7 @@ def insert_process_logs():
     image = request.form["image"]
     company = request.form["company"]
     command_line = request.form["command_line"]
-    alert = sigma_parse.check_log(process_creation, command_line)
+    alert = sigma_parse.check_log(evil_patterns_process, command_line)
     if alert:
         print("[!!] Alert triggered by the rule: %s" % alert)
         print("[!!] Malicious command: %s" % command_line)
