@@ -12,7 +12,6 @@ app = Flask(__name__)
 CORS(app)
 database = r"sqlite.db"
 
-
 # Logins logs
 # ----------------------------------------------------
 @app.route('/logins', methods=['POST'])

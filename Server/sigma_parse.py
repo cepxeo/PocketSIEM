@@ -27,7 +27,7 @@ def load_rules(process_creation, path):
                     except:
                         print("Problem parsing sigma file " + file)
                         print("Defect line " + line)
-    print(categories)
+    #print(categories)
     return process_creation
 
 def check_log(process_creation, entry):
@@ -35,6 +35,6 @@ def check_log(process_creation, entry):
         pattern_array = pattern.split("*")
         pattern_array = [i for i in pattern_array if i]
         match_pattern =  all(elem in entry for elem in pattern_array)
-        filter_trash = all(len(elem) > 1 and elem[:1] != "." for elem in pattern_array)
+        filter_trash = all(len(elem) > 1 for elem in pattern_array)
         if match_pattern and filter_trash:
             return pattern

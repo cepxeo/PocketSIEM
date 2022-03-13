@@ -8,7 +8,10 @@ category: process_creation
 - 'curl'
 - 'nltest'
 - 'qwinsta'
-- 'del '
+- 'cacls'
+- 'del*.'
+- 'copy*.exe'
+- 'copy*.dll'
 
 # Powershell
 - '-ep'
@@ -19,6 +22,7 @@ category: process_creation
 - 'hidden'
 - '-Nop'
 - 'System.Net.WebClient'
+- 'System.Reflection.Assembly'
 - 'IEX'
 - 'iex'
 
@@ -45,7 +49,6 @@ category: process_creation
 - 'regsvr32'
 - 'mshta'
 - 'netsh'
-- 'cacls'
 - 'rar.exe'
 - 'schtasks'
 - 'bitsadmin'
@@ -68,6 +71,7 @@ category: process_creation
 
 - '::'
 - 's4u'
+- 'ptt*/'
 - 'sekurlsa'
 - 'SpoolSample'
 - 'Get-Domain'
