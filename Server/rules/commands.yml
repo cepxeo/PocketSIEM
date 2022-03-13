@@ -49,7 +49,6 @@ category: process_creation
 - 'rar.exe'
 - 'schtasks'
 - 'bitsadmin'
-- 'http'
 - 'installutil'
 - 'cmd.exe /c'
 - 'cmd.exe /C'
