@@ -1,0 +1,84 @@
+category: process_creation
+
+# Common recon
+- 'whoami'
+- 'net user'
+- 'net group'
+- '/domain'
+- 'curl'
+- 'nltest'
+- 'qwinsta'
+- 'del '
+
+# Powershell
+- '-ep'
+- 'Bypass'
+- '-enc'
+- '-EncodedCommand'
+- 'Hidden'
+- 'hidden'
+- '-Nop'
+- 'System.Net.WebClient'
+- 'IEX'
+- 'iex'
+
+# Service modification
+
+- 'sc '
+- 'binpath='
+- 'Stop-Service'
+- '-DisableRealtimeMonitoring'
+- '-ExclusionPath'
+- 'Automation.AmsiUtils'
+- '/Create'
+- 'ONLOGON'
+- 'DAILY'
+- 'HOURLY'
+
+#LoL bins
+
+- 'certutil*-decode'
+- 'wmiprvse.exe'
+- 'csc.exe'
+- 'msbuild.exe'
+- 'msiexec'
+- 'regsvr32'
+- 'mshta'
+- 'netsh'
+- 'cacls'
+- 'rar.exe'
+- 'schtasks'
+- 'bitsadmin'
+- 'http'
+- 'installutil'
+- 'cmd.exe /c'
+- 'cmd.exe /C'
+- 'wscript'
+- 'cscript'
+- 'firewall'
+
+# Common evil paths
+
+- 'Windows\Tasks'
+- 'Windows\Temp'
+- 'Users\Public'
+- 'Microsoft\Crypto\RSA\MachineKeys'
+- 'System32\spool\SERVERS'
+
+# Known tools
+
+- '::'
+- 's4u'
+- 'sekurlsa'
+- 'SpoolSample'
+- 'Get-Domain'
+- 'Add-Domain'
+- 'Potato'
+- 'PsExec'
+- 'accepteula'
+- 'oodhound'
+- '-CollectionMethod'
+- 'UserSPN'
+- 'StartW'
+- '.dmp'
+- 'ngrok'
