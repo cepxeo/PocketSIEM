@@ -1,10 +1,13 @@
 from flask import Flask, request, send_file, jsonify, render_template_string
 import db
+import sigma_parse
 from flask_cors import CORS
+from glob import glob
 
 app = Flask(__name__)
 CORS(app)
 database = r"sqlite.db"
+process_creation = sigma_parse.load_rules
 
 # Logins logs
 # ----------------------------------------------------
@@ -100,6 +103,10 @@ def insert_process_logs():
     image = request.form["image"]
     company = request.form["company"]
     command_line = request.form["command_line"]
+    alert = sigma_parse.check_log(process_creation, command_line)
+    if alert:
+        print("[!!] Alert triggered by the rule: %s" % alert)
+        print("[!!] Malicious command: %s" % command_line)
     db.insert_proc_logs(conn, (date,host,image,company,command_line))
     conn.commit()
     print("[+] Received processes from Host: %s" % host,)
