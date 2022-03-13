@@ -4,10 +4,12 @@ import sigma_parse
 from flask_cors import CORS
 from glob import glob
 
+process_creation = []
+process_creation = sigma_parse.load_rules(process_creation)
 app = Flask(__name__)
 CORS(app)
 database = r"sqlite.db"
-process_creation = sigma_parse.load_rules
+
 
 # Logins logs
 # ----------------------------------------------------

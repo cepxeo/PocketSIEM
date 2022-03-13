@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 from glob import glob
 
-def load_rules():
+def load_rules(process_creation):
     basepath = Path('sigma/rules/windows/')
     result = [y for x in os.walk(basepath) for y in glob(os.path.join(x[0], '*.yml'))]
 
     categories = []
-    process_creation = []
 
     for file in result:
         with open(file) as f:
