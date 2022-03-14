@@ -17,9 +17,7 @@ category: process_creation
 - 'del*.'
 - 'copy*.exe'
 - 'copy*.dll'
-- 'reg*query'
 - 'reg*delete'
-- 'schtasks'
 
 # Powershell
 - '-ep'
@@ -30,23 +28,20 @@ category: process_creation
 - '-Nop'
 - 'System.Net.WebClient'
 - 'System.Reflection.Assembly'
-- 'IEX'
+- '| IEX'
 
 # Service modification
 
 - 'sc*config'
 - 'sc*query'
-- 'sc*start'
+- 'sc*/create'
 - 'sc*stop'
-- 'binpath='
+- 'sc*binpath='
 - 'Stop-Service'
 - '-DisableRealtimeMonitoring'
 - '-ExclusionPath'
 - 'Automation.AmsiUtils'
-- '/Create'
-- 'ONLOGON'
-- 'DAILY'
-- 'HOURLY'
+- 'schtasks*/Create*/sc'
 
 #LoL bins
 
@@ -59,12 +54,10 @@ category: process_creation
 - 'mshta'
 - 'netsh'
 - 'rar.exe'
-- 'schtasks'
 - 'bitsadmin'
 - 'installutil'
 - 'wscript'
 - 'cscript'
-- 'firewall'
 - 'rundll32*temp'
 - 'rundll32*public'
 

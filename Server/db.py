@@ -122,7 +122,7 @@ def get_process_logs(conn):
     sql = """SELECT DISTINCT date,host,image,company,command_line
               FROM sysmon_process 
               WHERE date BETWEEN datetime('now', 'start of day') AND datetime('now', '+2 days')
-              group by command_line having count(command_line) < 10
+              group by command_line having count(command_line) < 20
               ORDER BY date DESC
               """
     cur = conn.cursor()
