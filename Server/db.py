@@ -38,11 +38,10 @@ def create_db(conn):
             event text NOT NULL,
             image text,
             details text NOT NULL);"""
-    createsigmaalertsTable="""CREATE TABLE IF NOT EXISTS sigma_alerts (
+    createalertsTable="""CREATE TABLE IF NOT EXISTS alerts (
             id integer PRIMARY KEY,
             date text NOT NULL,
             host text NOT NULL,
-            event text NOT NULL,
             image text,
             rule text,
             details text NOT NULL);"""
@@ -52,7 +51,7 @@ def create_db(conn):
         c.execute(createsysmonproclogsTable)
         c.execute(createsysmonnetlogsTable)
         c.execute(createsysmoneventslogsTable)
-        c.execute(createsigmaalertsTable)
+        c.execute(createalertsTable)
     except Error as e:
         print(e)
 
@@ -193,9 +192,8 @@ def get_events_host_logs(conn, host):
     return cur.fetchall()
 
 def get_events_logs(conn):
-    sql = """SELECT DISTINCT date,host,event,image,details
+    sql = """SELECT DISTINCT date,host,image,details
               FROM sysmon_events
-              group by details having count(details) < 10
               ORDER BY date DESC
               """
     cur = conn.cursor()
@@ -204,23 +202,23 @@ def get_events_logs(conn):
 
 # Managing alerts
 def insert_alerts(conn, alerts):
-    sql = ''' INSERT INTO sigma_alerts(date,host,event,image,rule,details)
-              VALUES(?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO alerts(date,host,image,rule,details)
+              VALUES(?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, alerts)
     return cur.lastrowid
 
 def get_alerts_hosts(conn):
     sql = """SELECT DISTINCT host 
-             FROM sigma_alerts"""
+             FROM alerts"""
     cur = conn.cursor()
     cur.execute(sql)
     rows = cur.fetchall()
     return rows
 
 def get_host_alerts(conn, host):
-    sql = """SELECT DISTINCT date,host,event,image,rule,details
-              FROM sigma_alerts 
+    sql = """SELECT DISTINCT date,host,image,rule,details
+              FROM alerts 
               WHERE host = ? AND date BETWEEN datetime('now', '-7 days') AND datetime('now', '+2 days')
               ORDER BY date DESC
               """
@@ -229,9 +227,8 @@ def get_host_alerts(conn, host):
     return cur.fetchall()
 
 def get_alerts(conn):
-    sql = """SELECT DISTINCT date,host,event,image,rule,details
-              FROM sigma_alerts
-              group by details having count(details) < 10
+    sql = """SELECT DISTINCT date,host,image,rule,details
+              FROM alerts
               ORDER BY date DESC
               """
     cur = conn.cursor()
