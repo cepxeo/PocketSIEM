@@ -6,7 +6,8 @@ Current functionality includes:
 
 * Powershell agent parses successful and invalid logon attempts and some types of the Sysmon events (check collector.ps1 for details)
 * Sends the data to the API over HTTPS
-* API accepts logs via POST and visualise via GET based on the event type with the host filtering and appropriate date range
+* API accepts logs via POST and visualizes via GET based on the event type with the host filtering and appropriate date range
+* Created process logs are checked against known evil patterns and an alert is generated on match
 
 #### GET requests supported:
 
@@ -26,6 +27,10 @@ Current functionality includes:
 /events
 /events/hosts
 /events/<host>
+
+/alerts
+/alerts/hosts
+/alerts/<host>
 ```
 
 #### Setup

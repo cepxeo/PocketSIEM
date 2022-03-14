@@ -1,6 +1,12 @@
 from flask import Flask, request, send_file, jsonify, render_template_string
 import db
+import sigma_parse
 from flask_cors import CORS
+from glob import glob
+
+evil_patterns_process = []
+evil_patterns_process = sigma_parse.load_rules(evil_patterns_process, "rules")
+print ("[+] Loaded " + str(len(evil_patterns_process)) + " evil commands patterns.")
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +23,7 @@ def insert_login_logs():
     logon_type = request.form["logon_type"]
     db.insert_login_logs(conn, (date,host,user,logon_type))
     conn.commit()
-    print("[+] Received logons from Host: %s" % host,)
+    #print("[+] Received logons from Host: %s" % host,)
     return ""
 
 @app.route("/logins/hosts", methods=["GET"])
@@ -30,7 +36,6 @@ def get_all_login_hosts():
 def gett_login_host_logs(host):
     conn = db.create_connection(database)
     logs = db.get_login_host_logs(conn, (host,))
-    #return jsonify(logs)
     return render_template_string('''
 
     <h4>Last 8 days</h4>
@@ -100,9 +105,14 @@ def insert_process_logs():
     image = request.form["image"]
     company = request.form["company"]
     command_line = request.form["command_line"]
+    alert = sigma_parse.check_log(evil_patterns_process, command_line)
+    if alert:
+        db.insert_alerts(conn, (date,host,image,alert,command_line))
+        print("[!!] Alert triggered by the rule: %s" % alert)
+        print("[!!] Malicious command: %s" % command_line)
     db.insert_proc_logs(conn, (date,host,image,company,command_line))
     conn.commit()
-    print("[+] Received processes from Host: %s" % host,)
+    #print("[+] Received processes from Host: %s" % host,)
     return ""
 
 @app.route("/processes/hosts", methods=["GET"])
@@ -190,7 +200,7 @@ def insert_net_logs():
     dest_port = request.form["dest_port"]
     db.insert_network_logs(conn, (date,host,image,dest_ip,dest_port))
     conn.commit()
-    print("[+] Received network logs from Host: %s" % host,)
+    #print("[+] Received network logs from Host: %s" % host,)
     return ""
 
 @app.route("/net/hosts", methods=["GET"])
@@ -272,7 +282,7 @@ def insert_events_logs():
     details = request.form["details"]
     db.insert_events_logs(conn, (date,host,event,image,details))
     conn.commit()
-    print("[+] Received events from Host: %s" % host,)
+    #print("[+] Received events from Host: %s" % host,)
     return ""
 
 @app.route("/events/hosts", methods=["GET"])
@@ -334,6 +344,75 @@ def gett_events_logs():
                 <td>{{ host }}</td>
                 <td>{{ event }}</td> 
                 <td>{{ image }}</td> 
+                <td>{{ details }}</td> 
+            </tr>
+
+    {% endfor %}
+
+    </table>
+''', logs=logs)
+
+
+# Alerts
+# ----------------------------------------------------
+@app.route("/alerts/hosts", methods=["GET"])
+def gett_alerts_hosts():
+    conn = db.create_connection(database)
+    logs = db.get_alerts_hosts(conn)
+    return jsonify(logs)
+
+@app.route("/alerts/<host>", methods=["GET"])
+def gett_host_alerts(host):
+    conn = db.create_connection(database)
+    logs = db.get_host_alerts(conn, (host,))
+    return render_template_string('''
+    <h4>Last 8 days</h4>
+    <table>
+            <tr>
+                <td> Date </td> 
+                <td> Host </td>
+                <td> Image </td>
+                <td> Rule </td>
+                <td> Details </td>
+            </tr>
+
+    {% for date, host, image, rule, details in logs %}
+
+            <tr>
+                <td>{{ date }}</td> 
+                <td>{{ host }}</td>
+                <td>{{ image }}</td> 
+                <td>{{ rule }}</td> 
+                <td>{{ details }}</td> 
+            </tr>
+
+    {% endfor %}
+
+    </table>
+''', logs=logs)
+
+@app.route("/alerts", methods=["GET"])
+def gett_alerts():
+    conn = db.create_connection(database)
+    logs = db.get_alerts(conn)
+    return render_template_string('''
+
+    <table>
+            <tr>
+                <td> Date </td> 
+                <td> Host </td>
+                <td> Image </td>
+                <td> Rule </td>
+                <td> Details </td>
+            </tr>
+
+    {% for date, host, image, rule, details in logs %}
+
+            <tr>
+                <td>{{ date }}</td> 
+                <td>{{ host }}</td>
+                <td>{{ image }}</td> 
+                <td>{{ rule }}</td> 
                 <td>{{ details }}</td> 
             </tr>
 

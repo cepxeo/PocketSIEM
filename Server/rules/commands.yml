@@ -1,0 +1,90 @@
+category: process_creation
+
+# Common recon
+- 'whoami'
+- 'net user'
+- 'net group'
+- '/domain'
+- 'curl'
+- 'nltest'
+- 'qwinsta'
+- 'cacls'
+- 'del*.'
+- 'copy*.exe'
+- 'copy*.dll'
+
+# Powershell
+- '-ep'
+- 'Bypass'
+- '-enc'
+- '-EncodedCommand'
+- 'Hidden'
+- 'hidden'
+- '-Nop'
+- 'System.Net.WebClient'
+- 'System.Reflection.Assembly'
+- 'IEX'
+- 'iex'
+
+# Service modification
+
+- 'sc*config'
+- 'sc*query'
+- 'sc*start'
+- 'sc*stop'
+- 'binpath='
+- 'Stop-Service'
+- '-DisableRealtimeMonitoring'
+- '-ExclusionPath'
+- 'Automation.AmsiUtils'
+- '/Create'
+- 'ONLOGON'
+- 'DAILY'
+- 'HOURLY'
+
+#LoL bins
+
+- 'certutil*-decode'
+- 'wmiprvse.exe'
+- 'csc.exe'
+- 'msbuild.exe'
+- 'msiexec'
+- 'regsvr32'
+- 'mshta'
+- 'netsh'
+- 'rar.exe'
+- 'schtasks'
+- 'bitsadmin'
+- 'installutil'
+- 'cmd.exe /c'
+- 'cmd.exe /C'
+- 'wscript'
+- 'cscript'
+- 'firewall'
+
+# Common evil paths
+
+- 'Windows\Tasks'
+- 'Windows\Temp'
+- 'Users\Public'
+- 'Microsoft\Crypto\RSA\MachineKeys'
+- 'System32\spool\SERVERS'
+
+# Known tools
+
+- '::'
+- 's4u'
+- 'ptt*/'
+- 'sekurlsa'
+- 'SpoolSample'
+- 'Get-Domain'
+- 'Add-Domain'
+- 'Potato'
+- 'PsExec'
+- 'accepteula'
+- 'oodhound'
+- '-CollectionMethod'
+- 'UserSPN'
+- 'StartW'
+- '.dmp'
+- 'ngrok'
