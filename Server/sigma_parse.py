@@ -34,7 +34,7 @@ def check_log(process_creation, entry):
     for pattern in process_creation:
         pattern_array = pattern.split("*")
         pattern_array = [i for i in pattern_array if i]
-        match_pattern =  all(elem in entry for elem in pattern_array)
+        match_pattern =  all(elem.casefold() in entry.casefold() for elem in pattern_array)
         filter_trash = all(len(elem) > 1 for elem in pattern_array)
         if match_pattern and filter_trash:
             return pattern

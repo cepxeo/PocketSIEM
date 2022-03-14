@@ -4,6 +4,11 @@ category: process_creation
 - 'whoami'
 - 'net user'
 - 'net group'
+- 'tasklist'
+- 'systeminfo'
+- 'net start'
+- 'net stop'
+- 'net*\add'
 - '/domain'
 - 'curl'
 - 'nltest'
@@ -12,19 +17,20 @@ category: process_creation
 - 'del*.'
 - 'copy*.exe'
 - 'copy*.dll'
+- 'reg*query'
+- 'reg*delete'
+- 'schtasks'
 
 # Powershell
 - '-ep'
 - 'Bypass'
 - '-enc'
 - '-EncodedCommand'
-- 'Hidden'
 - 'hidden'
 - '-Nop'
 - 'System.Net.WebClient'
 - 'System.Reflection.Assembly'
 - 'IEX'
-- 'iex'
 
 # Service modification
 
@@ -56,11 +62,11 @@ category: process_creation
 - 'schtasks'
 - 'bitsadmin'
 - 'installutil'
-- 'cmd.exe /c'
-- 'cmd.exe /C'
 - 'wscript'
 - 'cscript'
 - 'firewall'
+- 'rundll32*temp'
+- 'rundll32*public'
 
 # Common evil paths
 
@@ -69,6 +75,7 @@ category: process_creation
 - 'Users\Public'
 - 'Microsoft\Crypto\RSA\MachineKeys'
 - 'System32\spool\SERVERS'
+- '\Excel\XLStart'
 
 # Known tools
 
@@ -82,7 +89,7 @@ category: process_creation
 - 'Potato'
 - 'PsExec'
 - 'accepteula'
-- 'oodhound'
+- 'hound'
 - '-CollectionMethod'
 - 'UserSPN'
 - 'StartW'
