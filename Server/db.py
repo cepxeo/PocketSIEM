@@ -192,7 +192,7 @@ def get_events_host_logs(conn, host):
     return cur.fetchall()
 
 def get_events_logs(conn):
-    sql = """SELECT DISTINCT date,host,image,details
+    sql = """SELECT DISTINCT date,host,event,image,details
               FROM sysmon_events
               ORDER BY date DESC
               """

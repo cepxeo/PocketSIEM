@@ -28,7 +28,10 @@ category: process_creation
 
 # Service modification
 
-- 'sc '
+- 'sc*config'
+- 'sc*query'
+- 'sc*start'
+- 'sc*stop'
 - 'binpath='
 - 'Stop-Service'
 - '-DisableRealtimeMonitoring'
