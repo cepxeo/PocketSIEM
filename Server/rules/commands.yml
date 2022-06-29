@@ -8,15 +8,15 @@ category: process_creation
 - 'systeminfo'
 - 'net start'
 - 'net stop'
-- 'net*\add'
+- 'net*use*\add'
 - '/domain'
 - 'curl'
 - 'nltest'
 - 'qwinsta'
 - 'cacls'
-- 'del*.'
-- 'copy*.exe'
-- 'copy*.dll'
+- 'del *.'
+- 'copy *.exe'
+- 'copy *.dll'
 - 'reg*delete'
 
 # Powershell
@@ -24,10 +24,10 @@ category: process_creation
 - 'Bypass'
 - '-enc'
 - '-EncodedCommand'
-- 'hidden'
+- 'hidden*-e'
 - '-Nop'
-- 'System.Net.WebClient'
-- 'System.Reflection.Assembly'
+- 'Sys*tem*Net*Web*Cli*ent'
+- 'Sys*tem*Refl*ection*Asse*mbly'
 - '| IEX'
 
 # Service modification
@@ -41,16 +41,17 @@ category: process_creation
 - '-DisableRealtimeMonitoring'
 - '-ExclusionPath'
 - 'Automation.AmsiUtils'
-- 'schtasks*/Create*/sc'
+- 'schtasks*/create*/sc'
 
 #LoL bins
 
 - 'certutil*-decode'
 - 'wmiprvse.exe'
 - 'csc.exe'
-- 'msbuild.exe'
-- 'msiexec'
-- 'regsvr32'
+- 'msbuild.exe*.cs'
+- 'msiexec*.msi'
+- 'regsvr32*http'
+- 'regsvr32*\\'
 - 'mshta'
 - 'netsh'
 - 'rar.exe'
@@ -58,8 +59,8 @@ category: process_creation
 - 'installutil'
 - 'wscript'
 - 'cscript'
-- 'rundll32*temp'
-- 'rundll32*public'
+- 'rundll32*\temp'
+- 'rundll32*\public'
 
 # Common evil paths
 

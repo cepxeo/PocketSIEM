@@ -45,6 +45,10 @@ def create_db(conn):
             image text,
             rule text,
             details text NOT NULL);"""
+    createusersTable="""CREATE TABLE IF NOT EXISTS users (
+            id integer PRIMARY KEY,
+            username text NOT NULL,
+            password_hash text NOT NULL);"""
     try:
         c = conn.cursor()
         c.execute(createloginlogsTable)
@@ -52,6 +56,7 @@ def create_db(conn):
         c.execute(createsysmonnetlogsTable)
         c.execute(createsysmoneventslogsTable)
         c.execute(createalertsTable)
+        c.execute(createusersTable)
     except Error as e:
         print(e)
 
