@@ -4,9 +4,8 @@ import logging
 import jwt
 import whois
 
-from database.models import User
+from database.models import db, User, Login, Process, File, Network, Event, Alert
 from api import sigma_parse
-from database import dbs
 
 api = Blueprint('api', __name__)
 
@@ -47,15 +46,17 @@ def healthcheck(current_user):
 @api.route('/logins', methods=['POST'])
 @token_required
 def insert_login_logs(current_user):
-    conn = dbs.create_connection()
     date = request.form["date"]
     host = request.form["host"]
-    user = request.form["user"]
+    osuser = request.form["osuser"]
     logon_type = request.form["logon_type"]
     process_name = request.form["process_name"]
-    dbs.insert_login_logs(conn, (date,host,user,logon_type,process_name))
-    conn.commit()
-    logger.debug("[+] Received logons from Host: %s" % host,)
+
+    newLogin = Login(date=date, host=host, image=osuser, field4=logon_type, field5=process_name)
+    db.session.add(newLogin)
+    db.session.commit()
+
+    logger.debug("[+] Received logins from Host: %s" % host,)
     return ""
 
 # Process creation logs
@@ -63,7 +64,6 @@ def insert_login_logs(current_user):
 @api.route('/processes', methods=['POST'])
 @token_required
 def insert_process_logs(current_user):
-    conn = dbs.create_connection()
     date = request.form["date"]
     host = request.form["host"]
     image = request.form["image"]
@@ -73,12 +73,16 @@ def insert_process_logs(current_user):
     # Check if command_line field matches any malicious pattern 
     alert = sigma_parse.check_log(evil_patterns, command_line)
     if alert:
-        dbs.insert_alerts(conn, (date,host,image,alert,command_line))
-        logger.debug("[!!] Process alert triggered by the rule: %s" % alert)
-        logger.debug("[!!] Malicious command: %s" % command_line)
+        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
+        logger.info("[!!] Malicious command: %s" % command_line)
+        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=command_line)
+        db.session.add(newAlert)
+        db.session.commit()
     
-    dbs.insert_proc_logs(conn, (date,host,image,company,command_line))
-    conn.commit()
+    newProcess = Process(date=date, host=host, image=image, field4=company, field5=command_line)
+    db.session.add(newProcess)
+    db.session.commit()
+
     logger.debug("[+] Received process from Host: %s" % host,)
     return ""
 
@@ -87,22 +91,25 @@ def insert_process_logs(current_user):
 @api.route('/files', methods=['POST'])
 @token_required
 def insert_files_logs(current_user):
-    conn = dbs.create_connection()
     date = request.form["date"]
     host = request.form["host"]
-    event = request.form["event"]
     image = request.form["image"]    
-    details = request.form["details"]
+    filename = request.form["filename"]
+    osuser = request.form["osuser"]
 
     # Check if details field matches any malicious pattern 
-    alert = sigma_parse.check_log(evil_patterns, details)
+    alert = sigma_parse.check_log(evil_patterns, filename)
     if alert:
-        dbs.insert_alerts(conn, (date,host,image,alert,details))
-        logger.debug("[!!] Event alert triggered by the rule: %s" % alert)
-        logger.debug("[!!] Malicious command: %s" % details)
+        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
+        logger.info("[!!] Malicious command: %s" % filename)
+        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=filename)
+        db.session.add(newAlert)
+        db.session.commit()
 
-    dbs.insert_files_logs(conn, (date,host,event,image,details))
-    conn.commit()
+    newFile = File(date=date, host=host, image=image, field4=filename, field5=osuser)
+    db.session.add(newFile)
+    db.session.commit()
+
     logger.debug("[+] Received file log from Host: %s" % host,)
     return ""
 
@@ -111,7 +118,6 @@ def insert_files_logs(current_user):
 @api.route('/net', methods=['POST'])
 @token_required
 def insert_net_logs(current_user):
-    conn = dbs.create_connection()
     date = request.form["date"]
     host = request.form["host"]
     image = request.form["image"]
@@ -133,10 +139,12 @@ def insert_net_logs(current_user):
                     return ""
             # If IP is not trusted and not internal, print it
             if whois_emails != None:
-                print (f"{dest_ip} for process {image} belongs to {whois_emails}")
+                logger.info(f"{dest_ip} for process {image} belongs to {whois_emails}")
             
-    dbs.insert_network_logs(conn, (date,host,image,dest_ip,dest_port))
-    conn.commit()
+    newNetwork = Network(date=date, host=host, image=image, field4=dest_ip, field5=dest_port)
+    db.session.add(newNetwork)
+    db.session.commit()
+
     logger.debug("[+] Received network log from Host: %s" % host,)
     return ""
 
@@ -145,21 +153,24 @@ def insert_net_logs(current_user):
 @api.route('/events', methods=['POST'])
 @token_required
 def insert_events_logs(current_user):
-    conn = dbs.create_connection()
     date = request.form["date"]
     host = request.form["host"]
-    event = request.form["event"]
-    image = request.form["image"]    
+    image = request.form["image"]  
+    event = request.form["event"]  
     details = request.form["details"]
 
     # Check if details field matches any malicious pattern 
     alert = sigma_parse.check_log(evil_patterns, details)
     if alert:
-        dbs.insert_alerts(conn, (date,host,image,alert,details))
-        logger.debug("[!!] Event alert triggered by the rule: %s" % alert)
-        logger.debug("[!!] Malicious command: %s" % details)
+        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
+        logger.info("[!!] Malicious command: %s" % details)
+        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=details)
+        db.session.add(newAlert)
+        db.session.commit()
 
-    dbs.insert_events_logs(conn, (date,host,event,image,details))
-    conn.commit()
+    newEvent = Event(date=date, host=host, image=image, field4=event, field5=details)
+    db.session.add(newEvent)
+    db.session.commit()
+
     logger.debug("[+] Received event from Host: %s" % host,)
     return ""

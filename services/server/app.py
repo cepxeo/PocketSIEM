@@ -6,7 +6,6 @@ import string
 import logging
 
 from database.models import db, User
-from database import dbs
 
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -15,10 +14,6 @@ def create_app(config_filename=None):
     register_blueprints(app)
     db.init_app(app)
 
-    conn = dbs.create_connection()
-    dbs.create_db(conn)
-    
-    #db.drop_all()
     db.create_all()
     db.session.commit()
     

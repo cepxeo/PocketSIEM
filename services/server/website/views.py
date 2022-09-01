@@ -1,13 +1,15 @@
 from flask import Blueprint, request, jsonify, g, url_for, render_template, redirect, session
 from functools import wraps
 
-from database.models import User
+from database.models import User, Login, Process, File, Network, Event, Alert
 from database import dbs
 
 website = Blueprint('website', __name__)
 
 false_positives = []
 default_date_range = '7'
+
+ROWS_PER_PAGE = 100
 
 @website.errorhandler(404)
 def page_not_found(e):
@@ -40,17 +42,20 @@ def index():
 @website.route('/logins', methods=['GET'])
 @require_login
 def login():
-    conn = dbs.create_connection()
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_login_logs(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Login.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
+        field1="log.host",
         event='website.login_host_logs', false_positives=false_positives)
         
 
@@ -71,7 +76,10 @@ def login_host_logs(host):
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_login_host_logs(conn, (host,),range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Login.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
@@ -84,17 +92,19 @@ def login_host_logs(host):
 @website.route('/processes', methods=['GET'])
 @require_login
 def process():
-    conn = dbs.create_connection()
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_process_logs(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Process.query.paginate(page=page, per_page=ROWS_PER_PAGE)
     return render_template(
             template, logs=logs,
             header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
+            field1="log.host",
             event='website.process_host_logs', false_positives=false_positives)
 
 @website.route("/processes/hosts", methods=["GET"])
@@ -134,7 +144,10 @@ def files():
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_files_logs(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = File.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
             template, logs=logs,
             header1="Date", header2="Host", header3="Event", header4="Image", header5="Details",
@@ -177,7 +190,10 @@ def net():
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_network_logs(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Network.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
             template, logs=logs,
             header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
@@ -220,7 +236,10 @@ def events():
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_events_logs(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Event.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
             template, logs=logs, 
             header1="Date", header2="Host", header3="Event", header4="Image", header5="Details", 
@@ -261,7 +280,10 @@ def alerts():
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_alerts(conn,range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Alert.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
             template, logs=logs, 
             header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 

@@ -34,33 +34,45 @@
       </tr>
     </thead>
     <tbody>
-      {% for field1, field2, field3, field4, field5 in logs %}
-        {% if field3 not in false_positives and field4 not in false_positives %}
+      {% for log in logs.items %}
+        {% if log.image not in false_positives %}
           <tr>
-            <th>{{ field1 }}</th>
+            <th>{{ log.date }}</th>
             <td>
-              <a href="{{url_for(event, host=field2)}}">{{ field2 }}</a>
+              <a href="{{url_for(event, host=log.host)}}">{{ log.host }}</a>
             </td>
-            {% if 'process' in event or 'login' in event%}
-              <td>
-                <a href="{{url_for('website.false_process', image=field3, send_to=event)}}">{{ field3 }}</a>
-              </td>
-            {% else %}
-              <td>{{ field3 }}</td>
-            {% endif %}
-            {% if 'event' in event or 'net' in event %}
-              <td>
-                <a href="{{url_for('website.false_process', image=field4, send_to=event)}}">{{ field4 }}</a>
-              </td>
-            {% else %}
-              <td>{{ field4 }}</td>
-            {% endif %}            
-            <td>{{ field5 }}</td>
-            <td></td>
+            <td>
+              <a href="{{url_for('website.false_process', image=log.image, send_to=event)}}">{{ log.image }}</a>
+            </td>    
+            <td>{{ log.field4 }}</td>
+            <td>{{ log.field5 }}</td>
           </tr>
         {% endif %}
       {% endfor %}
     </tbody>
   </table>
 </div>
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+  <a href="{{ url_for('website.process', page=logs.prev_num) }}" class="pagination-previous {% if logs.page == 1 %}is-disabled{% endif %}">Previous</a>
+  <a href="{{ url_for('website.process', page=logs.next_num) }}" class="pagination-next {% if logs.page == logs.pages %}is-disabled{% endif %}">Next page</a>
+  <ul class="pagination-list">
+      <!-- Loop through the number of pages to display a link for each-->
+      {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+      <!-- Check for the active page and set the link to "Active"-->
+            {% if logs.page == page_num %}
+            <li><a href="{{ url_for('website.process', page=page_num) }}" class="pagination-link is-current">
+              {{ page_num }}
+            </a></li>
+            {% else %}
+            <li><a href="{{ url_for('website.process', page=page_num) }}" class="pagination-link">
+              {{ page_num }}
+            </a></li>
+            {% endif %}
+          {% else %}
+              ...
+          {% endif %}
+      {% endfor %}
+  </ul>
+</nav>
 {% endblock %}
