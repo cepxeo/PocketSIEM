@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pocket SIEM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='highlight.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="{{ url_for('website.alerts') }}">
+            <img src="{{ url_for('static', filename='pocketsiem-logo.png') }}" width="112" height="28">
+          </a>
+          {% if g.user %}
+          <a class="navbar-item" href="{{ url_for('website.login') }}">Logins</a>
+          <a class="navbar-item" href="{{ url_for('website.process') }}">Processes</a>
+          <a class="navbar-item" href="{{ url_for('website.files') }}">Files</a>
+          <a class="navbar-item" href="{{ url_for('website.net') }}">Network</a>
+          <a class="navbar-item" href="{{ url_for('website.events') }}">Events</a>
+          <a class="navbar-item" href="{{ url_for('website.alerts') }}">Alerts</a>
+          {% endif %}
+          <div class="navbar-burger" data-target="navMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="navbar-menu" id="navMenu">
+          <div class="navbar-end">
+            {% if g.user %}
+
+              <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                  False Positives
+                </a>
+        
+                <div class="navbar-dropdown">
+                  <a class="navbar-item" href="{{url_for('website.clear_filter')}}">
+                    Clear Filter
+                  </a>
+                  <a class="navbar-item" href="{{url_for('website.save_filter')}}">
+                    Save Filter
+                  </a>
+                  <a class="navbar-item" href="{{url_for('website.show_filter')}}">
+                    Show Items
+                  </a>
+                </div>
+              </div>
+
+              <a class="navbar-item">Logged as:  {{ g.user.username }} </a>
+              <a class="navbar-item"  href="{{ url_for('auth.log_out') }}">
+                Log Out
+              </a>
+            {% else %}
+              <a class="navbar-item" href="{{ url_for('auth.log_in') }}">
+                Log In
+              </a>
+              <a class="navbar-item" href="{{ url_for('auth.sign_up') }}">
+                Sign Up
+              </a>
+            {% endif %}
+          </div>
+        </div>
+    </nav>
+    {% if get_flashed_messages() %}
+      <div class="container">
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+          <div id="message{{ loop.index }}">
+            {% if category %}
+              {% if category == 'error' %}
+                <div class="notification is-danger">
+              {% elif category == 'warning' %}
+                <div class="notification is-warning">
+              {% elif category == 'success' %}
+                <div class="notification is-success">
+              {% else %}
+                <div class="notification">
+              {% endif %}
+            {% else %}
+              <div class="notification">
+            {% endif %}
+              <button class="delete" data-target="message{{ loop.index }}" aria-label="delete"></button>
+              {{ message }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <section class="section" id="events_view">
+        {% block content %}
+        {% endblock %}
+    </section>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script src="{{ url_for('static', filename='highlight.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./services/server
+    command: python app.py
+    volumes:
+      - ./services/server/:/usr/src/app/
+    ports:
+      - 5000:5000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${PS_DATABASE_NAME}
+      POSTGRES_USER: ${PS_DATABASE_USER}
+      POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+
+  nginx:
+    image: nginx
+    volumes:
+     - ./services/nginx:/etc/nginx/templates
+     - ./services/nginx/certs:/etc/nginx/certs
+    ports:
+     - "443:443"
+     - "80:80"
+    links:
+     - web
+    depends_on:
+     - web
+volumes:
+  postgres_data:

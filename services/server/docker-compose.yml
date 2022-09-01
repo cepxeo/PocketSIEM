@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: ${PS_DATABASE_NAME}
+      POSTGRES_PORT: 5433
+      POSTGRES_USER: ${PS_DATABASE_USER}
+      POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
+    ports:
+      - 5433:5433
+    command: -p 5433

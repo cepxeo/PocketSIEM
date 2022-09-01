@@ -1,0 +1,39 @@
+<table class="table is-hoverable">
+  <thead>
+    <tr>
+      <th>{{ header1 }}</th>
+      <th>{{ header2 }}</th>
+      <th>{{ header3 }}</th>
+      <th>{{ header4 }}</th>
+      <th>{{ header5 }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for field1, field2, field3, field4, field5 in logs %}
+      {% if field3 not in false_positives and field4 not in false_positives %}
+        <tr>
+          <th>{{ field1 }}</th>
+          <td>
+            <a href="{{url_for(event, host=field2)}}">{{ field2 }}</a>
+          </td>
+          {% if 'process' in event or 'login' in event%}
+            <td>
+              <a href="{{url_for('website.false_process', image=field3, send_to=event)}}">{{ field3 }}</a>
+            </td>
+          {% else %}
+            <td>{{ field3 }}</td>
+          {% endif %}
+          {% if 'event' in event or 'net' in event %}
+            <td>
+              <a href="{{url_for('website.false_process', image=field4, send_to=event)}}">{{ field4 }}</a>
+            </td>
+          {% else %}
+            <td>{{ field4 }}</td>
+          {% endif %}            
+          <td>{{ field5 }}</td>
+          <td></td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
