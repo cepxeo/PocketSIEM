@@ -106,7 +106,6 @@ category: process_creation
 - 'Dnscmd.exe'
 - 'Esentutl.exe'
 - 'Eventvwr.exe'
-- 'Expand.exe'
 - 'Extexport.exe'
 - 'Extrac32.exe'
 - 'Findstr.exe'
