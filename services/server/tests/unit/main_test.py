@@ -1,8 +1,4 @@
-import pytest
 from datetime import datetime, timedelta
-
-from database.models import User, db
-from database import dbs
 
 # Check all routes accessible by unauthenticated user
 def test_urls_unauth(test_client):

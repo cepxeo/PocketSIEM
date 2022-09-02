@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, g, url_for, render_template, redirect, session
+from datetime import datetime, timedelta
 from functools import wraps
 
 from database.models import User, Login, Process, File, Network, Event, Alert
@@ -50,7 +51,7 @@ def login():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Login.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Login.query.filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
         template, logs=logs, 
@@ -62,14 +63,14 @@ def login():
 @website.route("/logins/hosts", methods=["GET"])
 @require_login
 def get_all_login_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_login_hosts(conn)
     return jsonify(logs)
 
 @website.route("/logins/<host>", methods=["GET"])
 @require_login
 def login_host_logs(host):
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -78,7 +79,7 @@ def login_host_logs(host):
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Login.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Login.query.filter(Login.host == host).filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
         template, logs=logs, 
@@ -100,7 +101,8 @@ def process():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Process.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Process.query.filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    
     return render_template(
             template, logs=logs,
             header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
@@ -110,21 +112,24 @@ def process():
 @website.route("/processes/hosts", methods=["GET"])
 @require_login
 def get_all_process_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_proc_hosts(conn)
     return jsonify(logs)
 
 @website.route("/processes/<host>", methods=["GET"])
 @require_login
 def process_host_logs(host):
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_process_host_logs(conn, (host,),range)
+    
+    page = request.args.get('page', 1, type=int)
+    logs = Process.query.filter(Process.host == host).filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    
     return render_template(
         template, logs=logs, 
         header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
@@ -137,7 +142,7 @@ def process_host_logs(host):
 @website.route('/files', methods=['GET'])
 @require_login
 def files():
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -146,34 +151,37 @@ def files():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = File.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = File.query.filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
             template, logs=logs,
-            header1="Date", header2="Host", header3="Event", header4="Image", header5="Details",
+            header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
             event='website.files_host_logs', false_positives=false_positives)
 
 @website.route("/files/hosts", methods=["GET"])
 @require_login
 def get_all_files_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_files_hosts(conn)
     return jsonify(logs)
 
 @website.route("/files/<host>", methods=["GET"])
 @require_login
 def files_host_logs(host):
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_files_host_logs(conn, (host,),range)
+    
+    page = request.args.get('page', 1, type=int)
+    logs = File.query.filter(File.host == host).filter(Login.host == host).filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
-        header1="Date", header2="Host", header3="Event", header4="Image", header5="Details",
+        header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
         event='website.files', false_positives=false_positives)
 
 # ----------------------------------------------------
@@ -183,7 +191,7 @@ def files_host_logs(host):
 @website.route('/net', methods=['GET'])
 @require_login
 def net():
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -192,31 +200,34 @@ def net():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Network.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Network.query.filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
             template, logs=logs,
-            header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
+            header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
             event='website.net_host_logs', false_positives=false_positives)
 
 @website.route("/net/hosts", methods=["GET"])
 @require_login
 def get_all_net_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_network_hosts(conn)
     return jsonify(logs)
 
 @website.route("/net/<host>", methods=["GET"])
 @require_login
 def net_host_logs(host):
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_network_host_logs(conn, (host,),range)
+
+    page = request.args.get('page', 1, type=int)
+    logs = Network.query.filter(Network.host == host).filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
         header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
@@ -229,7 +240,6 @@ def net_host_logs(host):
 @website.route('/events', methods=['GET'])
 @require_login
 def events():
-    conn = dbs.create_connection()
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -238,34 +248,36 @@ def events():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Event.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Event.query.filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
             template, logs=logs, 
-            header1="Date", header2="Host", header3="Event", header4="Image", header5="Details", 
+            header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
             event='website.events_host_logs', false_positives=false_positives)
 
 @website.route("/events/hosts", methods=["GET"])
 @require_login
 def get_all_events_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_events_hosts(conn)
     return jsonify(logs)
 
 @website.route("/events/<host>", methods=["GET"])
 @require_login
 def events_host_logs(host):
-    conn = dbs.create_connection()
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_events_host_logs(conn, (host,),range)
+    
+    page = request.args.get('page', 1, type=int)
+    logs = Event.query.filter(Event.host == host).filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
-        header1="Date", header2="Host", header3="Event", header4="Image", header5="Details", 
+        header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
         event='website.events', false_positives=false_positives)
 
 # Alerts
@@ -273,7 +285,7 @@ def events_host_logs(host):
 @website.route('/alerts', methods=['GET'])
 @require_login
 def alerts():
-    conn = dbs.create_connection()
+    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -282,7 +294,7 @@ def alerts():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Alert.query.paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Alert.query.filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
 
     return render_template(
             template, logs=logs, 
@@ -292,21 +304,23 @@ def alerts():
 @website.route("/alerts/hosts", methods=["GET"])
 @require_login
 def alerts_hosts():
-    conn = dbs.create_connection()
+    
     logs = dbs.get_alerts_hosts(conn)
     return jsonify(logs)
 
 @website.route("/alerts/<host>", methods=["GET"])
 @require_login
 def host_alerts(host):
-    conn = dbs.create_connection()
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
         template = 'events.html'
-    logs = dbs.get_host_alerts(conn, (host,),range)
+    
+    page = request.args.get('page', 1, type=int)
+    logs = Alert.query.filter(Alert.host == host).filter(Login.host == host).filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     return render_template(
         template, logs=logs, 
         header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 

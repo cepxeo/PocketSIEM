@@ -1,9 +1,7 @@
 from werkzeug.security import generate_password_hash
 import pytest
-import os
 
 from database.models import User, db
-from database import dbs
 from app import create_app
 
 
@@ -31,9 +29,6 @@ def test_client():
 @pytest.fixture(scope='module')
 def init_database(test_client):
     # Create the database and the database table
-    conn = dbs.create_connection()
-    dbs.create_db(conn)
-
     db.drop_all()
     db.create_all()
     db.session.commit()
