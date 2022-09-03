@@ -44,7 +44,7 @@
             <div class="dropdown-menu" id="dropdown-menu3" role="menu">
               <div class="dropdown-content">
                 {% for host in hosts %}
-                  <a href="{{url_for(event, host=host)}}" class="dropdown-item">
+                  <a href="{{url_for(hostroute, host=host)}}" class="dropdown-item">
                     {{ host }}
                   </a>
                 {% endfor %}
@@ -64,7 +64,7 @@
             <th>{{ log.date }}</th>
             <td>{{ log.host }}</td>
             <td>
-              <a href="{{url_for('website.false_process', image=log.image, send_to=event)}}">{{ log.image }}</a>
+              <a href="{{url_for('website.false_process', image=log.image, send_to=selfroute, host=currenthost)}}">{{ log.image }}</a>
             </td>    
             <td>{{ log.field4 }}</td>
             <td>{{ log.field5 }}</td>
@@ -83,11 +83,11 @@
         {% if page_num %}
         <!-- Check for the active page and set the link to "Active"-->
               {% if logs.page == page_num %}
-              <li><a href="{{ url_for('website.process', page=page_num) }}" class="pagination-link is-current">
+              <li><a href="{{ url_for(selfroute, page=page_num, host=currenthost) }}" class="pagination-link is-current">
                 {{ page_num }}
               </a></li>
               {% else %}
-              <li><a href="{{ url_for('website.process', page=page_num) }}" class="pagination-link">
+              <li><a href="{{ url_for(selfroute, page=page_num, host=currenthost) }}" class="pagination-link">
                 {{ page_num }}
               </a></li>
               {% endif %}

@@ -51,13 +51,15 @@ def login():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Login.query.filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Login.query.filter(
+        Login.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Login.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
         template, logs=logs, hosts=hosts,
-        header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
-        field1="log.host",
-        event='website.login_host_logs', false_positives=false_positives)
+        header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name",
+        hostroute='website.login_host_logs', selfroute='website.login', false_positives=false_positives)
 
 @website.route("/logins/<host>", methods=["GET"])
 @require_login
@@ -71,12 +73,16 @@ def login_host_logs(host):
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Login.query.filter(Login.host == host).filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    logs = Login.query.filter(Login.host == host).filter(
+        Login.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Login.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
-        event='website.login', false_positives=false_positives)
+        hostroute='website.login_host_logs', selfroute='website.login_host_logs', false_positives=false_positives)
 
 # ----------------------------------------------------
 # Process creation logs
@@ -93,33 +99,37 @@ def process():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Process.query.filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    hosts = [x[0] for x in db.session.query(Process.host).distinct()]
 
+    logs = Process.query.filter(
+        Process.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Process.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    hosts = [x[0] for x in db.session.query(Process.host).distinct()]
     return render_template(
             template, logs=logs, hosts=hosts,
-            header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
-            field1="log.host",
-            event='website.process_host_logs', false_positives=false_positives)
+            header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line",
+            hostroute='website.process_host_logs', selfroute='website.process', false_positives=false_positives)
 
 @website.route("/processes/<host>", methods=["GET"])
 @require_login
 def process_host_logs(host):
-    
+    page = request.args.get('page', 1, type=int)
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
     else:
         range = default_date_range
-        template = 'events.html'
+        template = 'events.html'    
     
-    page = request.args.get('page', 1, type=int)
-    logs = Process.query.filter(Process.host == host).filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Process.query.filter(Process.host == host).filter(
+        Process.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Process.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(Process.host).distinct()]    
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
-        event='website.process', false_positives=false_positives)
+        hostroute='website.process_host_logs', selfroute='website.process_host_logs', false_positives=false_positives)
         
 # ----------------------------------------------------
 # File creation logs
@@ -137,13 +147,16 @@ def files():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = File.query.filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = File.query.filter(
+        File.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(File.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(File.host).distinct()]
 
     return render_template(
             template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
-            event='website.files_host_logs', false_positives=false_positives)
+            hostroute='website.files_host_logs', selfroute='website.files', false_positives=false_positives)
 
 @website.route("/files/<host>", methods=["GET"])
 @require_login
@@ -157,12 +170,16 @@ def files_host_logs(host):
         template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
-    logs = File.query.filter(File.host == host).filter(Login.host == host).filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    logs = File.query.filter(File.host == host).filter(
+        File.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(File.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(File.host).distinct()]
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
-        event='website.files', false_positives=false_positives)
+        hostroute='website.files_host_logs', selfroute='website.files_host_logs', false_positives=false_positives)
 
 # ----------------------------------------------------
 # Network logs
@@ -180,13 +197,15 @@ def net():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Network.query.filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    hosts = [x[0] for x in db.session.query(Network.host).distinct()]
+    logs = Network.query.filter(
+        Network.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Network.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
 
+    hosts = [x[0] for x in db.session.query(Network.host).distinct()]
     return render_template(
             template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
-            event='website.net_host_logs', false_positives=false_positives)
+            hostroute='website.net_host_logs', selfroute='website.net', false_positives=false_positives)
 
 @website.route("/net/<host>", methods=["GET"])
 @require_login
@@ -200,12 +219,15 @@ def net_host_logs(host):
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Network.query.filter(Network.host == host).filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = Network.query.filter(Network.host == host).filter(
+        Network.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Network.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(Network.host).distinct()]
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
-        event='website.net', false_positives=false_positives)
+        hostroute='website.net_host_logs', selfroute='website.net_host_logs', false_positives=false_positives)
 
 # ----------------------------------------------------
 # Events
@@ -222,13 +244,15 @@ def events():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Event.query.filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    hosts = [x[0] for x in db.session.query(Event.host).distinct()]
+    logs = Event.query.filter(
+        Event.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Event.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
 
+    hosts = [x[0] for x in db.session.query(Event.host).distinct()]
     return render_template(
             template, logs=logs, hosts = hosts,
             header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
-            event='website.events_host_logs', false_positives=false_positives)
+            hostroute='website.events_host_logs', selfroute='website.events', false_positives=false_positives)
 
 @website.route("/events/<host>", methods=["GET"])
 @require_login
@@ -241,12 +265,16 @@ def events_host_logs(host):
         template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
-    logs = Event.query.filter(Event.host == host).filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    logs = Event.query.filter(Event.host == host).filter(
+        Event.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Event.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
     hosts = [x[0] for x in db.session.query(Event.host).distinct()]
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
-        event='website.events', false_positives=false_positives)
+        hostroute='website.events_host_logs', selfroute='website.events_host_logs', false_positives=false_positives)
 
 # Alerts
 # ----------------------------------------------------
@@ -262,13 +290,16 @@ def alerts():
         template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
-    logs = Alert.query.filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
 
+    logs = Alert.query.filter(
+        Alert.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Alert.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
     return render_template(
             template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
-            event='website.host_alerts')
+            hostroute='website.host_alerts', selfroute='website.alerts', false_positives=false_positives)
 
 @website.route("/alerts/<host>", methods=["GET"])
 @require_login
@@ -281,12 +312,16 @@ def host_alerts(host):
         template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
-    logs = Alert.query.filter(Alert.host == host).filter(Login.host == host).filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    logs = Alert.query.filter(Alert.host == host).filter(
+        Alert.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(Alert.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    
     hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
     return render_template(
-        template, logs=logs, hosts=hosts,
+        template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
-        event='website.alerts')
+        hostroute='website.host_alerts', selfroute='website.host_alerts', false_positives=false_positives)
 
 # ----------------------------------------------------
 # False positives filter
@@ -297,7 +332,10 @@ def host_alerts(host):
 def false_process():
     image  = request.args.get('image', None)
     send_to  = request.args.get('send_to', None)
+    host  = request.args.get('host', None)
     false_positives.append(image)
+    if 'host' in send_to:
+        return redirect(url_for(send_to, host = host))
     return redirect(url_for(send_to.split('_')[0]))
 
 @website.route("/clearfilter", methods=["GET"])
