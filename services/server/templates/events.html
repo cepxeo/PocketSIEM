@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container"><p class="mt-5 mb-5"> </p></div>
+
 <div class="container">
   <nav class="level">
     <div class="level-item has-text-centered">  
@@ -21,6 +23,8 @@
     </div>
   </nav>
 </div>
+
+<div class="container"><p class="mt-5 mb-5"> </p></div>
 
 <div class="table-container" id="events_id">
   <table class="table is-hoverable">
@@ -69,6 +73,9 @@
       {% endfor %}
     </tbody>
   </table>
+  
+  <div class="container"><p class="mt-6 mb-6"> </p></div>
+
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
     <ul class="pagination-list">
         <!-- Loop through the number of pages to display a link for each-->
@@ -90,5 +97,8 @@
         {% endfor %}
     </ul>
   </nav>
+
+  <div class="container"><p class="mt-6 mb-6"> </p></div>
+  
 </div>
 {% endblock %}
