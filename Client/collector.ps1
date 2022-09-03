@@ -40,8 +40,6 @@
 
 $url = '<DOMAIN>'
 $hostname = hostname
-$DateAfter = (Get-Date).AddDays(-7)
-$DateBefore = (Get-Date)
 
 # !! Provide the token value !!
 
@@ -67,7 +65,7 @@ If ($status.StatusCode -ne 200) {
 # Extract events and uploads via POST
 
 # Successful Logins
-Get-WinEvent -FilterHashtable @{Logname='security';id=4624} | Get-WinEventData | ? { ($_.e_TargetUserName -notmatch '^system.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;user=$_.e_TargetUserName;logon_type=$_.e_LogonType;process_name=$_.e_ProcessName}; Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers}
+Get-WinEvent -FilterHashtable @{Logname='security';id=4624} | Get-WinEventData | ? { ($_.e_TargetUserName -notmatch '^system.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;osuser=$_.e_TargetUserName;logon_type=$_.e_LogonType;process_name=$_.e_ProcessName}; Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers}
 
 # Failed Logins (event)
 $event = "Login failed"
@@ -96,9 +94,9 @@ Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';i
 $event = "Proc Inj CreateRemoteThread"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=8} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_SourceImage;details=$_.e_TargetImage + $_.e_SourceUser}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
 
-# Event ID 11: File created
+# Event ID 11: File created (event)
 $event = "File created"
-Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=11} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_Image;details=$_.e_TargetFilename}; Invoke-WebRequest -Uri $url/files -Method POST -Body $postParams -Headers $Headers}
+Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=11} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;image=$_.e_Image;filename=$_.e_TargetFilename;osuser=$_.e_User}; Invoke-WebRequest -Uri $url/files -Method POST -Body $postParams -Headers $Headers}
 
 # Event ID 12: Registry object added or deleted (event)
 $event = "Registry object added or deleted"

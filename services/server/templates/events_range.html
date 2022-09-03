@@ -2,7 +2,27 @@
   <thead>
     <tr>
       <th>{{ header1 }}</th>
-      <th>{{ header2 }}</th>
+      <th>
+        <div class="dropdown">
+          <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
+              <span>Hosts</span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              {% for host in hosts %}
+                <a href="{{url_for(event, host=host)}}" class="dropdown-item">
+                  {{ host }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </th>
       <th>{{ header3 }}</th>
       <th>{{ header4 }}</th>
       <th>{{ header5 }}</th>
@@ -13,9 +33,7 @@
       {% if log.image not in false_positives %}
         <tr>
           <th>{{ log.date }}</th>
-          <td>
-            <a href="{{url_for(event, host=log.host)}}">{{ log.host }}</a>
-          </td>
+          <td>{{ log.host }}</td>
           <td>
             <a href="{{url_for('website.false_process', image=log.image, send_to=event)}}">{{ log.image }}</a>
           </td>    

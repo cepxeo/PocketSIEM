@@ -27,7 +27,27 @@
     <thead>
       <tr>
         <th>{{ header1 }}</th>
-        <th>{{ header2 }}</th>
+        <th>
+          <div class="dropdown">
+            <div class="dropdown-trigger">
+              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
+                <span>Hosts</span>
+                <span class="icon is-small">
+                  <i class="fas fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+              <div class="dropdown-content">
+                {% for host in hosts %}
+                  <a href="{{url_for(event, host=host)}}" class="dropdown-item">
+                    {{ host }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </th>
         <th>{{ header3 }}</th>
         <th>{{ header4 }}</th>
         <th>{{ header5 }}</th>
@@ -38,9 +58,7 @@
         {% if log.image not in false_positives %}
           <tr>
             <th>{{ log.date }}</th>
-            <td>
-              <a href="{{url_for(event, host=log.host)}}">{{ log.host }}</a>
-            </td>
+            <td>{{ log.host }}</td>
             <td>
               <a href="{{url_for('website.false_process', image=log.image, send_to=event)}}">{{ log.image }}</a>
             </td>    
@@ -52,8 +70,6 @@
     </tbody>
   </table>
   <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-    <a href="{{ url_for('website.process', page=logs.prev_num) }}" class="pagination-previous {% if logs.page == 1 %}is-disabled{% endif %}">Previous</a>
-    <a href="{{ url_for('website.process', page=logs.next_num) }}" class="pagination-next {% if logs.page == logs.pages %}is-disabled{% endif %}">Next page</a>
     <ul class="pagination-list">
         <!-- Loop through the number of pages to display a link for each-->
         {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}

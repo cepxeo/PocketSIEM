@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, g, url_for, render_template, redi
 from datetime import datetime, timedelta
 from functools import wraps
 
-from database.models import User, Login, Process, File, Network, Event, Alert
+from database.models import db, User, Login, Process, File, Network, Event, Alert
 from database import dbs
 
 website = Blueprint('website', __name__)
@@ -52,20 +52,12 @@ def login():
 
     page = request.args.get('page', 1, type=int)
     logs = Login.query.filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
         field1="log.host",
         event='website.login_host_logs', false_positives=false_positives)
-        
-
-@website.route("/logins/hosts", methods=["GET"])
-@require_login
-def get_all_login_hosts():
-    
-    logs = dbs.get_login_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/logins/<host>", methods=["GET"])
 @require_login
@@ -80,9 +72,9 @@ def login_host_logs(host):
 
     page = request.args.get('page', 1, type=int)
     logs = Login.query.filter(Login.host == host).filter(Login.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
         event='website.login', false_positives=false_positives)
 
@@ -102,19 +94,13 @@ def process():
 
     page = request.args.get('page', 1, type=int)
     logs = Process.query.filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    
+    hosts = [x[0] for x in db.session.query(Process.host).distinct()]
+
     return render_template(
-            template, logs=logs,
+            template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
             field1="log.host",
             event='website.process_host_logs', false_positives=false_positives)
-
-@website.route("/processes/hosts", methods=["GET"])
-@require_login
-def get_all_process_hosts():
-    
-    logs = dbs.get_proc_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/processes/<host>", methods=["GET"])
 @require_login
@@ -129,9 +115,9 @@ def process_host_logs(host):
     
     page = request.args.get('page', 1, type=int)
     logs = Process.query.filter(Process.host == host).filter(Process.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-    
+    hosts = [x[0] for x in db.session.query(Process.host).distinct()]    
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
         event='website.process', false_positives=false_positives)
         
@@ -152,18 +138,12 @@ def files():
 
     page = request.args.get('page', 1, type=int)
     logs = File.query.filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    hosts = [x[0] for x in db.session.query(File.host).distinct()]
 
     return render_template(
-            template, logs=logs,
+            template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
             event='website.files_host_logs', false_positives=false_positives)
-
-@website.route("/files/hosts", methods=["GET"])
-@require_login
-def get_all_files_hosts():
-    
-    logs = dbs.get_files_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/files/<host>", methods=["GET"])
 @require_login
@@ -178,9 +158,9 @@ def files_host_logs(host):
     
     page = request.args.get('page', 1, type=int)
     logs = File.query.filter(File.host == host).filter(Login.host == host).filter(File.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(File.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
         event='website.files', false_positives=false_positives)
 
@@ -201,18 +181,12 @@ def net():
 
     page = request.args.get('page', 1, type=int)
     logs = Network.query.filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    hosts = [x[0] for x in db.session.query(Network.host).distinct()]
 
     return render_template(
-            template, logs=logs,
+            template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
             event='website.net_host_logs', false_positives=false_positives)
-
-@website.route("/net/hosts", methods=["GET"])
-@require_login
-def get_all_net_hosts():
-    
-    logs = dbs.get_network_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/net/<host>", methods=["GET"])
 @require_login
@@ -227,9 +201,9 @@ def net_host_logs(host):
 
     page = request.args.get('page', 1, type=int)
     logs = Network.query.filter(Network.host == host).filter(Network.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(Network.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
         event='website.net', false_positives=false_positives)
 
@@ -249,18 +223,12 @@ def events():
 
     page = request.args.get('page', 1, type=int)
     logs = Event.query.filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    hosts = [x[0] for x in db.session.query(Event.host).distinct()]
 
     return render_template(
-            template, logs=logs, 
+            template, logs=logs, hosts = hosts,
             header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
             event='website.events_host_logs', false_positives=false_positives)
-
-@website.route("/events/hosts", methods=["GET"])
-@require_login
-def get_all_events_hosts():
-    
-    logs = dbs.get_events_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/events/<host>", methods=["GET"])
 @require_login
@@ -274,9 +242,9 @@ def events_host_logs(host):
     
     page = request.args.get('page', 1, type=int)
     logs = Event.query.filter(Event.host == host).filter(Event.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(Event.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="Image", header4="Event", header5="Details", 
         event='website.events', false_positives=false_positives)
 
@@ -295,18 +263,12 @@ def alerts():
 
     page = request.args.get('page', 1, type=int)
     logs = Alert.query.filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
+    hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
 
     return render_template(
-            template, logs=logs, 
+            template, logs=logs, hosts=hosts,
             header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
             event='website.host_alerts')
-
-@website.route("/alerts/hosts", methods=["GET"])
-@require_login
-def alerts_hosts():
-    
-    logs = dbs.get_alerts_hosts(conn)
-    return jsonify(logs)
 
 @website.route("/alerts/<host>", methods=["GET"])
 @require_login
@@ -320,9 +282,9 @@ def host_alerts(host):
     
     page = request.args.get('page', 1, type=int)
     logs = Alert.query.filter(Alert.host == host).filter(Login.host == host).filter(Alert.date >= datetime.today() - timedelta(days=int(range))).paginate(page=page, per_page=ROWS_PER_PAGE)
-
+    hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
     return render_template(
-        template, logs=logs, 
+        template, logs=logs, hosts=hosts,
         header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
         event='website.alerts')
 
