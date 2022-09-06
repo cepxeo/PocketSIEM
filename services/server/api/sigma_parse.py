@@ -32,13 +32,15 @@ def load_rules(evil_patterns, path):
 def check_log(evil_patterns, command_line):
     for pattern in evil_patterns:
         full_pattern_array = pattern.split("%")
+
         # Check for antipattern
         if len(full_pattern_array) > 1:
             if full_pattern_array[1] in command_line:
-                return False
+                continue
             pattern_array = full_pattern_array[0].split("*")
         else:
             pattern_array = pattern.split("*")
+
         pattern_array = [i for i in pattern_array if i]      
         match_pattern =  all(elem.casefold() in command_line.casefold() for elem in pattern_array)
         filter_trash = all(len(elem) > 1 for elem in pattern_array)

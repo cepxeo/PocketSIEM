@@ -2,13 +2,14 @@ category: process_creation
 
 # Common recon
 - 'whoami'
+- 'tasklist'
+- 'systeminfo'
 - 'net user'
 - 'net group'
 - 'net localgroup'
-- 'tasklist'
-- 'systeminfo'
 - 'net start'
 - 'net stop'
+- 'net view'
 - 'net*use*\add'
 - '/domain'
 - 'curl'
@@ -28,6 +29,8 @@ category: process_creation
 - 'ping*0:0'
 
 # Powershell
+# https://threathunterplaybook.com/
+
 - '-ep*Bypass'
 - '-exec*Bypass'
 - 'Set*ExecutionPolicy'
@@ -59,11 +62,14 @@ category: process_creation
 - 'schtasks*/create*/sc'
 - 'WevtUtil'
 
-#LoL bins
+# LoL bins 
+# https://lolbas-project.github.io/
 
 - 'certutil*-decode'
 - 'wmiprvse.exe'
-- 'msbuild.exe*.cs'
+- 'msbuild.exe*proj'
+- 'msbuild.exe*.xml'
+- 'msbuild.exe*logger'
 - 'msiexec*.msi'
 - 'msiexec*.dll'
 - 'msiexec*tp//'
@@ -98,7 +104,7 @@ category: process_creation
 - 'Cmstp.exe'
 - 'ConfigSecurityPolicy.exe'
 - 'Conhost.exe'
-- 'Control.exe'
+- 'Control.exe*.dll'
 - 'Csc.exe*.cs'
 - 'Cscript.exe'
 - 'DataSvcUtil.exe'
@@ -132,7 +138,6 @@ category: process_creation
 - 'Microsoft.Workflow.Compiler.exe'
 - 'Mmc.exe*.msc%services'
 - 'MpCmdRun.exe'
-- 'Msbuild.exe'
 - 'Msconfig.exe'
 - 'Msdt.exe'
 - 'Mshta.exe'
@@ -223,6 +228,7 @@ category: process_creation
 - 'Squirrel.exe'
 - 'te.exe'
 - 'Tracker.exe'
+- 'userinit.exe'
 - 'VSIISExeLauncher.exe'
 - 'VisualUiaVerifyNative.exe'
 - 'vsjitdebugger.exe'
@@ -241,7 +247,7 @@ category: process_creation
 - 'Pester.bat'
 - 'iertutil.dll'
 
-# Registry keys
+# Registry keys (https://github.com/mandiant/SharPersist)
 
 - 'Windows\Load'
 - 'Windows\Run'
@@ -249,6 +255,10 @@ category: process_creation
 - 'Winlogon\System'
 - 'CurrentVersion\Run'
 - 'Policies\Explorer\Run'
+- 'Account\Users\Names'
+- 'Environment\UserInitMprLogonScript'
+- 'CurrentControlSet\Services*ImagePath'
+- 'CurrentControlSet\Services*Start'
 - 'AppCertDLL'
 - 'AppInitDLL'
 - 'LSA Authentication Packages'
@@ -261,6 +271,7 @@ category: process_creation
 # Common evil paths
 
 - 'Windows\Tasks'
+- 'Windows\System32\Tasks%Microsoft'
 - 'Windows\Temp*dll'
 - 'Windows\Temp*exe'
 - 'Users\Public'
@@ -270,7 +281,7 @@ category: process_creation
 - 'System32\spool\SERVERS'
 - '\Excel\XLStart\'
 - 'Programs\Startup'
-- 'temp*. sys'
+- 'temp*.sys'
 
 # Known evil tools
 

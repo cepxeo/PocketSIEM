@@ -569,7 +569,6 @@
 			<TargetObject name="RDP port change" condition="end with">Control\Terminal Server\WinStations\RDP-Tcp\PortNumber</TargetObject> <!--Windows: RDP port change under Control [ https://blog.menasec.net/2019/02/of-rdp-hijacking-part1-remote-desktop.html ]-->
 			<TargetObject name="RDP port change" condition="end with">Control\Terminal Server\fSingleSessionPerUser</TargetObject> <!--Windows: Allow same user to have mutliple RDP sessions, to hide from admin being impersonated-->
 			<TargetObject name="ModifyRemoteDesktopState" condition="end with">fDenyTSConnections</TargetObject> <!--Windows: Attacker turning on RDP-->
-			<TargetObject condition="end with">LastLoggedOnUser</TargetObject> <!--Windows: Changing last-logged in user-->
 			<TargetObject name="ModifyRemoteDesktopPort" condition="end with">RDP-tcp\PortNumber</TargetObject> <!--Windows: Changing RDP port to evade IDS-->
 			<TargetObject condition="end with">Services\PortProxy\v4tov4</TargetObject> <!--Windows: Changing RDP port to evade IDS-->
 			<!--CLSID launch commands and Default File Association changes-->
@@ -612,7 +611,6 @@
 			<TargetObject condition="contains">Software\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyEnable</TargetObject> <!--Windows: Malware often disables a web proxy for 2nd stage downloads -->
 			<!--Networking-->
 			<TargetObject condition="begin with">HKLM\SYSTEM\CurrentControlSet\Control\NetworkProvider\Order\</TargetObject> <!--Windows: Order of network providers that are checked to connect to destination [ https://www.malwarearchaeology.com/cheat-sheets ] -->
-			<TargetObject condition="begin with">HKLM\Software\Microsoft\Windows NT\CurrentVersion\NetworkList\Profiles</TargetObject> <!--Windows: | Credit @ion-storm -->
 			<TargetObject name="T1089" condition="end with">\EnableFirewall</TargetObject> <!--Windows: Monitor for firewall disablement, all firewall profiles [ https://attack.mitre.org/wiki/Technique/T1089 ] -->
 			<TargetObject name="T1089" condition="end with">\DoNotAllowExceptions</TargetObject> <!--Windows: Monitor for firewall disablement, all firewall profiles [ https://attack.mitre.org/wiki/Technique/T1089 ] -->
 			<TargetObject condition="begin with">HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile\AuthorizedApplications\List</TargetObject> <!--Windows Firewall authorized applications for all networks| Credit @ion-storm -->
@@ -678,19 +676,20 @@
 			<TargetObject name="InvDB-DriverVer" condition="end with">\DriverVersion</TargetObject> <!-- [ https://df-stream.com/2015/02/leveraging-devicecontainers-key/ ] -->
 			<TargetObject name="InvDB-DriverVer" condition="end with">\DriverVerVersion</TargetObject> <!-- [ https://df-stream.com/2015/02/leveraging-devicecontainers-key/ ] -->
 			<TargetObject name="InvDB-CompileTimeClaim" condition="end with">\LinkDate</TargetObject> <!-- Compile time of EXE, may not be reliable [ https://en.wikipedia.org/wiki/Link_time ] -->
-			<TargetObject name="InvDB" condition="contains">Compatibility Assistant\Store\</TargetObject> <!-- Inventory -->
-			<TargetObject name="VBS Scripts" condition="contains">.vbs</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">AppCertDLL</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">AppInitDLL</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">LSA Authentication Packages</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">LSA Password Filters</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">LSA Security Packages</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">PortMonitor</TargetObject> <!-- Inventory -->
-			<TargetObject name="LoL keys" condition="contains">TimeProv</TargetObject> <!-- Inventory -->
-			<TargetObject name="RID Highjack" condition="contains">SAM\Domains\Account\Users</TargetObject> <!-- Inventory -->
-			<TargetObject name="NTLM downgrade" condition="contains">LMCompatibilityLevel</TargetObject> <!-- Inventory -->
-			<TargetObject name="NTLM downgrade" condition="contains">NtlmMinClientSec</TargetObject> <!-- Inventory -->
-			<TargetObject name="NTLM downgrade" condition="contains">RestrictSendingNTLMTraffic</TargetObject> <!-- Inventory -->
+			<TargetObject name="InvDB" condition="contains">Compatibility Assistant\Store\</TargetObject>
+			<TargetObject name="VBS Scripts" condition="contains">.vbs</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">AppCertDLL</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">AppInitDLL</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">LSA Authentication Packages</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">LSA Password Filters</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">LSA Security Packages</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">PortMonitor</TargetObject>
+			<TargetObject name="LoL keys" condition="contains">TimeProv</TargetObject>
+			<TargetObject name="RID Highjack" condition="contains">SAM\Domains\Account\Users</TargetObject>
+			<TargetObject name="NTLM downgrade" condition="contains">LMCompatibilityLevel</TargetObject>
+			<TargetObject name="NTLM downgrade" condition="contains">NtlmMinClientSec</TargetObject>
+			<TargetObject name="NTLM downgrade" condition="contains">RestrictSendingNTLMTraffic</TargetObject>
+			<TargetObject name="Persistense" condition="contains">Control\Session Manager\Environment</TargetObject>
 			<!--Suspicious sources-->
 			<Image name="Suspicious,ImageBeginWithBackslash" condition="end with">regedit.exe</Image> <!--Users and helpdesk staff making system modifications -->
 			<Image name="Suspicious,ImageBeginWithBackslash" condition="begin with">\</Image> <!--Devices and VSC shouldn't be executing changes | Credit: @SBousseaden @ionstorm @neu5ron @PerchedSystems [ https://twitter.com/SwiftOnSecurity/status/1133167323991486464 ] -->
@@ -739,7 +738,7 @@
 			<TargetObject condition="end with">\UserChoice\ProgId</TargetObject> <!--Windows: Remove noise from monitoring "FileExts"--> <!--Win8+-->
 			<TargetObject condition="end with">\UserChoice\Hash</TargetObject> <!--Windows: Remove noise from monitoring "FileExts"--> <!--Win8+-->
 			<TargetObject condition="end with">\OpenWithList\MRUList</TargetObject> <!--Windows: Remove noise from monitoring "FileExts"-->
-			<TargetObject condition="contains">Shell Extentions\Cached</TargetObject> <!--Windows: Remove noise generated by explorer.exe on monitored ShellCached binary keys--> <!--Win8+-->
+			<TargetObject condition="contains">Shell Extensions\Cached</TargetObject> <!--Windows: Remove noise generated by explorer.exe on monitored ShellCached binary keys--> <!--Win8+-->
 			<!--Group Policy noise-->
 			<TargetObject condition="end with">HKLM\System\CurrentControlSet\Control\Lsa\Audit\SpecialGroups</TargetObject> <!--Windows: Routinely set through Group Policy, not especially important to log-->
 			<TargetObject condition="end with">SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\Scripts\Startup\0\PSScriptOrder</TargetObject> <!--Windows:Group Policy: Noise below the actual key while building-->

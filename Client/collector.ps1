@@ -62,14 +62,28 @@ If ($status.StatusCode -ne 200) {
     Exit
 }
 
-# Extract events and uploads via POST
+## Windows Security events
 
 # Successful Logins
-Get-WinEvent -FilterHashtable @{Logname='security';id=4624} | Get-WinEventData | ? { ($_.e_TargetUserName -notmatch '^system.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;osuser=$_.e_TargetUserName;logon_type=$_.e_LogonType;process_name=$_.e_ProcessName}; Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers}
+Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -max 1000 | Get-WinEventData | ? { ($_.e_TargetUserName -notmatch '^system.*')} | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;osuser=$_.e_TargetUserName;logon_type=$_.e_LogonType;process_name=$_.e_ProcessName}; Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers}
 
 # Failed Logins (event)
 $event = "Login failed"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4625} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_TargetUserName;details=$_.e_LogonType}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
+
+# Account created (event)
+$event = "User Account Created"
+Get-WinEvent -FilterHashtable @{Logname='security';id=4720} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_SubjectDomainName + $_.e_SubjectUserName;details=$_.e_TargetDomainName + $_.e_TargetUserName}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
+
+# Sched task created
+$event = "Scheduled task created"
+Get-WinEvent -FilterHashtable @{Logname='security';id=4698} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_TaskName;details=$_.e_SubjectUserName}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
+
+# Sched task deleted
+$event = "Scheduled task deleted"
+Get-WinEvent -FilterHashtable @{Logname='security';id=4699} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_TaskName;details=$_.e_SubjectUserName}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
+
+## Sysmon events
 
 # Event ID 1: Created processes
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -max 1000 | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;image=$_.e_Image;company=$_.e_Company;command_line=$_.e_CommandLine}; Invoke-WebRequest -Uri $url/processes -Method POST -Body $postParams -Headers $Headers}
@@ -103,8 +117,8 @@ $event = "Registry object added or deleted"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=12} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_Image;details=$_.e_EventType + $_.e_TargetObject}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
 
 # Event ID 13: Registry object modified - Disabled due to high volume of false positives
-#$event = "Registry object modified"
-#Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=13} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_Image;details=$_.e_EventType + $_.e_TargetObject}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
+$event = "Registry object modified"
+Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=13} | Get-WinEventData | foreach{$postParams = @{date=$_.TimeCreated;host=$hostname;event=$event;image=$_.e_Image;details=$_.e_EventType + $_.e_TargetObject}; Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers}
 
 # Event ID 15: Alternate data stream
 $event = "File downloaded"
