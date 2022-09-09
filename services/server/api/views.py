@@ -1,24 +1,15 @@
-from flask import Blueprint, current_app, request, abort
+from flask import Blueprint, current_app, request, abort, jsonify
 from functools import wraps
 import logging
 import jwt
-import whois
 
-from database.models import db, User, Login, Process, File, Network, Event, Alert
-from api import sigma_parse
+from database.models import db, User, Login, Process, File, Network, Event
+from . import tasks
 
 api = Blueprint('api', __name__)
 
 logger = logging.getLogger('waitress')
 logger.setLevel(logging.INFO)
-
-trusted_ips = []
-internal_ips = ['10', '192', '127', '172', '169', '240', '255']
-trusted_orgs = ['microsoft.com','markmonitor.com']
-
-evil_patterns = []
-evil_patterns = sigma_parse.load_rules(evil_patterns, "rules")
-print ("[+] Loaded " + str(len(evil_patterns)) + " evil commands patterns.")
 
 def token_required(f):
     @wraps(f)
@@ -40,6 +31,12 @@ def token_required(f):
 @token_required
 def healthcheck(current_user):
     return ""
+
+@api.route('/celery')
+@token_required
+def run_task():
+    task = tasks.sleep_test.delay()
+    return jsonify({"task_id": task.id}), 202
 
 # Logins logs
 # ----------------------------------------------------
@@ -70,14 +67,7 @@ def insert_process_logs(current_user):
     company = request.form["company"]
     command_line = request.form["command_line"]
 
-    # Check if command_line field matches any malicious pattern 
-    alert = sigma_parse.check_log(evil_patterns, command_line)
-    if alert:
-        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
-        logger.info("[!!] Malicious command: %s" % command_line)
-        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=command_line)
-        db.session.add(newAlert)
-        db.session.commit()
+    tasks.check_log.delay(date, host, image, command_line)
     
     newProcess = Process(date=date, host=host, image=image, field4=company, field5=command_line)
     db.session.add(newProcess)
@@ -97,14 +87,7 @@ def insert_files_logs(current_user):
     filename = request.form["filename"]
     osuser = request.form["osuser"]
 
-    # Check if details field matches any malicious pattern 
-    alert = sigma_parse.check_log(evil_patterns, filename)
-    if alert:
-        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
-        logger.info("[!!] Malicious command: %s" % filename)
-        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=filename)
-        db.session.add(newAlert)
-        db.session.commit()
+    tasks.check_log.delay(date, host, image, filename)
 
     newFile = File(date=date, host=host, image=image, field4=filename, field5=osuser)
     db.session.add(newFile)
@@ -124,26 +107,7 @@ def insert_net_logs(current_user):
     dest_ip = request.form["dest_ip"]
     dest_port = request.form["dest_port"]
 
-    # Checking the whois service for known orgs for given IPs
-    # Wouldn't run if service runs in the isolated segment. Also skip the checks if IP is a typical internal one.
-    if current_app.config['ONLINE_CHECKS'] == 'True' and dest_ip.split(".")[0] not in internal_ips:      
-        if dest_ip in trusted_ips:
-            return ""
-        else:
-            w = whois.whois(dest_ip)
-            whois_emails = w.emails
-            for trusted_org in trusted_orgs:
-                # If IP belongs to trusted org, don't add it to the DB and append the trusted IPs list
-                if whois_emails != None and list(filter(lambda x: trusted_org in x, whois_emails)):
-                    trusted_ips.append(dest_ip)
-                    return ""
-            # If IP is not trusted and not internal, print it
-            if whois_emails != None:
-                logger.info(f"{dest_ip} for process {image} belongs to {whois_emails}")
-            
-    newNetwork = Network(date=date, host=host, image=image, field4=dest_ip, field5=dest_port)
-    db.session.add(newNetwork)
-    db.session.commit()
+    tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
 
     logger.debug("[+] Received network log from Host: %s" % host,)
     return ""
@@ -159,14 +123,7 @@ def insert_events_logs(current_user):
     event = request.form["event"]  
     details = request.form["details"]
 
-    # Check if details field matches any malicious pattern 
-    alert = sigma_parse.check_log(evil_patterns, details)
-    if alert:
-        logger.info("[!!] Event alert triggered by the rule: %s" % alert)
-        logger.info("[!!] Malicious command: %s" % details)
-        newAlert = Alert(date=date, host=host, image=image, field4=alert, field5=details)
-        db.session.add(newAlert)
-        db.session.commit()
+    tasks.check_log.delay(date, host, image, details)
 
     newEvent = Event(date=date, host=host, image=image, field4=event, field5=details)
     db.session.add(newEvent)

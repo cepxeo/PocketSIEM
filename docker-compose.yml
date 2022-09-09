@@ -5,10 +5,54 @@ services:
     build: ./services/server
     command: python app.py
     volumes:
-      - ./services/server/:/usr/src/app/
+      - ./services/server:/app
     ports:
       - 5000:5000
     depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
+  celery_worker:
+    build: ./services/server
+    image: celery_worker
+    command: celery -A app.celery worker --loglevel=info
+    volumes:
+      - ./services/server:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
+  celery_beat:
+    build: ./services/server
+    image: celery_beat
+    command: rm -f './celerybeat.pid' && celery -A app.celery beat -l info
+    volumes:
+      - ./services/server:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
+  flower:
+    build: ./services/server
+    image: celery_flower
+    command: celery -A app.celery --broker="redis://redis:6379/0" flower
+    volumes:
+      - ./services/server:/app
+    env_file:
+      - .env
+    ports:
+      - 5557:5555
+    depends_on:
+      - redis
       - postgres
 
   postgres:

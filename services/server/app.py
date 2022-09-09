@@ -1,11 +1,13 @@
 from flask import Flask
 from werkzeug.security import generate_password_hash
+from flask_celeryext import FlaskCeleryExt
 from waitress import serve
 import secrets
 import string
 import logging
 
 from database.models import db, User
+from celery_utils import make_celery
 
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -15,8 +17,7 @@ def create_app(config_filename=None):
     db.init_app(app)
 
     db.create_all()
-    db.session.commit()
-    
+    db.session.commit()    
     return app
 
 def register_blueprints(app):
@@ -28,9 +29,12 @@ def register_blueprints(app):
     app.register_blueprint(api)
     app.register_blueprint(website)
 
+ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
+flask_app = create_app('flask.cfg')
+ext_celery.init_app(flask_app)
+celery = ext_celery.celery
+
 if __name__ == '__main__':
-    flask_app = create_app('flask.cfg')
-  
     def gen_admin():
         username = 'admin'        
         if User.query.filter_by(username=username).first() is not None:
@@ -53,3 +57,4 @@ if __name__ == '__main__':
         flask_app.run(host='0.0.0.0', port=8443, ssl_context=('cert.pem', 'key.pem'))
     else:
         serve(flask_app, host='0.0.0.0', port=5000, url_scheme='https')
+    
