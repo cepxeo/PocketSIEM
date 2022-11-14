@@ -1,0 +1,19 @@
+server {
+    listen 443 ssl;
+
+    ssl_certificate /etc/nginx/certs/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/key.pem;
+
+    server_name web;
+
+ location / {
+            proxy_pass http://web:5000;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    return 301 https://$host$request_uri;
+}

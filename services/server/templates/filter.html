@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <nav class="level">
+    <div class="level-item has-text-centered">  
+      <div class="table-container" id="events_id">
+        <table class="table is-hoverable">
+          <thead>
+            <tr>
+              <th>False Positives</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>
+                <a href="{{url_for('website.remove_item', item=item)}}">{{ item }}</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </nav>
+</div>
+{% endblock %}
