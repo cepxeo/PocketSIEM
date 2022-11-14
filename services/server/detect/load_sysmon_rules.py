@@ -1,11 +1,10 @@
 import re
-#from detect.utils import clean_value, add_key_value, add_or_key_value
-from utils import clean_value, add_key_value, add_or_key_value
+from detect.utils import clean_value, add_key_value, add_or_key_value
+#from utils import clean_value, add_key_value, add_or_key_value
 
 def parse_pattern(pattern, patterns_dict):
     if pattern[0] == "(" and pattern[-1] == ")":
         pattern = re.search(r"\((.*)\)", pattern).group(1)
-    print(f"pattern {pattern}")
     in_blocks = pattern.split(' IN ')
     if len(in_blocks) > 1:
         for in_block in in_blocks:
@@ -27,11 +26,13 @@ def parse_pattern(pattern, patterns_dict):
 
             # Parsing other keys to the left from IN
             if len(left_from_in_selection) > 1:
-                for item in left_from_in_selection:
-                    if '=' in item:
-                        key = clean_value(item.split('=')[0])
-                        value = clean_value(item.split('=')[1])
+                for selection in previous_in_block.split('" '):
+                    try:
+                        key = clean_value(selection.split('=')[0])
+                        value = clean_value(selection.split('=')[1])
                         patterns_dict = add_key_value(key, value, patterns_dict)
+                    except:
+                        pass
             
             if in_blocks.index(in_block) == len(in_blocks) - 1:
                 #Parsing other keys to the right from the last IN block
