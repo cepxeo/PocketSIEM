@@ -5,24 +5,28 @@ def run_check(rules_dict, field_names, or_field_names, date, host, image, detail
     for rule in rules_dict:
         flags = 0
         for key in rule.keys():
-            print(f"key: {key}")
             for field in field_names.keys():
                 if key[:3] == 'NOT':
-                    if key.replace("NOT ", "").replace("AND ", "") == field and all(item in field_names[field] for item in rule[key]):
-                        flags -= 1
-                if key.replace("AND ", "") == field and all(item in field_names[field] for item in rule[key]):
+                    if key.replace("NOT ", "").replace("AND ", "") == field and not all(item.casefold() in field_names[field].casefold() for item in rule[key]):
+                        flags += 1
+                        print(f"field: {field} flags {flags}")
+                if key.replace("AND ", "") == field and all(item.casefold() in field_names[field].casefold() for item in rule[key]):
                     flags += 1
-                print(f"field: {field} flags {flags}")
+                    print(f"field: {field} flags {flags}")                
 
             for field in or_field_names.keys():
                 if key[:3] == 'NOT':
-                    if key.replace("NOT ", "").replace("AND ", "") == field and any(item in or_field_names[field] for item in rule[key]):
-                        flags -= 1
-                if key.replace("AND ", "") == field and any(item in or_field_names[field] for item in rule[key]):
+                    if key.replace("NOT ", "").replace("AND ", "") == field and not any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
+                        flags += 1
+                        print(f"field: {field} flags {flags}")
+                if key.replace("AND ", "") == field and any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
                     flags += 1
-                print(f"or field: {field} flags {flags}")
+                    print(f"field: {field} flags {flags}")
 
-        if flags == len(rule.keys()):
+        all_keys = len(rule.keys())
+        print(f"flags: {flags}")
+        print(f"keys: {all_keys}")
+        if flags == all_keys:
             print(f"[!!] Event alert triggered by the process creation rule: {rule}")
             print(f"[!!] Malicious command: {details}")
             return

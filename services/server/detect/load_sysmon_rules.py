@@ -1,6 +1,6 @@
 import re
-from detect.utils import clean_value, add_key_value, add_or_key_value
-#from utils import clean_value, add_key_value, add_or_key_value
+#from detect.utils import clean_value, add_key_value, add_or_key_value
+from utils import clean_value, add_key_value, add_or_key_value
 
 def parse_pattern(pattern, patterns_dict):
     if pattern[0] == "(" and pattern[-1] == ")":
@@ -26,9 +26,12 @@ def parse_pattern(pattern, patterns_dict):
 
             # Parsing other keys to the left from IN
             if len(left_from_in_selection) > 1:
+                print(f"left_from_in_selection {left_from_in_selection}")
+                print(f"previous_in_block {previous_in_block}")
                 for selection in previous_in_block.split('" '):
+                    print(f"selection {selection}")
                     try:
-                        key = clean_value(selection.split('=')[0])
+                        key = clean_value(selection.split('=')[0].split()[-1])
                         value = clean_value(selection.split('=')[1])
                         patterns_dict = add_key_value(key, value, patterns_dict)
                     except:
@@ -40,14 +43,14 @@ def parse_pattern(pattern, patterns_dict):
                     right_from_in_selection = right_from_in.split('") ')[1].split('" ')
                     for item in right_from_in_selection:
                         if '=' in item:
-                            key = clean_value(item.split('=')[0])
+                            key = clean_value(item.split('=')[0].split()[-1])
                             value = clean_value(item.split('=')[1])
                             patterns_dict = add_key_value(key, value, patterns_dict)
     # If no IN, parse as simple space separated key=value pairs
     else:
         for selection in pattern.split('" '):
             try:
-                key = clean_value(selection.split('=')[0])
+                key = clean_value(selection.split('=')[0].split()[-1])
                 value = clean_value(selection.split('=')[1])
                 patterns_dict = add_key_value(key, value, patterns_dict)
             except:
