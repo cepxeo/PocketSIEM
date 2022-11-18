@@ -1,6 +1,6 @@
 import re
-#from detect.utils import clean_value, add_key_value, add_or_key_value
-from utils import clean_value, add_key_value, add_or_key_value
+from detect.utils import clean_value, add_key_value, add_or_key_value
+#from utils import clean_value, add_key_value, add_or_key_value
 
 def parse_pattern(pattern, patterns_dict):
     if pattern[0] == "(" and pattern[-1] == ")":
@@ -26,10 +26,10 @@ def parse_pattern(pattern, patterns_dict):
 
             # Parsing other keys to the left from IN
             if len(left_from_in_selection) > 1:
-                print(f"left_from_in_selection {left_from_in_selection}")
-                print(f"previous_in_block {previous_in_block}")
+                #print(f"left_from_in_selection {left_from_in_selection}")
+                #print(f"previous_in_block {previous_in_block}")
                 for selection in previous_in_block.split('" '):
-                    print(f"selection {selection}")
+                    #print(f"selection {selection}")
                     try:
                         key = clean_value(selection.split('=')[0].split()[-1])
                         value = clean_value(selection.split('=')[1])
