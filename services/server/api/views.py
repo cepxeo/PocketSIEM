@@ -33,7 +33,7 @@ def healthcheck():
 @api.route('/logins', methods=['POST'])
 @token_required
 def insert_login_logs():
-    login = WinLoginLog(request.form)
+    login = WinLoginLog.parse_obj(request.form)
     login.save_log()
     return ""
 
