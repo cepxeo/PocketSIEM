@@ -6,7 +6,7 @@ import jwt
 from database.models import db, User, Login, Process, File, Event
 from detect import tasks
 
-from winlog import SysmonProcessLog, SysmonFileLog
+from api.winlog import SysmonProcessLog, SysmonFileLog, SysmonNetLog
 
 api = Blueprint('api', __name__)
 
@@ -63,53 +63,23 @@ def insert_login_logs(current_user):
 @api.route('/processes', methods=['POST'])
 @token_required
 def insert_process_logs(current_user):
-    newProcess = SysmonProcessLog.parse_obj(request.form)
-    newProcess.check_log()
-    newProcess.save_log()
+    process = SysmonProcessLog.parse_obj(request.form)
+    process.check_log()
+    process.save_log()
 
-    # date = request.form["date"]
-    # host = request.form["host"]
-    # image = request.form["image"]
-    # company = request.form["company"]
-    # command_line = request.form["command_line"]
-    # parent_image = request.form["parent_image"]
-    # parent_command_line = request.form["parent_command_line"]
-    # description = request.form["description"]
-    # product = request.form["product"]
-    # original_file_name = request.form["original_file_name"]
-    # process_user = request.form["process_user"]
-
-    # tasks.check_log.delay(date, host, image, command_line)
-    # tasks.check_process.delay(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user)
-    
-    # saveProcess = Process(date=date, host=host, image=image, field4=company, field5=command_line, \
-    #     parent_image=parent_image, parent_command_line=parent_command_line, description=description, \
-    #     product=product, original_file_name=original_file_name, process_user=process_user)
-    # db.session.add(saveProcess)
-    # db.session.commit()
-
-    # logger.debug("[+] Received process from Host: %s" % host,)
-    # return ""
+    logger.debug("[+] Received process from Host: %s" % process.host,)
+    return ""
 
 # Files
 # ----------------------------------------------------
 @api.route('/files', methods=['POST'])
 @token_required
 def insert_files_logs(current_user):
-    date = request.form["date"]
-    host = request.form["host"]
-    image = request.form["image"]    
-    filename = request.form["filename"]
-    osuser = request.form["osuser"]
+    file = SysmonFileLog.parse_obj(request.form)
+    file.check_log()
+    file.save_log()
 
-    tasks.check_log.delay(date, host, image, filename)
-    tasks.check_files.delay(date, host, image, filename, osuser)
-
-    newFile = File(date=date, host=host, image=image, field4=filename, field5=osuser)
-    db.session.add(newFile)
-    db.session.commit()
-
-    logger.debug("[+] Received file log from Host: %s" % host,)
+    logger.debug("[+] Received file log from Host: %s" % file.host,)
     return ""
 
 # Network logs
@@ -117,16 +87,11 @@ def insert_files_logs(current_user):
 @api.route('/net', methods=['POST'])
 @token_required
 def insert_net_logs(current_user):
-    date = request.form["date"]
-    host = request.form["host"]
-    image = request.form["image"]
-    dest_ip = request.form["dest_ip"]
-    dest_port = request.form["dest_port"]
+    net = SysmonNetLog.parse_obj(request.form)
+    net.check_log()
+    net.save_log()
 
-    tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
-    tasks.check_network.delay(date, host, image, dest_ip, dest_port)
-
-    logger.debug("[+] Received network log from Host: %s" % host,)
+    logger.debug("[+] Received network log from Host: %s" % net.host,)
     return ""
 
 # Events

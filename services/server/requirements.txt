@@ -5,6 +5,7 @@ Werkzeug
 python-whois
 waitress
 psycopg2-binary==2.8.6
+pydantic
 celery
 redis
 flower
