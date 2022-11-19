@@ -103,7 +103,7 @@ Image="*UMWorkerProcess.exe" NOT (TargetFilename IN ("*CacheCleanup.bin", "*.txt
 (TargetFilename="*\\Microsoft\\Word\\Startup\\*" TargetFilename="*.wll") OR (TargetFilename="*\\Microsoft\\Excel\\Startup\\*" TargetFilename="*.xll") OR (TargetFilename="*\\Microsoft\\Addins\\*" TargetFilename IN ("*.xlam", "*.xla"))
 Image="*\\msiexec.exe" TargetFilename="C:\\Program Files (x86)\\Microsoft\\Edge\\Application*" TargetFilename="*\\elevation_service.exe"
 TargetFilename="*\\unattend.xml"
-TargetFilename="*\\ntds.dit" ParentImage IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\w3wp.exe", "*\\php-cgi.exe", "*\\nginx.exe", "*\\httpd.exe") OR ParentImage IN ("*\\apache*", "*\\tomcat*", "*\\AppData\\*", "*\\Temp\\*", "*\\Public\\*", "*\\PerfLogs\\*") OR Image IN ("*\\AppData\\*", "*\\Temp\\*", "*\\Public\\*", "*\\PerfLogs\\*")
+TargetFilename="*\\ntds.dit" ParentImage IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\w3wp.exe", "*\\php-cgi.exe", "*\\nginx.exe", "*\\httpd.exe")
 Image="C:\\WINDOWS\\system32\\WerFault.exe" TargetFilename IN ("*\\lsass*", "*lsass.exe*")
 Image="*\\w3wp.exe" CommandLine="*MSExchange*" TargetFilename IN ("*FrontEnd\\HttpProxy\\*", "*\\inetpub\\wwwroot\\aspnet_client\\*") TargetFilename IN ("*.aspx", "*.asp", "*.ashx")
 TargetFilename="*iphlpapi.dll*" TargetFilename="*\\AppData\\Local\\Microsoft*"
