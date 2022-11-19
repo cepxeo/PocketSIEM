@@ -311,7 +311,7 @@ Image IN ("*~1.exe*", "*~1.bat*", "*~1.msi*", "*~1.vbe*", "*~1.vbs*", "*~1.dll*"
 Image="*\\esentutl.exe" OR OriginalFileName="esentutl.exe" CommandLine="*/r *" CommandLine="*\\Windows\\WebCache*"
 Image="*\\node.exe" CommandLine IN ("* -e *", "* --eval *") CommandLine="*.exec(*" CommandLine="*net.socket*" CommandLine="*.connect*" CommandLine="*child_process*"
 Image="*\\rundll32.exe" OR OriginalFileName="RUNDLL32.EXE" OR CommandLine="*rundll32*" CommandLine="* \\\\*"
-Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\mshta.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\cmd.exe") OR CommandLine IN ("* -w hidden *", "* -ep bypass *", "*/e:vbscript *", "*/e:javascript *") OR OriginalFileName IN ("powershell.exe", "pwsh.dll", "mshta.exe", "wscript.exe", "cscript.exe", "cmd.exe") Image IN ("*\\Windows\\Temp*", "*\\Temporary Internet*", "*\\AppData\\Local\\Temp*", "*\\AppData\\Roaming\\Temp*", "*C:\\Users\\Public\\*", "*C:\\Perflogs\\*")
+Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\mshta.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\cmd.exe") Image IN ("*\\Windows\\Temp*", "*\\Temporary Internet*", "*\\AppData\\Local\\Temp*", "*\\AppData\\Roaming\\Temp*", "*C:\\Users\\Public\\*", "*C:\\Perflogs\\*")
 CommandLine IN ("*TVqQAAMAAAAEAAAA*", "*TVpQAAIAAAAEAA8A*", "*TVqAAAEAAAAEABAA*", "*TVoAAAAAAAAAAAAA*", "*TVpTAQEAAAAEAAAA*")
 ParentImage="*\\java.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe") NOT (ParentImage="*build*" CommandLine="*build*")
 Image="*\\mshta.exe" CommandLine IN ("*vbscript*", "*.jpg*", "*.png*", "*.lnk*", "*.xls*", "*.doc*", "*.zip*", "*.dll*", "*.exe*")
@@ -415,7 +415,7 @@ Image IN ("*\\tasksche.exe", "*\\mssecsvc.exe", "*\\taskdl.exe", "*\\taskhsvc.ex
 Image="*\\takeown.exe" CommandLine="*/f *" CommandLine="*/r*"
 CommandLine="*mklink*" CommandLine="*HarddiskVolumeShadowCopy*"
 Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="* use *" CommandLine="*\\\*\\*$*"
-Image IN ("*\\NTDSDump.exe", "*\\NTDSDumpEx.exe") OR (CommandLine="*ntds.dit*" CommandLine="*system.hiv*") OR CommandLine="*NTDSgrab.ps1*" OR (CommandLine="*ac i ntds*" CommandLine="*create full*") OR (CommandLine="*/c copy *" CommandLine="*\\windows\\ntds\\ntds.dit*") OR (CommandLine="*powershell*" CommandLine="*ntds.dit*") OR (CommandLine="*ntds.dit*" ParentImage IN ("*\\apache*", "*\\tomcat*", "*\\AppData\\*", "*\\Temp\\*", "*\\Public\\*", "*\\PerfLogs\\*") OR Image IN ("*\\apache*", "*\\tomcat*", "*\\AppData\\*", "*\\Temp\\*", "*\\Public\\*", "*\\PerfLogs\\*"))
+Image IN ("*\\NTDSDump.exe", "*\\NTDSDumpEx.exe") OR (CommandLine="*ntds.dit*" CommandLine="*system.hiv*") OR CommandLine="*NTDSgrab.ps1*" OR (CommandLine="*ac i ntds*" CommandLine="*create full*") OR (CommandLine="*/c copy *" CommandLine="*\\windows\\ntds\\ntds.dit*") OR (CommandLine="*powershell*" CommandLine="*ntds.dit*") OR (CommandLine="*ntds.dit*" Image IN ("*\\apache*", "*\\tomcat*", "*\\AppData\\*", "*\\Temp\\*", "*\\Public\\*", "*\\PerfLogs\\*"))
 ParentImage="*\\RazerInstaller.exe" IntegrityLevel="System" NOT Image="C:\\Windows\\Installer\\Razer\\Installer\\*"
 CommandLine="*Launch-VsDevShell.ps1*" CommandLine IN ("*VsWherePath *", "*VsInstallationPath *")
 OriginalFileName="iCACLS.EXE" OR Image="*\\icacls.exe" CommandLine="*C:\\Users\\*" CommandLine="*/deny*" CommandLine="*S-1-1-0:*"
@@ -805,7 +805,6 @@ ParentImage="*\\Serv-U.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pws
 Image="*\\findstr.exe" CommandLine="*cpassword*" CommandLine="*\\sysvol\\*" CommandLine="*.xml*"
 CommandLine IN ("* --remote-debugging-address=*", "* --remote-debugging-port=*") OR (Image="*\\firefox.exe" CommandLine="* -start-debugger-server *")
 ParentImage="*\\svchost.exe" Image="*\\mshta.exe"
-Image="*\\Wuauclt.exe" OR OriginalFileName="Wuauclt.exe" CommandLine="*\\Wuauclt.exe"
 Image="*\\reg.exe" OR OriginalFileName="reg.exe" CommandLine="*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System*" CommandLine IN ("*GroupPolicyRefreshTimeDC*", "*GroupPolicyRefreshTimeOffsetDC*", "*GroupPolicyRefreshTime*", "*GroupPolicyRefreshTimeOffset*", "*EnableSmartScreen*", "*ShellSmartScreenLevel*")
 Image="*\\schtasks.exe" OR OriginalFileName="schtasks.exe" CommandLine IN ("* ONLOGON *", "* ONSTART *", "* ONCE *", "* ONIDLE *") NOT (CommandLine IN ("*NT AUT*", "* SYSTEM*", "*HIGHEST*"))
 Image="*\\presentationhost.exe" OR OriginalFileName="PresentationHost.exe" CommandLine="*.xbap*" NOT (CommandLine IN ("*C:\\Windows\\*", "*C:\\Program Files*"))
