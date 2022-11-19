@@ -7,10 +7,9 @@ from . import load_sysmon_rules
 
 """ This module contains tasks offloaded to Celery, such as:
 
-Loading malicious patterns from simple list and parsed Sigma rules list
-Checking each incoming log for matching malicious patterns
-Writing an alert the the Alert DB table
-
+Loading malicious patterns from simple list and parsed Sigma rules list;
+Checking each incoming log for matching malicious patterns;
+Writing an alert to the Alert table;
 Filtering out trusted IP addresses, such as the internal ones or 
 belonging to known companies to reduce false positives.
 """
