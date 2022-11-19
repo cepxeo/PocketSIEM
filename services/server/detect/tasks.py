@@ -78,23 +78,23 @@ def run_check(rules_dict, field_names, or_field_names, date, host, image, detail
     """ Execute the check and save an alert in DB
     """
     for rule in rules_dict:
-        flags = 0
+        pattern_flags = 0
         for key in rule.keys():
             for field in field_names.keys():
                 if key[:3] == 'NOT':
                     if key.replace("NOT ", "").replace("AND ", "") == field and not all(item.casefold() in field_names[field].casefold() for item in rule[key]):
-                        flags += 1
+                        pattern_flags += 1
                 if key.replace("AND ", "") == field and all(item.casefold() in field_names[field].casefold() for item in rule[key]):
-                    flags += 1
+                    pattern_flags += 1
 
             for field in or_field_names.keys():
                 if key[:3] == 'NOT':
                     if key.replace("NOT ", "").replace("AND ", "") == field and not any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
-                        flags += 1
+                        pattern_flags += 1
                 if key.replace("AND ", "") == field and any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
-                    flags += 1
+                    pattern_flags += 1
 
-        if flags == len(rule.keys()):
+        if pattern_flags == len(rule.keys()):
             print(f"[!!] Event alert triggered by the process creation rule: {rule}")
             print(f"[!!] Malicious command: {details}")
             str_rule = str(rule)

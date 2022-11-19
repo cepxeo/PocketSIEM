@@ -124,8 +124,6 @@ Image="*\\schtasks.exe" CommandLine="* /create *" CommandLine="* /sc once *" Com
 Image="*\\rundll32.exe" CommandLine="*pcwutl*" CommandLine="*LaunchApplication*"
 ParentImage IN ("*\\pcalua.exe", "*\\forfiles.exe")
 Image="*\\dctask64.exe" NOT CommandLine="*DesktopCentral_Agent\\agent*"
-(Image="*\\mshta.exe" ParentImage IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe") OR CommandLine IN ("*\\AppData\\Local*", "*C:\\Windows\\Temp*", "*C:\\Users\\Public*")) OR (Image="*\\mshta.exe" NOT (Image IN ("*C:\\Windows\\System32*", "*C:\\Windows\\SysWOW64*"))) OR (Image="*\\mshta.exe" NOT (CommandLine IN ("*.htm*", "*.hta*") CommandLine IN ("*mshta.exe", "*mshta")))
-Image="*\\xwizard.exe" | regex CommandLine="{[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}}"
 OriginalFileName="psloglist.exe" OR Image IN ("*\\psloglist.exe", "*\\psloglist64.exe") OR (CommandLine="*security*" CommandLine="*accepteula*" CommandLine IN ("* -d*", "* /d*", "* -x*", "* /x*", "* -s*", "* /s*"))
 Image="*\\rundll32.exe" CommandLine="*InstallScreenSaver*"
 CommandLine="*Get-Process lsass*"
@@ -151,8 +149,8 @@ Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine="*Get-ADUser *" Comman
 (CommandLine="*cmd.exe /c *" CommandLine="*tasklist /fi *" CommandLine="*Imagename eq lsass.exe*" User IN ("*AUTHORI*", "*AUTORI*")) OR (CommandLine="*do rundll32.exe C:\\windows\\System32\\comsvcs.dll, MiniDump*" CommandLine="*\\Windows\\Temp\\*" CommandLine="* full*" CommandLine="*%%B*") OR (CommandLine="*tasklist /v /fo csv*" CommandLine="*findstr /i \"lsass\"*")
 (CommandLine="*\\regsvr32*" CommandLine="*\\AppData\\Local\\*") OR (CommandLine="*\\AppData\\Local\\*" CommandLine="*,DllEntry*") NOT (CommandLine="*AppData\\Local\\Microsoft\\TeamsMeetingAddin\\*" OR CommandLine IN ("*\\x86\\Microsoft.Teams.AddinLoader.dll", "*\\x86\\Microsoft.Teams.AddinLoader.dll\"", "*\\x64\\Microsoft.Teams.AddinLoader.dll", "*\\x64\\Microsoft.Teams.AddinLoader.dll\"") OR CommandLine="*\\AppData\\Local\\WebEx\\WebEx64\\Meetings\\atucfobj.dll")
 (ParentImage="*\\WinRAR.exe" Image="*\\wscript.exe") OR CommandLine="* /c ping.exe -n 6 127.0.0.1 & type *" OR (CommandLine="*regsvr32.exe*" CommandLine="*C:\\ProgramData*" CommandLine="*.tmp*")
-Image="*\\wbem\\WMIC.exe" OR OriginalFileName="wmic.exe" CommandLine IN ("*regsvr32*", "*rundll32*", "*msiexec*", "*mshta*", "*verclsid*") ParentImage IN ("*\\winword.exe", "*\\excel.exe", "*\\powerpnt.exe") CommandLine="*process*" CommandLine="*create*" CommandLine="*call*"
-Image="*\\KrbRelayUp.exe" OR OriginalFileName="KrbRelayUp.exe" OR (CommandLine="* relay *" CommandLine="* -Domain *" CommandLine="* -ComputerName *") OR (CommandLine="* krbscm *" CommandLine="* -sc *") OR (CommandLine="* spawn *" CommandLine="* -d *" CommandLine="* -cn *" CommandLine="* -cp *")
+Image="*\\wbem\\WMIC.exe" CommandLine IN ("*regsvr32*", "*rundll32*", "*msiexec*", "*mshta*", "*verclsid*") ParentImage IN ("*\\winword.exe", "*\\excel.exe", "*\\powerpnt.exe") CommandLine="*process*" CommandLine="*create*" CommandLine="*call*"
+Image="*\\KrbRelayUp.exe" OR (CommandLine="* relay *" CommandLine="* -Domain *" CommandLine="* -ComputerName *") OR (CommandLine="* krbscm *" CommandLine="* -sc *") OR (CommandLine="* spawn *" CommandLine="* -d *" CommandLine="* -cn *" CommandLine="* -cp *")
 Image="*\\hh.exe" CommandLine="*.chm*"
 CommandLine="*Remove-MpPreference*" CommandLine IN ("*-ControlledFolderAccessProtectedFolders *", "*-AttackSurfaceReductionRules_Ids *", "*-AttackSurfaceReductionRules_Actions *", "*-CheckForSignaturesBeforeRunningScan *")
 Description="Windows PowerShell" OR Product="PowerShell Core 6" CommandLine IN ("*bxor*", "*-join *", "*-join'*", "*-join\"*", "*-join`*", "*char*") NOT ParentImage="C:\\Program Files\\Amazon\\SSM\\ssm-document-worker.exe"
@@ -203,11 +201,11 @@ CommandLine IN ("*UtilityFunctions.ps1*", "*RegSnapin *")
 Image IN ("*.doc.exe", "*.docx.exe", "*.xls.exe", "*.xlsx.exe", "*.ppt.exe", "*.pptx.exe", "*.rtf.exe", "*.pdf.exe", "*.txt.exe", "*      .exe", "*______.exe")
 CommandLine="*WindowsAudioDevice-Powershell-Cmdlet*"
 ParentImage IN ("*\\winlogon.exe", "*\\services.exe", "*\\lsass.exe", "*\\csrss.exe", "*\\smss.exe", "*\\wininit.exe", "*\\spoolsv.exe", "*\\searchindexer.exe") Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\cmd.exe") User IN ("*AUTHORI*", "*AUTORI*") NOT (CommandLine="* route *" CommandLine="* ADD *")
-Image="*\\certreq.exe" OR OriginalFileName="CertReq.exe" CommandLine="* -Post *" CommandLine="* -config *" CommandLine="* http*" CommandLine="* C:\\windows\\win.ini *"
+Image="*\\certreq.exe" CommandLine="* -Post *" CommandLine="* -config *" CommandLine="* http*" CommandLine="* C:\\windows\\win.ini *"
 Image="*\\curl.exe" OR Product="The curl executable"
 Product="UltraViewer" OR Company="DucFabulous Co,ltd" OR OriginalFileName="UltraViewer_Desktop.exe"
 Image="*\\reg.exe" CommandLine="*add *" CommandLine="*SYSTEM\\CurrentControlSet\\Services\\*" CommandLine="* ImagePath *" CommandLine IN ("* /d *", "* -d *")
-Image="*\\GUP.exe" OR OriginalFileName="gup.exe" CommandLine="* -unzipTo *" CommandLine="*http*" NOT ParentImage="*\\notepad++.exe"
+Image="*\\GUP.exe" CommandLine="* -unzipTo *" CommandLine="*http*" NOT ParentImage="*\\notepad++.exe"
 CommandLine="*7z.exe a -v500m -mx9 -r0 -p*" OR (ParentCommandLine="*wscript.exe*" ParentCommandLine="*.vbs*" CommandLine="*rundll32.exe*" CommandLine="*C:\\Windows*" CommandLine="*.dll,Tk_*") OR (ParentImage="*\\rundll32.exe" ParentCommandLine="*C:\\Windows*" CommandLine="*cmd.exe /C *") OR (CommandLine="*rundll32 c:\\windows\\*" CommandLine="*.dll *") OR (ParentImage="*\\rundll32.exe" Image="*\\dllhost.exe" NOT (CommandLine IN (" ", "")))
 OriginalFileName="DirLister.exe" OR Image="*\\dirlister.exe"
 Image="*\\at.exe" CommandLine="*interactive*"

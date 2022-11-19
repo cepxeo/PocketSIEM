@@ -7,8 +7,7 @@ def parse_pattern(pattern, patterns_dict):
         pattern = re.search(r"\((.*)\)", pattern).group(1)
     in_blocks = pattern.split(' IN ')
     if len(in_blocks) > 1:
-        for in_block in in_blocks:
-            
+        for in_block in in_blocks:            
             if in_blocks.index(in_block) == 0:
                 continue
             previous_in_block = in_blocks[in_blocks.index(in_block) - 1]
@@ -26,10 +25,7 @@ def parse_pattern(pattern, patterns_dict):
 
             # Parsing other keys to the left from IN
             if len(left_from_in_selection) > 1:
-                #print(f"left_from_in_selection {left_from_in_selection}")
-                #print(f"previous_in_block {previous_in_block}")
                 for selection in previous_in_block.split('" '):
-                    #print(f"selection {selection}")
                     try:
                         key = clean_value(selection.split('=')[0].split()[-1])
                         value = clean_value(selection.split('=')[1])
