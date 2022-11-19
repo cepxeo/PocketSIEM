@@ -29,17 +29,17 @@ services:
       - redis
       - postgres
 
-  celery_beat:
-    build: ./services/server
-    image: celery_beat
-    command: rm -f './celerybeat.pid' && celery -A app.celery beat -l info
-    volumes:
-      - ./services/server:/app
-    env_file:
-      - .env
-    depends_on:
-      - redis
-      - postgres
+  # celery_beat:
+  #   build: ./services/server
+  #   image: celery_beat
+  #   command: rm -f './celerybeat.pid' && celery -A app.celery beat -l info
+  #   volumes:
+  #     - ./services/server:/app
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - redis
+  #     - postgres
 
   flower:
     build: ./services/server
