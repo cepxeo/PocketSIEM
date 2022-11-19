@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from database.models import db, User, Login, Process, File, Event
+from database.models import db, Login, Process, File, Event
 from detect import tasks
 
 class WinLog(BaseModel):
@@ -31,11 +31,12 @@ class SysmonProcessLog(SysmonLog):
 
     def check_log(self) -> None:
         tasks.check_log.delay(self.date, self.host, self.image, self.command_line)
-        tasks.check_process.delay(self.date, self.host, self.image, self.command_line, self.parent_image, self.parent_command_line, self.description, self.product, self.original_file_name, self.process_user)
+        tasks.check_process.delay(self.date, self.host, self.image, self.command_line, self.parent_image, 
+            self.parent_command_line, self.description, self.product, self.original_file_name, self.process_user)
         
     def save_log(self) -> None:
-        process = Process(date=self.date, host=self.host, image=self.image, field4=self.company, field5=self.command_line, \
-            parent_image=self.parent_image, parent_command_line=self.parent_command_line, description=self.description, \
+        process = Process(date=self.date, host=self.host, image=self.image, field4=self.company, field5=self.command_line,
+            parent_image=self.parent_image, parent_command_line=self.parent_command_line, description=self.description,
             product=self.product, original_file_name=self.original_file_name, process_user=self.process_user)
         db.session.add(process)
         db.session.commit()

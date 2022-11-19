@@ -21,18 +21,18 @@ def token_required(f):
             current_user = User.query.filter_by(id=data['id']).first()
         except:
             return abort(403, "Token is invalid")
-        return f(current_user, *args, **kwargs)
+        return f(*args, **kwargs)
     return decorator
 
 @api.route('/healthcheck')
 @token_required
-def healthcheck(current_user):
+def healthcheck():
     return ""
 
 # Logins logs
 @api.route('/logins', methods=['POST'])
 @token_required
-def insert_login_logs(current_user):
+def insert_login_logs():
     login = WinLoginLog(request.form)
     login.save_log()
     return ""
@@ -40,7 +40,7 @@ def insert_login_logs(current_user):
 # Process creation logs
 @api.route('/processes', methods=['POST'])
 @token_required
-def insert_process_logs(current_user):
+def insert_process_logs():
     process = SysmonProcessLog.parse_obj(request.form)
     process.check_log()
     process.save_log()
@@ -49,7 +49,7 @@ def insert_process_logs(current_user):
 # Files
 @api.route('/files', methods=['POST'])
 @token_required
-def insert_files_logs(current_user):
+def insert_files_logs():
     file = SysmonFileLog.parse_obj(request.form)
     file.check_log()
     file.save_log()
@@ -58,7 +58,7 @@ def insert_files_logs(current_user):
 # Network logs
 @api.route('/net', methods=['POST'])
 @token_required
-def insert_net_logs(current_user):
+def insert_net_logs():
     net = SysmonNetLog.parse_obj(request.form)
     net.check_log()
     return ""
@@ -66,7 +66,7 @@ def insert_net_logs(current_user):
 # Events
 @api.route('/events', methods=['POST'])
 @token_required
-def insert_events_logs(current_user):
+def insert_events_logs():
     event = SysmonEventLog.parse_obj(request.form)
     event.check_log()
     event.save_log()
