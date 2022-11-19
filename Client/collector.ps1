@@ -140,20 +140,20 @@ catch {}
 try { 
 $event = "Created processes"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -max 1000 -ErrorAction Stop | Get-WinEventData `
-| foreach{$postParams = @{date=$_.TimeCreated;`
-    host=$hostname;`
-    parent_image=$_.e_ParentImage;`
-    parent_command_line=$_.e_ParentCommandLine;`
-    image=$_.e_Image;`
-    company=$_.e_Company;`
-    description=$_.e_Description;`
-    product=$_.e_Product;`
-    original_file_name=$_.e_OriginalFileName;`
-    process_user=$_.e_User;`
-    command_line=$_.e_CommandLine};`
-    Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers} | Out-Null;` 
+    | foreach{$postParams = @{date=$_.TimeCreated;`
+        host=$hostname;`
+        parent_image=$_.e_ParentImage;`
+        parent_command_line=$_.e_ParentCommandLine;`
+        image=$_.e_Image;`
+        company=$_.e_Company;`
+        description=$_.e_Description;`
+        product=$_.e_Product;`
+        original_file_name=$_.e_OriginalFileName;`
+        process_user=$_.e_User;`
+        command_line=$_.e_CommandLine};`
+        Invoke-WebRequest -Uri $url/processes -Method POST -Body $postParams -Headers $Headers} | Out-Null;` 
         Write-Host $event "events sent"
-}
+    }
 catch {}
 # Event ID 3: Network connections
 try { 
