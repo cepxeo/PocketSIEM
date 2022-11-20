@@ -65,7 +65,7 @@ def _parse_pattern(pattern, patterns_dict) -> dict:
     return patterns_dict
 
 def load_rules(patterns_array, file, min_keys) -> list:
-    """ Function called from the outside
+    """ Entry function.
     Expects empty list (patterns_array), name of the file with converted Sigma rules (file).
     and minimal amount of keys the rule should contain (usually 1 or 2) (min_keys).
     Returns a list with rule dicts (patterns_array).

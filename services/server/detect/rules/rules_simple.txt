@@ -303,7 +303,6 @@
 - 'Rubeus'
 - 'Mimik'
 - 'ngrok'
-- ' -u* -p'
 - ' /u* /p'
 - ' /u* /d'
 - 'dc-ip'

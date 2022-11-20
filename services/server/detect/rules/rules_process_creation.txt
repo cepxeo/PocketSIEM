@@ -153,7 +153,7 @@ Image="*\\wbem\\WMIC.exe" CommandLine IN ("*regsvr32*", "*rundll32*", "*msiexec*
 Image="*\\KrbRelayUp.exe" OR (CommandLine="* relay *" CommandLine="* -Domain *" CommandLine="* -ComputerName *") OR (CommandLine="* krbscm *" CommandLine="* -sc *") OR (CommandLine="* spawn *" CommandLine="* -d *" CommandLine="* -cn *" CommandLine="* -cp *")
 Image="*\\hh.exe" CommandLine="*.chm*"
 CommandLine="*Remove-MpPreference*" CommandLine IN ("*-ControlledFolderAccessProtectedFolders *", "*-AttackSurfaceReductionRules_Ids *", "*-AttackSurfaceReductionRules_Actions *", "*-CheckForSignaturesBeforeRunningScan *")
-Description="Windows PowerShell" OR Product="PowerShell Core 6" CommandLine IN ("*bxor*", "*-join *", "*-join'*", "*-join\"*", "*-join`*", "*char*") NOT ParentImage="C:\\Program Files\\Amazon\\SSM\\ssm-document-worker.exe"
+CommandLine IN ("*bxor*", "*-join *", "*-join'*", "*-join\"*", "*-join`*", "*char*") NOT ParentImage="C:\\Program Files\\Amazon\\SSM\\ssm-document-worker.exe"
 CommandLine="*\\\\?\\GLOBALROOT\\Device\\HarddiskVolumeShadowCopy*" CommandLine IN ("*\\NTDS.dit*", "*\\SYSTEM*", "*\\SECURITY*", "*C:\\tmp\\log*")
 (CommandLine="*Invoke-WMIMethod win32_process -name create -argumentlist*" CommandLine="*rundll32 c:\\windows*") OR (CommandLine="*wmic /node:*" CommandLine="*process call create \"rundll32 c:\\windows*")
 CommandLine="*noconsentprompt*" CommandLine="*shadow:*"
@@ -717,7 +717,7 @@ Image="*\\PSEXESVC.exe" User IN ("*AUTHORI*", "*AUTORI*")
 CommandLine IN ("*SQBuAHYAbwBrAGUALQ*", "*kAbgB2AG8AawBlAC0A*", "*JAG4AdgBvAGsAZQAtA*") NOT (CommandLine IN ("*SQBuAHYAbwBrAGUALQBCAGwAbwBvAGQASABvAHUAbgBkA*", "*kAbgB2AG8AawBlAC0AQgBsAG8AbwBkAEgAbwB1AG4AZA*", "*JAG4AdgBvAGsAZQAtAEIAbABvAG8AZABIAG8AdQBuAGQA*", "*SQBuAHYAbwBrAGUALQBNAGkAbQBpAGsAYQB0AHoA*", "*kAbgB2AG8AawBlAC0ATQBpAG0AaQBrAGEAdAB6A*", "*JAG4AdgBvAGsAZQAtAE0AaQBtAGkAawBhAHQAeg*", "*SQBuAHYAbwBrAGUALQBXAE0ASQBFAHgAZQBjA*", "*kAbgB2AG8AawBlAC0AVwBNAEkARQB4AGUAYw*", "*JAG4AdgBvAGsAZQAtAFcATQBJAEUAeABlAGMA*"))
 Image="C:\\Windows\\PSEXESVC.exe" OR OriginalFileName="psexesvc.exe"
 Image="C:\\WINDOWS\\system32\\wbem\\scrcons.exe" ParentImage="C:\\Windows\\System32\\svchost.exe"
-ParentImage="*\\consent.exe" Image="*\\iexplore.exe" CommandLine="* http*" IntegrityLevel="System" OR User IN ("*AUTHORI*", "*AUTORI*")
+ParentImage="*\\consent.exe" Image="*\\iexplore.exe" CommandLine="* http*" User IN ("*AUTHORI*", "*AUTORI*")
 Image="*\\svchost.exe" NOT (ParentImage IN ("*\\services.exe", "*\\MsMpEng.exe", "*\\Mrt.exe", "*\\rpcnet.exe", "*\\ngen.exe", "*\\TiWorker.exe") OR ParentImage!=* OR ParentImage="" OR ParentImage="-")
 Image="*\\dnx.exe"
 Image="*\\whoami.exe" OR OriginalFileName="whoami.exe" CommandLine="*/priv*"
@@ -762,7 +762,7 @@ CommandLine="* -s cmd.exe" CommandLine IN ("*PsExec*", "*PAExec*", "*accepteula*
 CommandLine IN ("*echo*", "*copy*", "*type*", "*file createnew*", "*cacls*") CommandLine="*C:\\Windows\\Fonts\\*" CommandLine IN ("*.sh*", "*.exe*", "*.dll*", "*.bin*", "*.bat*", "*.cmd*", "*.js*", "*.msh*", "*.reg*", "*.scr*", "*.ps*", "*.vb*", "*.jar*", "*.pl*", "*.inf*", "*.cpl*", "*.hta*", "*.msi*", "*.vbs*")
 Image="*\\OfflineScannerShell.exe" NOT (CurrentDirectory="C:\\Program Files\\Windows Defender\\Offline\\" OR CurrentDirectory!=*)
 Image="*\\reg.exe" CommandLine="*SYSTEM\\CurrentControlSet\\Control\\Lsa*" CommandLine="* add *" CommandLine="* /d 0*" CommandLine="* /v RunAsPPL *" CommandLine IN ("*Real-Time Protection*", "*TamperProtection*")
-(CommandLine="*lsass*" CommandLine="*.dmp*" NOT Image="*\\werfault.exe") OR (Image="*\\procdump*" Image="*.exe" CommandLine="*lsass*")
+(CommandLine="*lsass*" CommandLine="*.dmp*") OR (Image="*\\procdump*" Image="*.exe" CommandLine="*lsass*")
 Image IN ("*\\frpc.exe", "*\\frps.exe") CommandLine="*\\frpc.ini*"
 Image IN ("*windows\\system32\\Physmem.sys*", "*Windows\\system32\\ime\\SHARED\\WimBootConfigurations.ini*", "*Windows\\system32\\ime\\IMEJP\\WimBootConfigurations.ini*", "*Windows\\system32\\ime\\IMETC\\WimBootConfigurations.ini*") OR (Image IN ("*windows\\system32\\filepath2*", "*windows\\system32\\ime*") CommandLine="*reg add*" CommandLine IN ("*HKEY_LOCAL_MACHINE\\software\\classes\\clsid\\{7c857801-7381-11cf-884d-00aa004b2e24}\\inprocserver32*", "*HKEY_LOCAL_MACHINE\\software\\classes\\clsid\\{cf4cc405-e2c5-4ddd-b3ce-5e7582d8c9fa}\\inprocserver32*"))
 CommandLine="*::FromBase64String(*"
