@@ -5,10 +5,10 @@ key_names_whitelist = ['ParentCommandLine', 'ParentImage', 'Image', 'CommandLine
         'DestinationHostname','DestinationPort']
 
 # Remove unnecessary symbols for dict keys and values
-def clean_value(key):
+def clean_value(key) -> str:
     return key.replace("*", "").replace("\"", "").replace("(", "").replace(")", "").replace("!", "").replace("\\\\","\\").strip()
 
-def add_key_value(key, value, patterns_dict):
+def add_key_value(key, value, patterns_dict) -> dict:
     if key in key_names_whitelist:
         if key.split()[-1] in patterns_dict:
             for i in range(0,10):
@@ -19,7 +19,7 @@ def add_key_value(key, value, patterns_dict):
         patterns_dict[key] = [value]
     return patterns_dict
 
-def add_or_key_value(key, value, patterns_dict):
+def add_or_key_value(key, value, patterns_dict) -> dict:
     if key.split()[-1] in key_names_whitelist:
         if key in patterns_dict:
             for i in range(0,10):

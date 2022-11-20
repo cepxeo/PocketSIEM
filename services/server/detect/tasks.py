@@ -11,7 +11,7 @@ Loading malicious patterns from simple list and parsed Sigma rules list;
 Checking each incoming log for matching malicious patterns;
 Writing an alert to the Alert table;
 Filtering out trusted IP addresses, such as the internal ones or 
-belonging to known companies to reduce false positives.
+belonging to known companies to reduce output.
 """
 
 evil_patterns = []
@@ -45,10 +45,11 @@ def sleep_test():
     return ""
 
 @shared_task
-def check_log(date, host, image, details):
-
-    """ Checking incoming log to match any of the known malicious patterns
-    from the list (rules/commands.txt)
+def check_log(date, host, image, details) -> None:
+    """ Checks incoming log to match any of the known malicious patterns
+    from the simple rules list (rules/commands.txt).
+    Expects received log fields.
+    If details field contains any of the rule string, the Alert is raised and saved to DB
     """
 
     for pattern in evil_patterns:
@@ -72,9 +73,8 @@ def check_log(date, host, image, details):
             db.session.add(newAlert)
             db.session.commit()
 
-def run_check(rules_dict, field_names, or_field_names, date, host, image, details):
-
-    """ Execute the check and save an alert in DB
+def _run_check(rules_dict, field_names, or_field_names, date, host, image, details) -> None:
+    """ Executes the check and saves an alert in DB
     """
     for rule in rules_dict:
         pattern_flags = 0
@@ -100,42 +100,40 @@ def run_check(rules_dict, field_names, or_field_names, date, host, image, detail
             newAlert = Alert(date=date, host=host, image=image, field4=str_rule, field5=details)
             db.session.add(newAlert)
             db.session.commit()
-            return
 
 @shared_task
-def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user):
+def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
     field_names = {'ParentCommandLine':parent_command_line, 'ParentImage':parent_image, 'Image':image, 'CommandLine':command_line, 
         'OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
     or_field_names = {'OR ParentCommandLine':parent_command_line, 'OR ParentImage':parent_image, 'OR Image':image, 'OR CommandLine':command_line, 
         'OR OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
 
-    run_check(proc_creation_patterns, field_names, or_field_names, date, host, image, command_line)
+    _run_check(proc_creation_patterns, field_names, or_field_names, date, host, image, command_line)
 
 @shared_task
 def check_registry(date, host, image, details):
     field_names = {'TargetObject':details, 'NewName':details, 'Image':image, 'Details':details, 'EventType':details}
     or_field_names = {'OR TargetObject':details, 'OR NewName':details, 'OR Image':image, 'OR Details':details, 'OR EventType':details}
 
-    run_check(reg_manip_patterns, field_names, or_field_names, date, host, image, details)
+    _run_check(reg_manip_patterns, field_names, or_field_names, date, host, image, details)
 
 @shared_task
-def check_files(date, host, image, filename, osuser):
+def check_files(date, host, image, filename, osuser) -> None:
     field_names = {'Image':image, 'TargetFilename':filename, 'User':osuser}
     or_field_names = {'OR Image':image, 'OR TargetFilename':filename, 'OR User':osuser}
 
-    run_check(file_manip_patterns, field_names, or_field_names, date, host, image, filename)
+    _run_check(file_manip_patterns, field_names, or_field_names, date, host, image, filename)
 
 @shared_task
-def check_network(date, host, image, dest_ip, dest_port):
+def check_network(date, host, image, dest_ip, dest_port) -> None:
     field_names = {'Image':image, 'DestinationIP':dest_ip, 'DestinationHostname':dest_ip, 'DestinationPort':dest_port}
     or_field_names = {'OR Image':image, 'OR DestinationIP':dest_ip, 'OR DestinationHostname':dest_ip, 'OR DestinationPort':dest_port}
 
-    run_check(network_conn_patterns, field_names, or_field_names, date, host, image, dest_ip)
+    _run_check(network_conn_patterns, field_names, or_field_names, date, host, image, dest_ip)
 
 @shared_task
-def check_whois(date, host, image, dest_ip, dest_port):
-    """Checking the whois service for known orgs for given IPs
-
+def check_whois(date, host, image, dest_ip, dest_port) -> None:
+    """Checks the whois service for known orgs for given IPs
     Wouldn't run if service runs in the isolated segment. Also skip the checks if IP is a typical internal one.
     """
 

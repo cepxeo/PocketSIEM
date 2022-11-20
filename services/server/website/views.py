@@ -38,10 +38,7 @@ def require_login(f):
 def index():
     return redirect(url_for('website.alerts'))
 
-# ----------------------------------------------------
 # Logins logs
-# ----------------------------------------------------
-
 @website.route('/logins', methods=['GET'])
 @require_login
 def login():
@@ -67,7 +64,6 @@ def login():
 @website.route("/logins/<host>", methods=["GET"])
 @require_login
 def login_host_logs(host):
-    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -88,10 +84,7 @@ def login_host_logs(host):
         header1="Date", header2="Host", header3="User", header4="Logon Type", header5="Process Name", 
         hostroute='website.login_host_logs', selfroute='website.login_host_logs')
 
-# ----------------------------------------------------
 # Process creation logs
-# ----------------------------------------------------
-
 @website.route('/processes', methods=['GET'])
 @require_login
 def process():
@@ -137,14 +130,10 @@ def process_host_logs(host):
         header1="Date", header2="Host", header3="Image", header4="Company", header5="Command line", 
         hostroute='website.process_host_logs', selfroute='website.process_host_logs')
         
-# ----------------------------------------------------
 # File creation logs
-# ----------------------------------------------------
-
 @website.route('/files', methods=['GET'])
 @require_login
 def files():
-    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -167,8 +156,7 @@ def files():
 
 @website.route("/files/<host>", methods=["GET"])
 @require_login
-def files_host_logs(host):
-    
+def files_host_logs(host): 
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -189,14 +177,10 @@ def files_host_logs(host):
         header1="Date", header2="Host", header3="Image", header4="File Name", header5="User",
         hostroute='website.files_host_logs', selfroute='website.files_host_logs')
 
-# ----------------------------------------------------
 # Network logs
-# ----------------------------------------------------
-
 @website.route('/net', methods=['GET'])
 @require_login
 def net():
-    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -219,7 +203,6 @@ def net():
 @website.route("/net/<host>", methods=["GET"])
 @require_login
 def net_host_logs(host):
-    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -239,10 +222,7 @@ def net_host_logs(host):
         header1="Date", header2="Host", header3="Image", header4="Dest IP", header5="Dest Port", 
         hostroute='website.net_host_logs', selfroute='website.net_host_logs')
 
-# ----------------------------------------------------
 # Events
-# ----------------------------------------------------
-
 @website.route('/events', methods=['GET'])
 @require_login
 def events():
@@ -289,11 +269,9 @@ def events_host_logs(host):
         hostroute='website.events_host_logs', selfroute='website.events_host_logs')
 
 # Alerts
-# ----------------------------------------------------
 @website.route('/alerts', methods=['GET'])
 @require_login
 def alerts():
-    
     range = request.args.get('range', None)
     if range:
         template = 'events_range.html'
@@ -335,10 +313,7 @@ def host_alerts(host):
         header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
         hostroute='website.host_alerts', selfroute='website.host_alerts')
 
-# ----------------------------------------------------
 # False positives filter
-# ----------------------------------------------------
-
 @website.route("/false", methods=["GET"])
 @require_login
 def false_process():

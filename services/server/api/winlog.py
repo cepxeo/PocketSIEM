@@ -59,8 +59,8 @@ class SysmonNetLog(SysmonLog):
     dest_port: str
 
     def check_log(self) -> None:
-        tasks.check_whois.delay(self.date, self.host, self.image, self.dest_ip, self.dest_port)
         tasks.check_network.delay(self.date, self.host, self.image, self.dest_ip, self.dest_port)
+        tasks.check_whois.delay(self.date, self.host, self.image, self.dest_ip, self.dest_port)
 
 class SysmonEventLog(SysmonLog):
     event: str

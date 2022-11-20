@@ -2,7 +2,16 @@ import re
 from detect.utils import clean_value, add_key_value, add_or_key_value
 #from utils import clean_value, add_key_value, add_or_key_value
 
-def parse_pattern(pattern, patterns_dict):
+""" Module parses Sigma rules converted to Splunk alert regular expressions.
+Each line gets converted to one or more dicts representing individual rule.
+Rules are stored in lists and checked by check_ functions in offloaded Celery tasks.
+"""
+
+def _parse_pattern(pattern, patterns_dict) -> dict:
+    """ Processes each OR chunk of the rule.
+    Expects rule chunk (pattern) and empty rule dicts (patterns_dict).
+    Returns a rule dict (patterns_dict) to be appended to the rules list (patterns_array).
+    """
     if pattern[0] == "(" and pattern[-1] == ")":
         pattern = re.search(r"\((.*)\)", pattern).group(1)
     in_blocks = pattern.split(' IN ')
@@ -55,7 +64,12 @@ def parse_pattern(pattern, patterns_dict):
   
     return patterns_dict
 
-def load_rules(patterns_array, file, min_keys):
+def load_rules(patterns_array, file, min_keys) -> list:
+    """ Function called from the outside
+    Expects empty list (patterns_array), name of the file with converted Sigma rules (file).
+    and minimal amount of keys the rule should contain (usually 1 or 2) (min_keys).
+    Returns a list with rule dicts (patterns_array).
+    """
     with open(file, encoding="utf8") as f:
         for line in f:
             try:
@@ -66,14 +80,14 @@ def load_rules(patterns_array, file, min_keys):
 
                     if antipatterns[0] == "(" and antipatterns[-2] == ")":
                         antipatterns = re.search(r"\((.*)\)", antipatterns).group(1)
-                    antipatterns_dict == parse_pattern(antipatterns.replace(" OR ", " "), antipatterns_dict)
+                    antipatterns_dict == _parse_pattern(antipatterns.replace(" OR ", " "), antipatterns_dict)
                     antipatterns_dict = dict(('NOT ' + key, value) for (key, value) in antipatterns_dict.items())
                 else:
                     patterns = line
                 patterns = patterns.split(' OR ')
                 for pattern in patterns:
                     patterns_dict = {}
-                    patterns_dict = parse_pattern(pattern, patterns_dict)
+                    patterns_dict = _parse_pattern(pattern, patterns_dict)
 
                     if len(patterns_dict.keys()) == 0: continue
                     patterns_dict = patterns_dict | antipatterns_dict
