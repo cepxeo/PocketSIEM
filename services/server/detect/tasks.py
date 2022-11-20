@@ -73,25 +73,28 @@ def check_log(date, host, image, details) -> None:
             db.session.add(newAlert)
             db.session.commit()
 
-def _run_check(rules_dict, field_names, or_field_names, date, host, image, details) -> None:
+def _run_check(rules_dict, field_names, date, host, image, details) -> None:
     """ Executes the check and saves an alert in DB
     """
     for rule in rules_dict:
         pattern_flags = 0
         for key in rule.keys():
-            for field in field_names.keys():
-                if key[:3] == 'NOT':
-                    if key.replace("NOT ", "").replace("AND ", "") == field and not all(item.casefold() in field_names[field].casefold() for item in rule[key]):
-                        pattern_flags += 1
-                if key.replace("AND ", "") == field and all(item.casefold() in field_names[field].casefold() for item in rule[key]):
-                    pattern_flags += 1
-
-            for field in or_field_names.keys():
-                if key[:3] == 'NOT':
-                    if key.replace("NOT ", "").replace("AND ", "") == field and not any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
-                        pattern_flags += 1
-                if key.replace("AND ", "") == field and any(item.casefold() in or_field_names[field].casefold() for item in rule[key]):
-                    pattern_flags += 1
+            if "OR " in key:
+                for field in field_names.keys():
+                    if key[:3] == 'NOT':
+                        if key.split()[-1] == field and not any(item.casefold() in field_names[field].casefold() for item in rule[key]):
+                            pattern_flags += 1
+                    else:
+                        if key.split()[-1] == field and any(item.casefold() in field_names[field].casefold() for item in rule[key]):
+                            pattern_flags += 1
+            else:
+                for field in field_names.keys():
+                    if key[:3] == 'NOT':
+                        if key.split()[-1] == field and not all(item.casefold() in field_names[field].casefold() for item in rule[key]):
+                            pattern_flags += 1
+                    else:
+                        if key.split()[-1] == field and all(item.casefold() in field_names[field].casefold() for item in rule[key]):
+                            pattern_flags += 1
 
         if pattern_flags == len(rule.keys()):
             print(f"[!!] Event alert triggered by the process creation rule: {rule}")
@@ -100,32 +103,29 @@ def _run_check(rules_dict, field_names, or_field_names, date, host, image, detai
             newAlert = Alert(date=date, host=host, image=image, field4=str_rule, field5=details)
             db.session.add(newAlert)
             db.session.commit()
+            break
 
 @shared_task
-def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
-    field_names = {'ParentCommandLine':parent_command_line, 'ParentImage':parent_image, 'Image':image, 'CommandLine':command_line, 
-        'OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
-    or_field_names = {'OR ParentCommandLine':parent_command_line, 'OR ParentImage':parent_image, 'OR Image':image, 'OR CommandLine':command_line, 
-        'OR OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
-    _run_check(proc_creation_patterns, field_names, or_field_names, date, host, image, command_line)
+#def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
+def check_process(log) -> None:
+    field_names = {'ParentCommandLine':log.parent_command_line, 'ParentImage':log.parent_image, 'Image':log.image, 'CommandLine':log.command_line, 
+        'OriginalFileName':log.original_file_name,'Description':log.description,'Product':log.product,'User':log.process_user}
+    _run_check(proc_creation_patterns, field_names, field_names, log.date, log.host, log.image, log.command_line)
 
 @shared_task
 def check_registry(date, host, image, details) -> None:
     field_names = {'TargetObject':details, 'NewName':details, 'Image':image, 'Details':details, 'EventType':details}
-    or_field_names = {'OR TargetObject':details, 'OR NewName':details, 'OR Image':image, 'OR Details':details, 'OR EventType':details}
-    _run_check(reg_manip_patterns, field_names, or_field_names, date, host, image, details)
+    _run_check(reg_manip_patterns, field_names, field_names, date, host, image, details)
 
 @shared_task
 def check_files(date, host, image, filename, osuser) -> None:
     field_names = {'Image':image, 'TargetFilename':filename, 'User':osuser}
-    or_field_names = {'OR Image':image, 'OR TargetFilename':filename, 'OR User':osuser}
-    _run_check(file_manip_patterns, field_names, or_field_names, date, host, image, filename)
+    _run_check(file_manip_patterns, field_names, field_names, date, host, image, filename)
 
 @shared_task
 def check_network(date, host, image, dest_ip, dest_port) -> None:
     field_names = {'Image':image, 'DestinationIP':dest_ip, 'DestinationHostname':dest_ip, 'DestinationPort':dest_port}
-    or_field_names = {'OR Image':image, 'OR DestinationIP':dest_ip, 'OR DestinationHostname':dest_ip, 'OR DestinationPort':dest_port}
-    _run_check(network_conn_patterns, field_names, or_field_names, date, host, image, dest_ip)
+    _run_check(network_conn_patterns, field_names, field_names, date, host, image, dest_ip)
 
 @shared_task
 def check_whois(date, host, image, dest_ip, dest_port) -> None:
