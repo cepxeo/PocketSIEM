@@ -17,5 +17,4 @@ RUN pip install -r requirements.txt
 COPY . /app/
 
 # run entrypoint
-RUN SECRET_KEY=$(chars='abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'; python -c "import secrets; print(''.join(secrets.choice('${chars}') for i in range(50)))")
 CMD ["python3 app.py"]

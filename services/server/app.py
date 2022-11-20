@@ -34,7 +34,7 @@ ext_celery.init_app(flask_app)
 celery = ext_celery.celery
 
 if __name__ == '__main__':
-    def gen_admin():
+    def _gen_admin() -> str:
         username = 'admin'        
         if User.query.filter_by(username=username).first() is not None:
             return False
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
 
-    passw = gen_admin()
+    passw = _gen_admin()
     if passw:
         logger.info('admin user created with password: {passwd}'.format(passwd=passw))
 
