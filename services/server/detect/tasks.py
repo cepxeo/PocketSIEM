@@ -106,26 +106,25 @@ def _run_check(rules_dict, field_names, date, host, image, details) -> None:
             break
 
 @shared_task
-#def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
-def check_process(log) -> None:
-    field_names = {'ParentCommandLine':log.parent_command_line, 'ParentImage':log.parent_image, 'Image':log.image, 'CommandLine':log.command_line, 
-        'OriginalFileName':log.original_file_name,'Description':log.description,'Product':log.product,'User':log.process_user}
-    _run_check(proc_creation_patterns, field_names, field_names, log.date, log.host, log.image, log.command_line)
+def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
+    field_names = {'ParentCommandLine':parent_command_line, 'ParentImage':parent_image, 'Image':image, 'CommandLine':command_line, 
+        'OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
+    _run_check(proc_creation_patterns, field_names, date, host, image, command_line)
 
 @shared_task
 def check_registry(date, host, image, details) -> None:
     field_names = {'TargetObject':details, 'NewName':details, 'Image':image, 'Details':details, 'EventType':details}
-    _run_check(reg_manip_patterns, field_names, field_names, date, host, image, details)
+    _run_check(reg_manip_patterns, field_names, date, host, image, details)
 
 @shared_task
 def check_files(date, host, image, filename, osuser) -> None:
     field_names = {'Image':image, 'TargetFilename':filename, 'User':osuser}
-    _run_check(file_manip_patterns, field_names, field_names, date, host, image, filename)
+    _run_check(file_manip_patterns, field_names, date, host, image, filename)
 
 @shared_task
 def check_network(date, host, image, dest_ip, dest_port) -> None:
     field_names = {'Image':image, 'DestinationIP':dest_ip, 'DestinationHostname':dest_ip, 'DestinationPort':dest_port}
-    _run_check(network_conn_patterns, field_names, field_names, date, host, image, dest_ip)
+    _run_check(network_conn_patterns, field_names, date, host, image, dest_ip)
 
 @shared_task
 def check_whois(date, host, image, dest_ip, dest_port) -> None:
