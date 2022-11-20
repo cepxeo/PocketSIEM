@@ -41,19 +41,19 @@ services:
   #     - redis
   #     - postgres
 
-  flower:
-    build: ./services/server
-    image: celery_flower
-    command: celery -A app.celery --broker="redis://redis:6379/0" flower
-    volumes:
-      - ./services/server:/app
-    env_file:
-      - .env
-    ports:
-      - 5557:5555
-    depends_on:
-      - redis
-      - postgres
+  # flower:
+  #   build: ./services/server
+  #   image: celery_flower
+  #   command: celery -A app.celery --broker="redis://redis:6379/0" flower
+  #   volumes:
+  #     - ./services/server:/app
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 5557:5555
+  #   depends_on:
+  #     - redis
+  #     - postgres
 
   postgres:
     image: postgres:13-alpine

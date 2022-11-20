@@ -107,34 +107,31 @@ def check_process(date, host, image, command_line, parent_image, parent_command_
         'OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
     or_field_names = {'OR ParentCommandLine':parent_command_line, 'OR ParentImage':parent_image, 'OR Image':image, 'OR CommandLine':command_line, 
         'OR OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
-
     _run_check(proc_creation_patterns, field_names, or_field_names, date, host, image, command_line)
 
 @shared_task
-def check_registry(date, host, image, details):
+def check_registry(date, host, image, details) -> None:
     field_names = {'TargetObject':details, 'NewName':details, 'Image':image, 'Details':details, 'EventType':details}
     or_field_names = {'OR TargetObject':details, 'OR NewName':details, 'OR Image':image, 'OR Details':details, 'OR EventType':details}
-
     _run_check(reg_manip_patterns, field_names, or_field_names, date, host, image, details)
 
 @shared_task
 def check_files(date, host, image, filename, osuser) -> None:
     field_names = {'Image':image, 'TargetFilename':filename, 'User':osuser}
     or_field_names = {'OR Image':image, 'OR TargetFilename':filename, 'OR User':osuser}
-
     _run_check(file_manip_patterns, field_names, or_field_names, date, host, image, filename)
 
 @shared_task
 def check_network(date, host, image, dest_ip, dest_port) -> None:
     field_names = {'Image':image, 'DestinationIP':dest_ip, 'DestinationHostname':dest_ip, 'DestinationPort':dest_port}
     or_field_names = {'OR Image':image, 'OR DestinationIP':dest_ip, 'OR DestinationHostname':dest_ip, 'OR DestinationPort':dest_port}
-
     _run_check(network_conn_patterns, field_names, or_field_names, date, host, image, dest_ip)
 
 @shared_task
 def check_whois(date, host, image, dest_ip, dest_port) -> None:
     """Checks the whois service for known orgs for given IPs
-    Wouldn't run if service runs in the isolated segment. Also skip the checks if IP is a typical internal one.
+    Skips the checks if IP is a typical internal or trusted one.
+    TODO: Wouldn't run if service runs in the isolated segment.
     """
 
     #if current_app.config['ONLINE_CHECKS'] == 'True' and dest_ip.split(".")[0] not in internal_ips:      

@@ -12,7 +12,7 @@ Current functionality includes:
 ![](img/network-logs.png)
 
 * Incoming logs are checked against known evil patterns and an alert is generated on match.
-* Over 1100 Sigma and custom rules currently implemented. Check Tweaking alerts section.
+* Over 1500 Sigma and custom rules currently implemented. Check Tweaking alerts section.
 
 ![](img/alerts.png)
 
