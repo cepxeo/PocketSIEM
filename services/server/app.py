@@ -44,7 +44,9 @@ if __name__ == '__main__':
         db.session.commit()
         return password
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        filename="pocketsiem.log",
+        format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
 

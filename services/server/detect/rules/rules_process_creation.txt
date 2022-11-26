@@ -257,7 +257,7 @@ Image="*\\netsh.exe" CommandLine="*firewall*" CommandLine="*delete*" NOT (Parent
 CommandLine="*ActiveScriptEventConsumer*" CommandLine="* CREATE *"
 (CommandLine="*cl*" CommandLine="*/Trace*") OR (CommandLine="*clear-log*" CommandLine="*/Trace*") OR (CommandLine="*sl*" CommandLine="*/e:false*") OR (CommandLine="*set-log*" CommandLine="*/e:false*") OR (CommandLine="*logman*" CommandLine="*update*" CommandLine="*trace*" CommandLine="*--p*" CommandLine="*-ets*") OR CommandLine="*Remove-EtwTraceProvider*" OR (CommandLine="*Set-EtwTraceProvider*" CommandLine="*0x11*")
 Image="*\\curl.exe" OR Product="The curl executable" CommandLine IN ("* -A *", "* --user-agent *")
-CommandLine IN ("* -windowstyle hidden\"", "* -windowstyle hidden", "* -windowstyle hidden'", "* -w hidden\"", "* -w hidden", "* -w hidden'", "* -ep bypass\"", "* -ep bypass", "* -ep bypass'", "* -noni\"", "* -noni", "* -noni'")
+CommandLine IN ("* -windowstyle hidden'", "* -w hidden'", "* -ep bypass'", "* -noni'")
 (CommandLine="*mshta*" CommandLine="*.zip*") OR (ParentImage="C:\\Windows\\System32\\wbem\\wmiprvse.exe" Image="C:\\Windows\\System32\\mshta.exe") OR (ParentImage="*:\\Users\\Public\\*" Image="C:\\Windows\\System32\\rundll32.exe")
 Image="*\\schtasks.exe" CommandLine="* /Change *" CommandLine="* /TN *" CommandLine IN ("*\\AppData\\Local\\Temp*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\WINDOWS\\Temp\\*", "*\\Desktop\\*", "*\\Downloads\\*", "*\\Temporary Internet*", "*C:\\ProgramData\\*", "*C:\\Perflogs\\*", "*%ProgramData%*", "*%appdata%*", "*%comspec%*", "*%localappdata%*") CommandLine IN ("*regsvr32*", "*rundll32*", "*cmd /c *", "*cmd /k *", "*cmd.exe /c *", "*cmd.exe /k *", "*powershell*", "*mshta*", "*wscript*", "*cscript*", "*certutil*", "*bitsadmin*", "*bash.exe*", "*bash *", "*scrcons*", "*wmic *", "*wmic.exe*", "*forfiles*", "*scriptrunner*", "*hh.exe*", "*hh *")
 CommandLine="*winget*" CommandLine="*install*" CommandLine IN ("*-m *", "*--manifest*")
@@ -740,7 +740,6 @@ CommandLine="* /s*" CommandLine="* /u*" CommandLine IN ("* /i:http://1*", "* /i:
 CommandLine="*rundll32.exe*" CommandLine="*Execute*" CommandLine="*RegRead*" CommandLine="*window.close*"
 Image="*\\MSOHTMED.exe" OR OriginalFileName="MsoHtmEd.exe" CommandLine IN ("*http://*", "*https://*", "*ftp://*")
 CommandLine IN ("*printnightmare.gentilkiwi.com*", "* /user:gentilguest *", "*Kiwi Legit Printer*")
-ParentUser IN ("NT AUTHORITY\\NETWORK SERVICE", "NT AUTHORITY\\LOCAL SERVICE", "AUTORITE NT\\") User IN ("*AUTHORI*", "*AUTORI*") User IN ("*\\SYSTEM", "*\\СИСТЕМА") IntegrityLevel="System" NOT (Image="*\\rundll32.exe" CommandLine="*DavSetCookie*")
 Imphash IN ("bca5675746d13a1f246e2da3c2217492", "53e117a96057eaf19c41380d0e87f1c2") OR Hashes IN ("*IMPHASH=BCA5675746D13A1F246E2DA3C2217492*", "*IMPHASH=53E117A96057EAF19C41380D0E87F1C2*") NOT (Image="*\\AdFind.exe" OriginalFileName="AdFind.exe")
 Image IN ("*\\PCHunter32.exe", "*\\PCHunter64.exe") OR OriginalFileName="PCHunter.exe"
 Image="*\\certoc.exe" OR OriginalFileName="CertOC.exe" CommandLine="*-LoadDLL*" CommandLine="*.dll*"
