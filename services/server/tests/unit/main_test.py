@@ -134,7 +134,13 @@ def test_send_logs(test_client, login_default_user):
         "host": "TEST01",
         "image": "C:\Test\VGAuthService.exe",
         "company": "Microsoft Corporation",
-        "command_line": "C:\Test\VGAuthService.exe ocdjjb.dll,bbb",    
+        "command_line": "C:\Test\VGAuthService.exe ocdjjb.dll,bbb",
+        "parent_image": "C:\Test\VGAuthService.exe",
+        "parent_command_line": "C:\Test\VGAuthService.exe",
+        "description": "Microsoft Corporation",
+        "product": "Microsoft Corporation",
+        "original_file_name": "C:\Test\VGAuthService.exe",
+        "process_user": "TEST01",
         },headers={
         'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjcyMzY5OTI4fQ.2k-Gh6uCJoz6uDxXTfcdadjDKzh5Cv-oXYABQXDOrjo'
         })
@@ -158,7 +164,13 @@ def test_date_filter(test_client, login_default_user):
         "host": "TEST01",
         "image": "C:\Test\TestCommand.exe",
         "company": "Microsoft Corporation",
-        "command_line": "C:\Test\TestCommand.exe",    
+        "command_line": "C:\Test\TestCommand.exe",
+        "parent_image": "C:\Test\VGAuthService.exe",
+        "parent_command_line": "C:\Test\VGAuthService.exe",
+        "description": "Microsoft Corporation",
+        "product": "Microsoft Corporation",
+        "original_file_name": "C:\Test\VGAuthService.exe",
+        "process_user": "TEST01",
         },headers={
         'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjcyMzY5OTI4fQ.2k-Gh6uCJoz6uDxXTfcdadjDKzh5Cv-oXYABQXDOrjo'
         })
