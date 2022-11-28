@@ -1,7 +1,4 @@
+sudo rm -r /var/lib/docker/volumes/server_postgres_data_test/_data
+sudo mkdir /var/lib/docker/volumes/server_postgres_data_test/_data
 cd services/server
-docker-compose up -d
-sleep 5
-docker-compose logs web
-# python3 -m pytest -v  --disable-warnings
-docker-compose down
-cd ../..
+docker-compose up

@@ -43,7 +43,6 @@ def init_database(test_client):
     db.session.commit()
 
     yield  # this is where the testing happens!
-
     #db.drop_all()
 
 @pytest.fixture(scope='function')
