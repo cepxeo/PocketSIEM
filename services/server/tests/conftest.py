@@ -4,7 +4,6 @@ import pytest
 from database.models import User, db
 from app import create_app
 
-
 @pytest.fixture(scope='module')
 def new_user():    
     username = 'testuser'
@@ -13,7 +12,6 @@ def new_user():
     db.session.add(user)
     db.session.commit()
     return user
-
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -24,7 +22,6 @@ def test_client():
         # Establish an application context
         with flask_app.app_context():
             yield testing_client  # this is where the testing happens!
-
 
 @pytest.fixture(scope='module')
 def init_database(test_client):

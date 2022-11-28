@@ -5,21 +5,19 @@ services:
     image: postgres:13-alpine
     environment:
       POSTGRES_DB: ${PS_DATABASE_NAME}
-      POSTGRES_PORT: 5433
+      POSTGRES_PORT: 5432
       POSTGRES_USER: ${PS_DATABASE_USER}
       POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
     ports:
-      - 5433:5433
-    command: -p 5433
+      - 5432:5432
 
-services:
   web:
-    build: ./services/server
+    build: .
     command: python -m pytest -v  --disable-warnings
     volumes:
-      - ./services/server:/app
+      - .:/app
     ports:
-      - 5000:5000
+      - 8443:8443
     depends_on:
       - postgres-test
       - redis
@@ -30,11 +28,11 @@ services:
       - 6379:6379
 
   celery_worker:
-    build: ./services/server
+    build: .
     image: celery_worker
     command: celery -A app.celery worker --loglevel=warning
     volumes:
-      - ./services/server:/app
+      - .:/app
     env_file:
       - .env
     depends_on:

@@ -29,6 +29,7 @@ def test_urls_unauth(test_client):
     response = test_client.get('/logins')
     assert response.status_code == 302
 
+    print("Checking notexisting route")
     response = test_client.get('/notexisting')
     assert response.status_code == 404
 

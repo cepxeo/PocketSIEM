@@ -33,15 +33,16 @@ def register_blueprints(app):
     app.register_blueprint(api)
     app.register_blueprint(website)
 
-TESTING=os.environ.get('TESTING', default='False')
-if TESTING:
-    flask_app = create_app('flask_test.cfg')
-else:
-    flask_app = create_app('flask.cfg')
+# TESTING=os.environ.get('TESTING', default='False')
+# if TESTING:
+#     flask_app = create_app('flask_test.cfg')
+# else:
+#     flask_app = create_app('flask.cfg')
 
-ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
-ext_celery.init_app(flask_app)
-celery = ext_celery.celery
+# flask_app = create_app('flask_test.cfg')
+# ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
+# ext_celery.init_app(flask_app)
+# celery = ext_celery.celery
 
 if __name__ == '__main__':
     def _gen_admin() -> str:
