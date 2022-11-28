@@ -5,6 +5,7 @@ from waitress import serve
 import secrets
 import string
 import logging
+import os
 
 from database.models import db, User
 from celery_utils import make_celery
@@ -32,10 +33,10 @@ def register_blueprints(app):
     app.register_blueprint(api)
     app.register_blueprint(website)
 
-flask_app = create_app('flask_test.cfg')
-ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
-ext_celery.init_app(flask_app)
-celery = ext_celery.celery
+# flask_app = create_app('flask_test.cfg')
+# ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
+# ext_celery.init_app(flask_app)
+# celery = ext_celery.celery
 
 if __name__ == '__main__':
     def _gen_admin() -> str:

@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash
 import pytest
 
 from database.models import User, db
-from app import create_app
+from app_test import create_app
 
 @pytest.fixture(scope='module')
 def new_user():    
