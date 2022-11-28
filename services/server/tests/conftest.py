@@ -16,11 +16,11 @@ def new_user():
 
 @pytest.fixture(scope='module')
 def test_client():
-    print("test_client init")
     flask_app = create_app('flask.cfg')
 
     # Create a test client using the Flask application configured for testing
     with flask_app.test_client() as testing_client:
+        print("test_client init")
         # Establish an application context
         with flask_app.app_context():
             yield testing_client  # this is where the testing happens!
@@ -29,9 +29,9 @@ def test_client():
 def init_database(test_client):
     print("init_database init")
     # Create the database and the database table
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
+    # db.drop_all()
+    # db.create_all()
+    # db.session.commit()
 
     # Insert user data
     user1 = User(username='testuser1', password=generate_password_hash('FlaskIsAwesome1'), role='User')
