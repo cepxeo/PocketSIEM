@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres-test:
+  postgres:
     image: postgres:13-alpine
     environment:
       POSTGRES_DB: ${PS_DATABASE_NAME}
@@ -19,7 +19,7 @@ services:
     ports:
       - 8443:8443
     depends_on:
-      - postgres-test
+      - postgres
       - redis
 
   redis:
@@ -37,4 +37,4 @@ services:
       - .env
     depends_on:
       - redis
-      - postgres-test
+      - postgres

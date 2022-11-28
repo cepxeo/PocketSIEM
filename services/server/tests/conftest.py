@@ -4,6 +4,7 @@ import pytest
 from database.models import User, db
 from app import create_app
 
+print("Conftest init")
 @pytest.fixture(scope='module')
 def new_user():    
     username = 'testuser'
@@ -15,6 +16,7 @@ def new_user():
 
 @pytest.fixture(scope='module')
 def test_client():
+    print("test_client init")
     flask_app = create_app('flask.cfg')
 
     # Create a test client using the Flask application configured for testing
@@ -25,6 +27,7 @@ def test_client():
 
 @pytest.fixture(scope='module')
 def init_database(test_client):
+    print("init_database init")
     # Create the database and the database table
     db.drop_all()
     db.create_all()
