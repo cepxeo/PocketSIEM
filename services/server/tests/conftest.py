@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash
 import pytest
 
 from database.models import User, db
-from app_test import create_app
+from app import create_app
 
 @pytest.fixture(scope='module')
 def new_user():    
@@ -15,7 +15,7 @@ def new_user():
 
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app('flask_test.cfg')
+    flask_app = create_app('flask.cfg')
 
     # Create a test client using the Flask application configured for testing
     with flask_app.test_client() as testing_client:

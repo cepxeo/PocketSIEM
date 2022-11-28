@@ -13,11 +13,9 @@ services:
 
   web:
     build: .
-    command: python -m pytest -v  --disable-warnings
+    command: python -m pytest -v --disable-warnings
     volumes:
       - .:/app
-    env_file:
-      - .env
     ports:
       - 8443:8443
     depends_on:
@@ -32,7 +30,7 @@ services:
   celery_worker:
     build: .
     image: celery_worker
-    command: celery -A app.celery worker --loglevel=warning
+    command: celery -A app.celery worker --loglevel=info
     volumes:
       - .:/app
     env_file:

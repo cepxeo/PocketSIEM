@@ -32,7 +32,7 @@ def register_blueprints(app):
     app.register_blueprint(api)
     app.register_blueprint(website)
 
-flask_app = create_app('flask_test.cfg')
+flask_app = create_app('flask.cfg')
 ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 ext_celery.init_app(flask_app)
 celery = ext_celery.celery
