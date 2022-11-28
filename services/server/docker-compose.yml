@@ -11,3 +11,20 @@ services:
     ports:
       - 5433:5433
     command: -p 5433
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
+  celery_worker:
+    build: ./services/server
+    image: celery_worker
+    command: celery -A app.celery worker --loglevel=warning
+    volumes:
+      - ./services/server:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
