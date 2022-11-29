@@ -1,5 +1,6 @@
 from celery import shared_task
 import whois
+import logging
 
 from database.models import db, Network, Alert
 from . import load_simple_rules
@@ -16,23 +17,23 @@ belonging to known companies to reduce output.
 
 evil_patterns = []
 evil_patterns = load_simple_rules.load_rules(evil_patterns, "detect/rules/rules_simple.txt")
-print ("[+] Loaded " + str(len(evil_patterns)) + " simple patterns")
+logging.info("[+] Loaded " + str(len(evil_patterns)) + " simple patterns")
 
 proc_creation_patterns = []
 proc_creation_patterns = load_sysmon_rules.load_rules(proc_creation_patterns, "detect/rules/rules_process_creation.txt", 2)
-print ("[+] Loaded " + str(len(proc_creation_patterns)) + " process creation rules")
+logging.info("[+] Loaded " + str(len(proc_creation_patterns)) + " process creation rules")
 
 reg_manip_patterns = []
 reg_manip_patterns = load_sysmon_rules.load_rules(reg_manip_patterns, "detect/rules/rules_registry_manipulation.txt", 1)
-print ("[+] Loaded " + str(len(reg_manip_patterns)) + " registry manipulation rules")
+logging.info("[+] Loaded " + str(len(reg_manip_patterns)) + " registry manipulation rules")
 
 file_manip_patterns = []
 file_manip_patterns = load_sysmon_rules.load_rules(file_manip_patterns, "detect/rules/rules_file_manipulation.txt", 1)
-print ("[+] Loaded " + str(len(file_manip_patterns)) + " file manipulation rules")
+logging.info("[+] Loaded " + str(len(file_manip_patterns)) + " file manipulation rules")
 
 network_conn_patterns = []
 network_conn_patterns = load_sysmon_rules.load_rules(network_conn_patterns, "detect/rules/rules_network_connection.txt", 1)
-print ("[+] Loaded " + str(len(network_conn_patterns)) + " network connection rules")
+logging.info("[+] Loaded " + str(len(network_conn_patterns)) + " network connection rules")
 
 trusted_ips = []
 internal_ips = ['10', '192', '127', '172', '169', '240', '255']
@@ -67,8 +68,8 @@ def check_log(date, host, image, details) -> None:
         filter_trash = all(len(elem) > 1 for elem in pattern_array)
 
         if match_pattern and filter_trash:
-            print(f"[!!] Event alert triggered by the rule: {pattern}")
-            print(f"[!!] Malicious command: {details}")
+            logging.warning(f"[!!] Event alert triggered by the rule: {pattern}")
+            logging.warning(f"[!!] Malicious command: {details}")
             newAlert = Alert(date=date, host=host, image=image, field4=pattern, field5=details)
             db.session.add(newAlert)
             db.session.commit()
@@ -97,8 +98,8 @@ def _run_check(rules_dict, field_names, date, host, image, details) -> None:
                             pattern_flags += 1
 
         if pattern_flags == len(rule.keys()):
-            print(f"[!!] Event alert triggered by the process creation rule: {rule}")
-            print(f"[!!] Malicious command: {details}")
+            logging.warning(f"[!!] Event alert triggered by the process creation rule: {rule}")
+            logging.warning(f"[!!] Malicious command: {details}")
             str_rule = str(rule)
             newAlert = Alert(date=date, host=host, image=image, field4=str_rule, field5=details)
             db.session.add(newAlert)
@@ -144,7 +145,7 @@ def check_whois(date, host, image, dest_ip, dest_port) -> None:
                 return
         # If IP is not trusted and not internal, print it
         if whois_emails != None:
-            print(f"{dest_ip} for process {image} belongs to {whois_emails}")
+            logging.warning(f"{dest_ip} for process {image} belongs to {whois_emails}")
         
         newNetwork = Network(date=date, host=host, image=image, field4=dest_ip, field5=dest_port)
         db.session.add(newNetwork)

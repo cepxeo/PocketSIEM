@@ -9,6 +9,10 @@ import logging
 from database.models import db, User
 from celery_utils import make_celery
 
+logging.basicConfig(
+        filename="pocketsiem.log",
+        format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+        
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile(config_filename)
@@ -28,8 +32,8 @@ def register_blueprints(app):
     app.register_blueprint(api)
     app.register_blueprint(website)
 
-ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 flask_app = create_app('flask.cfg')
+ext_celery = FlaskCeleryExt(create_celery_app=make_celery)
 ext_celery.init_app(flask_app)
 celery = ext_celery.celery
 
@@ -44,7 +48,6 @@ if __name__ == '__main__':
         db.session.commit()
         return password
 
-    logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
 

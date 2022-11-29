@@ -29,6 +29,7 @@ def test_urls_unauth(test_client):
     response = test_client.get('/logins')
     assert response.status_code == 302
 
+    print("Checking notexisting route")
     response = test_client.get('/notexisting')
     assert response.status_code == 404
 
@@ -113,7 +114,7 @@ def test_token_healthcheck(test_client):
     assert b'Token is invalid' in response.data
 
     response = test_client.get('/healthcheck', 
-    headers={'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjY0MzA2MzkwfQ.3kOeOyD6HP3pj0wzWPV3wiO45j3j2Fq0MRWIAYVYDlo'})
+    headers={'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjcyMzY5OTI4fQ.2k-Gh6uCJoz6uDxXTfcdadjDKzh5Cv-oXYABQXDOrjo'})
     assert response.status_code == 200
 
 # Send the process log, ensure it is accepted and visualized properly
@@ -133,9 +134,15 @@ def test_send_logs(test_client, login_default_user):
         "host": "TEST01",
         "image": "C:\Test\VGAuthService.exe",
         "company": "Microsoft Corporation",
-        "command_line": "C:\Test\VGAuthService.exe ocdjjb.dll,bbb",    
+        "command_line": "C:\Test\VGAuthService.exe ocdjjb.dll,bbb",
+        "parent_image": "C:\Test\VGAuthService.exe",
+        "parent_command_line": "C:\Test\VGAuthService.exe",
+        "description": "Microsoft Corporation",
+        "product": "Microsoft Corporation",
+        "original_file_name": "C:\Test\VGAuthService.exe",
+        "process_user": "TEST01",
         },headers={
-        'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjY0MzA2MzkwfQ.3kOeOyD6HP3pj0wzWPV3wiO45j3j2Fq0MRWIAYVYDlo'
+        'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjcyMzY5OTI4fQ.2k-Gh6uCJoz6uDxXTfcdadjDKzh5Cv-oXYABQXDOrjo'
         })
     assert response.status_code == 200
 
@@ -157,9 +164,15 @@ def test_date_filter(test_client, login_default_user):
         "host": "TEST01",
         "image": "C:\Test\TestCommand.exe",
         "company": "Microsoft Corporation",
-        "command_line": "C:\Test\TestCommand.exe",    
+        "command_line": "C:\Test\TestCommand.exe",
+        "parent_image": "C:\Test\VGAuthService.exe",
+        "parent_command_line": "C:\Test\VGAuthService.exe",
+        "description": "Microsoft Corporation",
+        "product": "Microsoft Corporation",
+        "original_file_name": "C:\Test\VGAuthService.exe",
+        "process_user": "TEST01",
         },headers={
-        'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjY0MzA2MzkwfQ.3kOeOyD6HP3pj0wzWPV3wiO45j3j2Fq0MRWIAYVYDlo'
+        'x-access-tokens': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjcyMzY5OTI4fQ.2k-Gh6uCJoz6uDxXTfcdadjDKzh5Cv-oXYABQXDOrjo'
         })
     assert response.status_code == 200
 

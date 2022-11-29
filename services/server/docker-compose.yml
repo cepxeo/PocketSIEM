@@ -1,13 +1,44 @@
 version: '3.8'
 
 services:
-  postgres-test:
+  postgres:
     image: postgres:13-alpine
+    volumes:
+      - postgres_data_test:/var/lib/postgresql/data/
     environment:
       POSTGRES_DB: ${PS_DATABASE_NAME}
-      POSTGRES_PORT: 5433
       POSTGRES_USER: ${PS_DATABASE_USER}
       POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
     ports:
-      - 5433:5433
-    command: -p 5433
+      - 5432:5432
+
+  web:
+    build: .
+    command: python -m pytest -v --disable-warnings
+    volumes:
+      - .:/app
+    ports:
+      - 8443:8443
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+
+  celery_worker:
+    build: .
+    image: celery_worker
+    command: celery -A app.celery worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+
+volumes:
+  postgres_data_test:

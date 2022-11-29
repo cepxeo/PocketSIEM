@@ -245,7 +245,7 @@
 
 - 'C:\Users*.chm'
 - 'C:\ProgramData*.chm'
-- 'C:\Users*.tmp'
+# 'C:\Users*.tmp'
 - 'Content.Outlook*.exe'
 
 # Registry keys (https://github.com/mandiant/SharPersist)

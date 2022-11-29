@@ -56,10 +56,10 @@ sudo cp /etc/letsencrypt/live/$MYDOMAIN/fullchain.pem services/nginx/certs/cert.
 sudo docker-compose up -d
 ```
 
-* View the logs to get the admin password:
+* View the log to get the admin password:
 
 ```
-docker-compose logs | grep "password"
+cat services/server/pocketsiem.log | grep password
 ```
 
 * Login with admin and obtain JWT by visiting `/token`

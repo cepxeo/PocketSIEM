@@ -4,7 +4,7 @@ import pytest
 from database.models import User, db
 from app import create_app
 
-
+print("Conftest init")
 @pytest.fixture(scope='module')
 def new_user():    
     username = 'testuser'
@@ -14,24 +14,24 @@ def new_user():
     db.session.commit()
     return user
 
-
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app('flask_test.cfg')
+    flask_app = create_app('flask.cfg')
 
     # Create a test client using the Flask application configured for testing
     with flask_app.test_client() as testing_client:
+        print("test_client init")
         # Establish an application context
         with flask_app.app_context():
             yield testing_client  # this is where the testing happens!
 
-
 @pytest.fixture(scope='module')
 def init_database(test_client):
+    print("init_database init")
     # Create the database and the database table
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
+    # db.drop_all()
+    # db.create_all()
+    # db.session.commit()
 
     # Insert user data
     user1 = User(username='testuser1', password=generate_password_hash('FlaskIsAwesome1'), role='User')
@@ -43,7 +43,6 @@ def init_database(test_client):
     db.session.commit()
 
     yield  # this is where the testing happens!
-
     #db.drop_all()
 
 @pytest.fixture(scope='function')
