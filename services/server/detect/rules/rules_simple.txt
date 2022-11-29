@@ -280,7 +280,7 @@
 - 'System32\spool\SERVERS'
 - '\Excel\XLStart\'
 - 'Programs\Startup'
-- '.lnk%Desktop*Downloads*Start Menu\Programs'
+- '.lnk%Desktop*Downloads*Start Menu\Programs*AppData\Roaming'
 - '.rar%Desktop*Downloads'
 
 # Known evil tools
