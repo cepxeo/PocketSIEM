@@ -1,4 +1,15 @@
-﻿Function Get-WinEventData {
+﻿# ! Specify the domain name to upload logs !
+# Example $url = 'https://mydomain.com'
+$url = 'MYDOMAIN.COM'
+
+# ! Provide the token value !
+$tokenValue = 'YOUR_TOKEN'
+
+$Headers = @{
+    'x-access-tokens' = $tokenValue
+}
+
+Function Get-WinEventData {
     [cmdletbinding()]
     param(
         [Parameter(Mandatory=$true,
@@ -35,26 +46,26 @@
     }
 }
 
-# !! Specify the host to upload logs !!
-# Example $url = 'https://mydomain.com'
+# Disables SSL server certificate validation to make use of self signed certs
+# Comment out or delete the block below if certificate validation is required
+add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 
-$url = '<DOMAIN>'
-$hostname = hostname
-
-# !! Provide the token value !!
-
-$tokenValue = 'YOUR_TOKEN'
-
-$Headers = @{
-    'x-access-tokens' = $tokenValue
-}
-
-# Change the system time format to conform with SQLite
+# Change the system time format to conform with DB requirements
 Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sShortDate -Value "yyyy-MM-dd"
 Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sTimeFormat -Value "HH:mm:ss"
 
 # Check connectivity
-
 $status = Invoke-WebRequest -Uri $url/healthcheck -Headers $Headers | select-object StatusCode
 
 If ($status.StatusCode -ne 200) {
@@ -62,8 +73,10 @@ If ($status.StatusCode -ne 200) {
     Exit
 }
 
-## Windows Security events
+$hostname = hostname
+Write-Host "Sending logs to the server ..."
 
+## Windows Security events
 # Successful Logins
 try { 
 $event = "Login successful"
