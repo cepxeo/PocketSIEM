@@ -231,7 +231,7 @@ CommandLine="*transport=dt_socket,address=*" CommandLine IN ("*jre1.*", "*jdk1.*
 Image="*\\DefenderCheck.exe" OR Description="DefenderCheck"
 CommandLine="*(WCHAR)0x*"
 OriginalFileName="RUNDLL32.EXE" NOT Image="*\\rundll32.exe"
-Image IN ("*\\Desktop\\*", "*\\Temp\\*", "*\\Temporary Internet*") NOT (ParentImage IN ("C:\\Windows\\System32\\cleanmgr.exe", "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\resources\\app\\ServiceHub\\Services\\Microsoft.VisualStudio.Setup.Service\\BackgroundDownload.exe", "C:\\Windows\\System32\\dxgiadaptercache.exe") OR ParentImage="C:\\Program Files (x86)\\NVIDIA Corporation\\*" OR Image="*setup.exe" OR (Image="C:\\Program Files (x86)\\Microsoft\\Temp\\*" Image="*.tmp\\MicrosoftEdgeUpdate.exe"))
+Image IN ("*\\Desktop\\*", "*\\Temporary Internet*") NOT (ParentImage IN ("C:\\Windows\\System32\\cleanmgr.exe", "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\resources\\app\\ServiceHub\\Services\\Microsoft.VisualStudio.Setup.Service\\BackgroundDownload.exe", "C:\\Windows\\System32\\dxgiadaptercache.exe") OR ParentImage="C:\\Program Files (x86)\\NVIDIA Corporation\\*" OR Image="*setup.exe" OR (Image="C:\\Program Files (x86)\\Microsoft\\Temp\\*" Image="*.tmp\\MicrosoftEdgeUpdate.exe"))
 (CommandLine="*del *" CommandLine="*\*.exe*" CommandLine="*/f *" CommandLine="*/q *") OR (CommandLine="*del *" CommandLine="*\*.dll*" CommandLine="*C:\\ProgramData\\*")
 CommandLine="C:\\Windows\\PSEXESVC.exe"
 CommandLine="*reg add*" CommandLine="*\\system\\currentcontrolset\\control*" CommandLine="*write protection*" CommandLine="*0*" CommandLine IN ("*storage*", "*storagedevicepolicies*")
@@ -348,7 +348,6 @@ CommandLine IN ("* tcp 139*", "* tcp 445*", "* tcp 3389*", "* tcp 5985*", "* tcp
 Image="*\\runonce.exe" OR Description="Run Once Wrapper" CommandLine="* /AlternateShellStartup*"
 CommandLine="* --adcs *" CommandLine="* --port *"
 Image="*\\bitsadmin.exe" CommandLine IN ("* /transfer *", "* /create *", "* /addfile *") CommandLine IN ("*.asax*", "*.ashx*", "*.asmx*", "*.asp*", "*.aspx*", "*.bat*", "*.cfm*", "*.cgi*", "*.chm*", "*.cmd*", "*.gif*", "*.jpeg*", "*.jpg*", "*.jsp*", "*.jspx*", "*.png*", "*.ps1*", "*.psm1*", "*.scf*", "*.sct*", "*.txt*", "*.vbe*", "*.vbs*", "*.war*", "*.wsf*", "*.wsh*", "*.zip*", "*.rar*", "*.dll*")
-Image="*\\rundll32.exe" NOT (CommandLine!=* OR CommandLine IN ("*.dll*", "") OR (ParentImage="*:\\Program Files\\Internet Explorer\\iexplore.exe" CommandLine="*.cpl*") OR (ParentImage="*:\\Windows\\SysWOW64\\msiexec.exe" ParentCommandLine="C:\\Windows\\syswow64\\MsiExec.exe -Embedding*") OR (ParentImage="*:\\Windows\\System32\\msiexec.exe" ParentCommandLine="C:\\Windows\\system32\\MsiExec.exe -Embedding*") OR (ParentImage="*:\\Windows\\System32\\cmd.exe" ParentCommandLine="* C:\\Program Files\\SplunkUniversalForwarder\\*") OR CommandLine="* -localserver *")
 Image="*\\control.exe" ParentImage="*\\WorkFolders.exe" NOT Image="C:\\Windows\\System32\\control.exe"
 (Image="C:\\Windows\\SysWOW64\\cmd.exe" CommandLine="*\\Windows\\Caches\\NavShExt.dll *") OR CommandLine="*\\AppData\\Roaming\\MICROS~1\\Windows\\Caches\\NavShExt.dll,Setting"
 CommandLine="*-u *" CommandLine="*-p *" CommandLine IN ("*^USER^*", "*^PASS^*")

@@ -4,7 +4,6 @@
 - 'net*group'
 - 'net*start'
 - 'net*stop'
-- 'net*view'
 - 'net*use*\add'
 - '/domain'
 - 'curl'
