@@ -476,7 +476,6 @@ CommandLine IN ("*cmd.exe/c*", "*\\cmd/c*", "*\"cmd/c*", "*cmd.exe/k*", "*\\cmd/
 CommandLine="*start /min msedge*"
 Image="*\\regedit.exe" CommandLine IN ("* /i *", "*.reg*") NOT (CommandLine IN ("* /e *", "* /a *", "* /c *", "* -e *", "* -a *", "* -c *")) regex CommandLine=":[^ \\\\\\\\]"
 Image="*\\explorer.exe" ParentImage="*\\cmd.exe" CommandLine="*explorer.exe*"
-Image="*\\rundll32.exe" ParentImage="*\\explorer.exe" NOT CommandLine="*\\shell32.dll,OpenAs_RunDLL*"
 ParentImage="*\\vbc.exe" Image="*\\cvtres.exe"
 ParentImage="*\\mmc.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\wscript.exe", "*\\cscript.exe", "*\\sh.exe", "*\\bash.exe", "*\\reg.exe", "*\\regsvr32.exe") OR Image="*\\BITSADMIN*"
 Image="*\\findstr.exe" CommandLine="* 385201*"

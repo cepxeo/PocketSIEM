@@ -24,16 +24,14 @@ Current functionality includes:
 
 #### Generate SSL keys
 
-* Obtain the server SSL key / certificate pair. I use certbot with registered domain for that.
+* Obtain the server SSL key / certificate pair. I use Let's Encrypt with the registered domain for that.
 
 ```
 sudo snap install certbot --classic
 sudo certbot certonly --register-unsafely-without-email --agree-tos -d mydomain.com
 ```
 
-For testing purposes, it is possible to use own generated certificate. In this case you need to update the `collector.ps1` to accept untrusted certificates [hint](https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error).
-
-To generate the self-signed pair:
+For testing purposes, it is possible to use own generated certificate. To generate the self-signed pair:
 
 ```
 cd PockerSIEM/services/nginx/certs
