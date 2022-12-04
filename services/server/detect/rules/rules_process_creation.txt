@@ -185,7 +185,6 @@ Hashes="*6834B1B94E49701D77CCB3C0895E1AFD*" NOT Image="*\\dctask64.exe"
 (Image="*\\rundll32.exe" CommandLine="*,dll_u") OR CommandLine="* -export dll_u *"
 Image="*\\curl.exe" OR Product="The curl executable" CommandLine IN ("* -F *", "* --form*", "* -T *", "* --upload-file *", "* -d *", "* --data *", "* --data-*")
 (ParentImage IN ("*\\WmiPrvSE.exe", "*\\svchost.exe", "*\\dllhost.exe") Image IN ("*\\wab.exe", "*\\wabmig.exe")) OR ParentImage IN ("*\\wab.exe", "*\\wabmig.exe")
-Image="*\\expand.exe" CommandLine IN ("*.cab*", "*/F:*", "*-F:*", "*C:\\ProgramData\\*", "*C:\\Public\\*", "*\\AppData\\Local\\Temp\\*", "*\\AppData\\Roaming\\Temp\\*") NOT (ParentImage="C:\\Program Files (x86)\\Dell\\UpdateService\\ServiceShell.exe" CommandLine="*C:\\ProgramData\\Dell\\UpdateService\\Temp\\*")
 Image="*\\control.exe" ParentImage IN ("*\\winword.exe", "*\\powerpnt.exe", "*\\excel.exe") NOT (CommandLine IN ("*\\control.exe input.dll", "*\\control.exe\" input.dll"))
 (Image="C:\\Program Files\\Windows Media Player\\osk.exe" IntegrityLevel IN ("High", "System")) OR (Image="C:\\Windows\\System32\\cmd.exe" ParentCommandLine="\"C:\\Windows\\system32\\mmc.exe\" \"C:\\Windows\\system32\\eventvwr.msc\" /s" IntegrityLevel IN ("High", "System"))
 (Image="*\\DismHost.exe" ParentCommandLine="*/Online*" ParentCommandLine="*/Disable-Feature*") OR (Image="*\\Dism.exe" CommandLine="*/Online*" CommandLine="*/Disable-Feature*")
@@ -356,7 +355,7 @@ OriginalFileName="Cmd.Exe" OR Image="*\\cmd.exe" (ParentCommandLine="*cmd *" Par
 ParentImage="*\\WINWORD.EXE" Image="*\\MicroScMgmt.exe"
 Description IN ("Windows PowerShell*", "pwsh*") Company="Microsoft Corporation" NOT (Image IN ("*\\powershell.exe", "*\\powershell_ise.exe", "*\\pwsh.exe"))
 Image IN ("*\\powershell.exe", "*\\pwsh.exe") CommandLine="*ForEach*" CommandLine="*Xor*"
-Image IN ("*\\svchost.exe", "*\\taskhost.exe", "*\\lsm.exe", "*\\lsass.exe", "*\\services.exe", "*\\lsaiso.exe", "*\\csrss.exe", "*\\wininit.exe", "*\\winlogon.exe") NOT (ParentImage IN ("*\\SavService.exe", "*\\ngen.exe") OR ParentImage IN ("*\\System32\\*", "*\\SysWOW64\\*") OR (ParentImage IN ("*\\Windows Defender\\*", "*\\Microsoft Security Client\\*") ParentImage="*\\MsMpEng.exe") OR ParentImage!=* OR ParentImage="-")
+Image IN ("*\\svchost.exe", "*\\taskhost.exe", "*\\lsm.exe", "*\\lsass.exe", "*\\services.exe", "*\\lsaiso.exe", "*\\csrss.exe", "*\\winlogon.exe") NOT (ParentImage IN ("*\\SavService.exe", "*\\ngen.exe") OR ParentImage IN ("*\\System32\\*", "*\\SysWOW64\\*") OR (ParentImage IN ("*\\Windows Defender\\*", "*\\Microsoft Security Client\\*") ParentImage="*\\MsMpEng.exe") OR ParentImage!=* OR ParentImage="-")
 CommandLine="*\\CL_Mutexverifiers.ps1*" CommandLine="*runAfterCancelProcess *"
 Image="*\\client32.exe" OR Product="*NetSupport Remote Control*" OR OriginalFileName="*client32.exe*" OR Imphash="a9d50692e95b79723f3e76fcf70d023e" OR Hashes="*IMPHASH=a9d50692e95b79723f3e76fcf70d023e*" NOT (Image IN ("C:\\Program Files\\*", "C:\\Program Files (x86)\\*"))
 ParentImage="*\\wsreset.exe" NOT (Image="*\\conhost.exe" OR OriginalFileName="CONHOST.EXE")
@@ -562,7 +561,7 @@ CommandLine IN ("*Invoke-WebRequest*", "*iwr *", "*wget *", "*curl *", "*Downloa
 CommandLine="*COMPlus_ETWEnabled=0*"
 Image IN ("*rundll32.exe*", "*cmd.exe*") CommandLine IN ("*gthread-3.6.dll*", "*\\Windows\\Temp\\tmp.bat*", "*sigcmm-2.4.dll*")
 Image="*\\SharpLdapWhoami.exe" OR OriginalFileName="*SharpLdapWhoami*" OR Product="SharpLdapWhoami" OR CommandLine IN ("* /method:ntlm", "* /method:kerb", "* /method:nego", "* /m:nego", "* /m:ntlm", "* /m:kerb")
-Image="*\\nltest.exe" OR OriginalFileName="nltestrk.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*", "*/user*")
+Image="*\\nltest.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*", "*/user*")
 (Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\cmd.exe") CommandLine IN ("*Invoke-WebRequest*", "*iwr *", "*wget *", "*curl *") CommandLine="* -ur*" CommandLine="* -me*" CommandLine="* -b*" CommandLine="* POST *") OR (Image="*\\curl.exe" CommandLine="*--ur*" CommandLine IN ("* -d *", "* --data *")) CommandLine IN ("*ToBase64String*", "*whoami*", "*nltest*", "*ifconfig*", "*hostname*", "*net view*", "*qprocess*", "*netstat*", "*systeminfo*", "*tasklist*", "*sc query*") OR (CommandLine="*type *" CommandLine="* > *" CommandLine="* C:\\*")
 CommandLine="*Microsoft.NodejsTools.PressAnyKey.exe normal *" OR (CommandLine="*.exe normal *" CommandLine="*.exe") NOT Image="*\\Microsoft\\NodeJsTools\\NodeJsTools*"
 OriginalFileName="wmic.exe" OR Image="*\\WMIC.exe" CommandLine="* qfe *" CommandLine="* get *" CommandLine="*Caption,Description,HotFixID,InstalledOn*"
@@ -791,8 +790,7 @@ Image="*\\tracker.exe" OR Description="Tracker" CommandLine IN ("* /d *", "* /c 
 Image="*\\where.exe" OR OriginalFileName="where.exe" CommandLine IN ("*places.sqlite*", "*cookies.sqlite*", "*formhistory.sqlite*", "*logins.json*", "*key4.db*", "*key3.db*", "*sessionstore.jsonlz4*", "*History*", "*Bookmarks*", "*Cookies*", "*Login Data*")
 Image="*\\auditpol.exe" CommandLine IN ("*disable*", "*clear*", "*remove*", "*restore*")
 Image="*\\crackmapexec.exe"
-Image IN ("*\\net.exe", "*\\net1.exe") OR OriginalFileName IN ("net.exe", "net1.exe") CommandLine IN ("* group*", "* localgroup*", "* user*", "* view*", "* share*", "* accounts*", "* stop *", "* start*")
-Image="*\\nimgrab.exe" OR Hashes IN ("*MD5=2DD44C3C29D667F5C0EF5F9D7C7FFB8B*", "*SHA256=F266609E91985F0FE3E31C5E8FAEEEC4FFA5E0322D8B6F15FE69F4C5165B9559*", "*IMPHASH=C07FDDD21D123EA9B3A08EEF44AAAC45*") OR md5="2DD44C3C29D667F5C0EF5F9D7C7FFB8B" OR sha256="F266609E91985F0FE3E31C5E8FAEEEC4FFA5E0322D8B6F15FE69F4C5165B9559" OR imphash="C07FDDD21D123EA9B3A08EEF44AAAC45"
+Image IN ("*\\net.exe", "*\\net1.exe") CommandLine IN ("* group*", "* localgroup*", "* user*", "* view*", "* share*", "* accounts*", "* stop *", "* start*")
 (ParentImage="*\\explorer.exe" CommandLine="*C:\\Windows\\Temp\\meg.exe*") OR (OriginalFileName="meg.exe" NOT Image="*\\meg.exe")
 OriginalFileName IN ("Cmd.Exe", "CONHOST.EXE", "PowerShell.EXE", "pwsh.dll", "powershell_ise.EXE", "psexec.exe", "psexec.c", "cscript.exe", "wscript.exe", "MSHTA.EXE", "REGSVR32.EXE", "wmic.exe", "CertUtil.exe", "RUNDLL32.EXE", "CMSTP.EXE", "msiexec.exe", "7z.exe", "WinRAR.exe", "wevtutil.exe", "net.exe", "net1.exe", "netsh.exe") NOT (Image IN ("*\\cmd.exe", "*\\conhost.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\powershell_ise.exe", "*\\psexec.exe", "*\\psexec64.exe", "*\\cscript.exe", "*\\wscript.exe", "*\\mshta.exe", "*\\regsvr32.exe", "*\\WMIC.exe", "*\\certutil.exe", "*\\rundll32.exe", "*\\cmstp.exe", "*\\msiexec.exe", "*\\7z.exe", "*\\WinRAR.exe", "*\\wevtutil.exe", "*\\net.exe", "*\\net1.exe", "*\\netsh.exe"))
 Image="*\\bcdedit.exe" CommandLine IN ("*delete*", "*deletevalue*", "*import*", "*safeboot*", "*network*")

@@ -24,23 +24,14 @@ Current functionality includes:
 
 #### Generate SSL keys
 
-* Obtain the server SSL key / certificate pair. I use Let's Encrypt with the registered domain for that.
+Obtain the server SSL key / certificate pair. I use Let's Encrypt with the registered domain for that.
 
 ```
 sudo snap install certbot --classic
 sudo certbot certonly --register-unsafely-without-email --agree-tos -d mydomain.com
 ```
 
-For testing purposes, it is possible to use own generated certificate. To generate the self-signed pair:
-
-```
-cd PockerSIEM/services/nginx/certs
-openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-```
-
-#### Setup server with Docker
-
-* Ensure SSL keys and certificates are in services/nginx/certs folder. If certs were generated with certbot, just run the following commands providing your domain name:
+Copy generated SSL keys and certificates in services/nginx/certs folder. Run the following commands providing your domain name:
 
 ```
 export MYDOMAIN=mydomain.com
@@ -48,7 +39,16 @@ sudo cp /etc/letsencrypt/live/$MYDOMAIN/privkey.pem services/nginx/certs/key.pem
 sudo cp /etc/letsencrypt/live/$MYDOMAIN/fullchain.pem services/nginx/certs/cert.pem
 ```
 
-* Run docker-compose:
+For testing purposes, it is possible to use own generated certificate. To generate the self-signed pair:
+
+```
+cd services/nginx/certs
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+
+#### Setup server with Docker
+
+* Run docker-compose from the PocketSIEM folder:
 
 ```
 sudo docker-compose up -d
