@@ -162,7 +162,7 @@ Image="*\\reg.exe" CommandLine IN ("*SOFTWARE\\Microsoft\\Windows Defender\\Excl
 CommandLine="*eprod.ldf" OR CommandLine IN ("*\\ldifde.exe -f -n *", "*\\7za.exe a 1.7z *", "*\\aaaa\\procdump64.exe*", "*\\aaaa\\netsess.exe*", "*\\aaaa\\7za.exe*", "*copy .\\1.7z \\*", "*copy \\client\\c$\\aaaa\\*") OR Image="C:\\Users\\Public\\7za.exe"
 Image="*\\psexec.exe" CommandLine="*accepteula*"
 (Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*time*") OR (Image="*\\w32tm.exe" CommandLine="*tz*")
-(CommandLine="* del *" CommandLine="*/f*") OR (CommandLine="*rmdir*" CommandLine="*/s*" CommandLine="*/q*")
+(CommandLine="* del *" CommandLine="*/f*") OR (CommandLine="*rmdir*" CommandLine="*/s*" CommandLine="*/q*") NOT (CommandLine="*Microsoft\\Office\\Office*")
 Image IN ("*\\rutserv.exe", "*\\rfusclient.exe") OR Product="Remote Utilities" NOT (Image IN ("C:\\Program Files\\Remote Utilities*", "C:\\Program Files (x86)\\Remote Utilities*"))
 Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*user*" CommandLine="*add*" CommandLine="*expires:never*"
 Image IN ("*\\7z.exe", "*\\7zr.exe", "*\\7za.exe") OR Description="*7-Zip*" CommandLine="*.dmp*"
@@ -801,7 +801,7 @@ Image="*\\findstr.exe" CommandLine="*cpassword*" CommandLine="*\\sysvol\\*" Comm
 CommandLine IN ("* --remote-debugging-address=*", "* --remote-debugging-port=*") OR (Image="*\\firefox.exe" CommandLine="* -start-debugger-server *")
 ParentImage="*\\svchost.exe" Image="*\\mshta.exe"
 Image="*\\reg.exe" OR OriginalFileName="reg.exe" CommandLine="*\\SOFTWARE\\Policies\\Microsoft\\Windows\\System*" CommandLine IN ("*GroupPolicyRefreshTimeDC*", "*GroupPolicyRefreshTimeOffsetDC*", "*GroupPolicyRefreshTime*", "*GroupPolicyRefreshTimeOffset*", "*EnableSmartScreen*", "*ShellSmartScreenLevel*")
-Image="*\\schtasks.exe" OR OriginalFileName="schtasks.exe" CommandLine IN ("* ONLOGON *", "* ONSTART *", "* ONCE *", "* ONIDLE *") NOT (CommandLine IN ("*NT AUT*", "* SYSTEM*", "*HIGHEST*"))
+Image="*\\schtasks.exe" CommandLine IN ("* ONLOGON *", "* ONSTART *", "* ONCE *", "* ONIDLE *") NOT (CommandLine IN ("*NT AUT*", "* SYSTEM*", "*HIGHEST*"))
 Image="*\\presentationhost.exe" OR OriginalFileName="PresentationHost.exe" CommandLine="*.xbap*" NOT (CommandLine IN ("*C:\\Windows\\*", "*C:\\Program Files*"))
 regex CommandLine=".*cmd.{0,5}(?:\\/c|\\/r).+powershell.+(?:\\$\\{?input\\}?|noexit).+\\\""
 Image IN ("*\\Users\\Public\\*", "*\\$Recycle.bin*", "*\\Users\\All Users\\*", "*\\Users\\Default\\*", "*\\Users\\Contacts\\*", "*\\Users\\Searches\\*", "*C:\\Perflogs\\*", "*\\config\\systemprofile\\*", "*\\Windows\\Fonts\\*", "*\\Windows\\IME\\*", "*\\Windows\\addins\\*") ParentImage IN ("*\\services.exe", "*\\svchost.exe")
