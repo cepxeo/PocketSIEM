@@ -122,7 +122,6 @@ Image="*\\hh.exe" CommandLine="* http*"
 ParentImage="*\\vmtoolsd.exe" Image IN ("*\\cmd.exe", "*\\powershell.exe", "*\\pwsh.exe", "*\\rundll32.exe", "*\\regsvr32.exe", "*\\wscript.exe", "*\\cscript.exe") NOT (CommandLine IN ("*\\VMware\\VMware Tools\\poweron-vm-default.bat*", "*\\VMware\\VMware Tools\\poweroff-vm-default.bat*", "*\\VMware\\VMware Tools\\resume-vm-default.bat*", "*\\VMware\\VMware Tools\\suspend-vm-default.bat*"))
 Image="*\\schtasks.exe" CommandLine="* /create *" CommandLine="* /sc once *" CommandLine="*\\Temp\\*"
 Image="*\\rundll32.exe" CommandLine="*pcwutl*" CommandLine="*LaunchApplication*"
-ParentImage IN ("*\\pcalua.exe", "*\\forfiles.exe")
 Image="*\\dctask64.exe" NOT CommandLine="*DesktopCentral_Agent\\agent*"
 OriginalFileName="psloglist.exe" OR Image IN ("*\\psloglist.exe", "*\\psloglist64.exe") OR (CommandLine="*security*" CommandLine="*accepteula*" CommandLine IN ("* -d*", "* /d*", "* -x*", "* /x*", "* -s*", "* /s*"))
 Image="*\\rundll32.exe" CommandLine="*InstallScreenSaver*"
@@ -162,7 +161,6 @@ Image="*\\reg.exe" CommandLine IN ("*SOFTWARE\\Microsoft\\Windows Defender\\Excl
 CommandLine="*eprod.ldf" OR CommandLine IN ("*\\ldifde.exe -f -n *", "*\\7za.exe a 1.7z *", "*\\aaaa\\procdump64.exe*", "*\\aaaa\\netsess.exe*", "*\\aaaa\\7za.exe*", "*copy .\\1.7z \\*", "*copy \\client\\c$\\aaaa\\*") OR Image="C:\\Users\\Public\\7za.exe"
 Image="*\\psexec.exe" CommandLine="*accepteula*"
 (Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*time*") OR (Image="*\\w32tm.exe" CommandLine="*tz*")
-(CommandLine="* del *" CommandLine="*/f*") OR (CommandLine="*rmdir*" CommandLine="*/s*" CommandLine="*/q*") NOT (CommandLine="*Microsoft\\Office\\Office*")
 Image IN ("*\\rutserv.exe", "*\\rfusclient.exe") OR Product="Remote Utilities" NOT (Image IN ("C:\\Program Files\\Remote Utilities*", "C:\\Program Files (x86)\\Remote Utilities*"))
 Image IN ("*\\net.exe", "*\\net1.exe") CommandLine="*user*" CommandLine="*add*" CommandLine="*expires:never*"
 Image IN ("*\\7z.exe", "*\\7zr.exe", "*\\7za.exe") OR Description="*7-Zip*" CommandLine="*.dmp*"
@@ -211,7 +209,7 @@ Image="*\\at.exe" CommandLine="*interactive*"
 Image="*\\taskkill.exe" OR OriginalFileName="taskkill.exe" CommandLine="* /f*" CommandLine="* /im *"
 Image="*\\schtasks.exe" CommandLine="*/Create *" (CommandLine IN ("*/sc minute *", "*/ru system *") CommandLine IN ("*cmd.exe /c *", "*cmd /c*")) OR CommandLine IN ("* bypass *", "*.DownloadString*", "*.DownloadFile*", "*FromBase64String*", "* IEX*", "* -enc *", "* -decode *", "*/c start /min *", "* curl *") OR (CommandLine="*/xml C:\\Users\\*" CommandLine="*\\AppData\\Local\\*") OR (CommandLine="*wscript.exe*" CommandLine="*\\AppData\\*")
 CommandLine="* /c *" CommandLine="*.dmp*" CommandLine="*copy *" CommandLine="* \\\\*"
-Image IN ("*\\net.exe", "*\\net1.exe") OR OriginalFileName IN ("net.exe", "net1.exe") (CommandLine IN ("* group *", "* localgroup *") CommandLine IN ("*domain admins*", "* administrator*", "* administrateur*", "*enterprise admins*", "*Exchange Trusted Subsystem*", "*Remote Desktop Users*", "*Utilisateurs du Bureau à distance*", "*Usuarios de escritorio remoto*", "* /do*")) OR (CommandLine="* accounts *" CommandLine="* /do*")
+Image IN ("*\\net.exe", "*\\net1.exe") (CommandLine IN ("* group *", "* localgroup *") CommandLine IN ("*domain admins*", "* administrator*", "* administrateur*", "*enterprise admins*", "*Exchange Trusted Subsystem*", "*Remote Desktop Users*", "*Utilisateurs du Bureau à distance*", "*Usuarios de escritorio remoto*", "* /do*")) OR (CommandLine="* accounts *" CommandLine="* /do*")
 Image="*\\OpenWith.exe" CommandLine="*/c*"
 OriginalFileName="finger.exe" OR Image="*\\finger.exe"
 Image="*\\replace.exe" CommandLine IN ("*/a*", "*-a*")
@@ -260,7 +258,6 @@ CommandLine IN ("* -windowstyle hidden'", "* -ep bypass'", "* -noni'")
 (CommandLine="*mshta*" CommandLine="*.zip*") OR (ParentImage="C:\\Windows\\System32\\wbem\\wmiprvse.exe" Image="C:\\Windows\\System32\\mshta.exe") OR (ParentImage="*:\\Users\\Public\\*" Image="C:\\Windows\\System32\\rundll32.exe")
 Image="*\\schtasks.exe" CommandLine="* /Change *" CommandLine="* /TN *" CommandLine IN ("*\\AppData\\Local\\Temp*", "*\\AppData\\Roaming\\*", "*\\Users\\Public\\*", "*\\WINDOWS\\Temp\\*", "*\\Desktop\\*", "*\\Downloads\\*", "*\\Temporary Internet*", "*C:\\ProgramData\\*", "*C:\\Perflogs\\*", "*%ProgramData%*", "*%appdata%*", "*%comspec%*", "*%localappdata%*") CommandLine IN ("*regsvr32*", "*rundll32*", "*cmd /c *", "*cmd /k *", "*cmd.exe /c *", "*cmd.exe /k *", "*powershell*", "*mshta*", "*wscript*", "*cscript*", "*certutil*", "*bitsadmin*", "*bash.exe*", "*bash *", "*scrcons*", "*wmic *", "*wmic.exe*", "*forfiles*", "*scriptrunner*", "*hh.exe*", "*hh *")
 CommandLine="*winget*" CommandLine="*install*" CommandLine IN ("*-m *", "*--manifest*")
-Image="*\\rundll32.exe" OR OriginalFileName="RUNDLL32.EXE" CommandLine="*C:\\windows\\system32\\davclnt.dll,DavSetCookie*"
 Image="*\\CreateMiniDump.exe*" OR Imphash="4a07f944a83e8a7c2525efa35dd30e2f" OR Hashes="*IMPHASH=4a07f944a83e8a7c2525efa35dd30e2f*"
 CommandLine="*tasklist*" OR Image="*\\tasklist.exe" OR OriginalFileName="tasklist.exe"
 CommandLine IN ("*IAAtAGIAeABvAHIAIAAwAHgA*", "*AALQBiAHgAbwByACAAMAB4A*", "*gAC0AYgB4AG8AcgAgADAAeA*", "*AC4ASQBuAHYAbwBrAGUAKAApACAAfAAg*", "*AuAEkAbgB2AG8AawBlACgAKQAgAHwAI*", "*ALgBJAG4AdgBvAGsAZQAoACkAIAB8AC*", "*AHsAMQB9AHsAMAB9ACIAIAAtAGYAI*", "*B7ADEAfQB7ADAAfQAiACAALQBmAC*", "*AewAxAH0AewAwAH0AIgAgAC0AZgAg*", "*AHsAMAB9AHsAMwB9ACIAIAAtAGYAI*", "*B7ADAAfQB7ADMAfQAiACAALQBmAC*", "*AewAwAH0AewAzAH0AIgAgAC0AZgAg*", "*AHsAMgB9AHsAMAB9ACIAIAAtAGYAI*", "*B7ADIAfQB7ADAAfQAiACAALQBmAC*", "*AewAyAH0AewAwAH0AIgAgAC0AZgAg*", "*AHsAMQB9AHsAMAB9ACcAIAAtAGYAI*", "*B7ADEAfQB7ADAAfQAnACAALQBmAC*", "*AewAxAH0AewAwAH0AJwAgAC0AZgAg*", "*AHsAMAB9AHsAMwB9ACcAIAAtAGYAI*", "*B7ADAAfQB7ADMAfQAnACAALQBmAC*", "*AewAwAH0AewAzAH0AJwAgAC0AZgAg*", "*AHsAMgB9AHsAMAB9ACcAIAAtAGYAI*", "*B7ADIAfQB7ADAAfQAnACAALQBmAC*", "*AewAyAH0AewAwAH0AJwAgAC0AZgAg*")

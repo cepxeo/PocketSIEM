@@ -80,7 +80,7 @@ Write-Host "Sending logs to the server ..."
 # Successful Logins
 try { 
 $event = "Login successful"
-Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -max 1000 -ErrorAction Stop | Get-WinEventData `
+Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -max 3000 -ErrorAction Stop | Get-WinEventData `
     | ? { ($_.e_TargetUserName -notmatch '^system.*')}`
     | foreach{$postParams = @{`
         date=$_.TimeCreated;`
@@ -152,7 +152,7 @@ catch {}
 # Event ID 1: Created processes
 try { 
 $event = "Created processes"
-Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -max 1000 -ErrorAction Stop | Get-WinEventData `
+Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -max 3000 -ErrorAction Stop | Get-WinEventData `
     | foreach{$postParams = @{date=$_.TimeCreated;`
         host=$hostname;`
         parent_image=$_.e_ParentImage;`
@@ -171,7 +171,7 @@ catch {}
 # Event ID 3: Network connections
 try { 
 $event = "Network connections"
-Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=3} -max 1000 -ErrorAction Stop | Get-WinEventData `
+Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=3} -max 3000 -ErrorAction Stop | Get-WinEventData `
     | foreach{$postParams = @{date=$_.TimeCreated;`
         host=$hostname;`
         image=$_.e_Image;`

@@ -4,7 +4,7 @@
 - 'net*group'
 - 'net*use*\add'
 - '/domain'
-# 'curl'
+- 'runas*/user'
 - 'nltest'
 - 'qwinsta'
 - 'cacls*Program Files'
@@ -49,9 +49,11 @@
 
 # Service modification
 
-- 'sc*query'
+# 'sc*query'
 - 'sc*stop'
 - 'sc*binpath='
+- 'sc*config*auto'
+- 'sc*sdshow'
 - 'schtasks*/create*/sc'
 - 'WevtUtil*cl*Security'
 
