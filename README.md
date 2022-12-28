@@ -22,33 +22,7 @@ Current functionality includes:
 
 ### Server setup
 
-#### Generate SSL keys
-
-Obtain the server SSL key / certificate pair. I use Let's Encrypt with the registered domain for that.
-
-```
-sudo snap install certbot --classic
-sudo certbot certonly --register-unsafely-without-email --agree-tos -d mydomain.com
-```
-
-Copy generated SSL keys and certificates in services/nginx/certs folder. Run the following commands providing your domain name:
-
-```
-export MYDOMAIN=mydomain.com
-sudo cp /etc/letsencrypt/live/$MYDOMAIN/privkey.pem services/nginx/certs/key.pem
-sudo cp /etc/letsencrypt/live/$MYDOMAIN/fullchain.pem services/nginx/certs/cert.pem
-```
-
-For testing purposes, it is possible to use own generated certificate. To generate the self-signed pair:
-
-```
-cd services/nginx/certs
-openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-```
-
-#### Setup server with Docker
-
-* Run docker-compose from the PocketSIEM folder:
+* Run [docker-compose](https://docs.docker.com/compose/install/other/) from the PocketSIEM folder:
 
 ```
 sudo docker-compose up -d
@@ -69,6 +43,30 @@ cat services/server/pocketsiem.log | grep password
 * Amend the `$url` to your API server IP / Address in Client\collector.ps1
 * Fill in the generated JWT value.
 * Create scheduled task to periodically run Client\collector.ps1. Tick "Run with highest privileges" within the created task.
+
+### (Optional) Generate server SSL keys
+
+Although the server will work with embedded SSL keys one may want to generate own pair. One way of doing that is to use Let's Encrypt with the registered domain for that.
+
+```
+sudo snap install certbot --classic
+sudo certbot certonly --register-unsafely-without-email --agree-tos -d mydomain.com
+```
+
+Copy generated SSL keys and certificates in services/nginx/certs folder. Run the following commands providing your domain name:
+
+```
+export MYDOMAIN=mydomain.com
+sudo cp /etc/letsencrypt/live/$MYDOMAIN/privkey.pem services/nginx/certs/key.pem
+sudo cp /etc/letsencrypt/live/$MYDOMAIN/fullchain.pem services/nginx/certs/cert.pem
+```
+
+For testing purposes, it is possible to use own generated certificate. To generate the self-signed pair:
+
+```
+cd services/nginx/certs
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
 
 ### Tweaking alerts:
 

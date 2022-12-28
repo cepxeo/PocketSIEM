@@ -558,7 +558,7 @@ CommandLine IN ("*Invoke-WebRequest*", "*iwr *", "*wget *", "*curl *", "*Downloa
 CommandLine="*COMPlus_ETWEnabled=0*"
 Image IN ("*rundll32.exe*", "*cmd.exe*") CommandLine IN ("*gthread-3.6.dll*", "*\\Windows\\Temp\\tmp.bat*", "*sigcmm-2.4.dll*")
 Image="*\\SharpLdapWhoami.exe" OR OriginalFileName="*SharpLdapWhoami*" OR Product="SharpLdapWhoami" OR CommandLine IN ("* /method:ntlm", "* /method:kerb", "* /method:nego", "* /m:nego", "* /m:ntlm", "* /m:kerb")
-Image="*\\nltest.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*", "*/user*")
+Image="*\\nltest.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*")
 (Image IN ("*\\powershell.exe", "*\\pwsh.exe", "*\\cmd.exe") CommandLine IN ("*Invoke-WebRequest*", "*iwr *", "*wget *", "*curl *") CommandLine="* -ur*" CommandLine="* -me*" CommandLine="* -b*" CommandLine="* POST *") OR (Image="*\\curl.exe" CommandLine="*--ur*" CommandLine IN ("* -d *", "* --data *")) CommandLine IN ("*ToBase64String*", "*whoami*", "*nltest*", "*ifconfig*", "*hostname*", "*net view*", "*qprocess*", "*netstat*", "*systeminfo*", "*tasklist*", "*sc query*") OR (CommandLine="*type *" CommandLine="* > *" CommandLine="* C:\\*")
 CommandLine="*Microsoft.NodejsTools.PressAnyKey.exe normal *" OR (CommandLine="*.exe normal *" CommandLine="*.exe") NOT Image="*\\Microsoft\\NodeJsTools\\NodeJsTools*"
 OriginalFileName="wmic.exe" OR Image="*\\WMIC.exe" CommandLine="* qfe *" CommandLine="* get *" CommandLine="*Caption,Description,HotFixID,InstalledOn*"

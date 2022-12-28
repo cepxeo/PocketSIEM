@@ -46,6 +46,9 @@
 - 'ExclusionPath'
 - 'Automation.AmsiUtils'
 - 'rename-item*path'
+- 'ForEach'
+- 'Xor'
+- 'TCPClient('
 
 # Service modification
 
