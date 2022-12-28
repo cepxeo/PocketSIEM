@@ -22,27 +22,32 @@ Current functionality includes:
 
 ### Server setup
 
-* Run [docker-compose](https://docs.docker.com/compose/install/other/) from the PocketSIEM folder:
+* Ensure you have [Docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/other/) installed.
+* Run from the PocketSIEM folder:
 
 ```
 sudo docker-compose up -d
 ```
 
-* View the log to get the admin password:
+* View the log to get the `admin` password:
 
 ```
 cat services/server/pocketsiem.log | grep password
 ```
 
-* Login with admin and obtain JWT by visiting `/token`
+* Login to the website with `admin` user and obtain client JWT by visiting `/token`
 
 ### Client setup:
 
 * Download [Sysmon](https://download.sysinternals.com/files/Sysmon.zip)
 * Install `Sysmon64.exe -i Client\sysmonconfig.xml`
-* Amend the `$url` to your API server IP / Address in Client\collector.ps1
+* Amend the `$url` to your API server IP / Address in `Client\collector.ps1`
 * Fill in the generated JWT value.
-* Create scheduled task to periodically run Client\collector.ps1. Tick "Run with highest privileges" within the created task.
+* Create scheduled task to periodically run `Client\collector.ps1`. Tick "Run with highest privileges" in the created task. From command line might be quicker, don't forget to start cmd as administrator:
+
+```
+SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Path\Client\collector.ps1" /RL HIGHEST
+```
 
 ### (Optional) Generate server SSL keys
 
@@ -53,7 +58,7 @@ sudo snap install certbot --classic
 sudo certbot certonly --register-unsafely-without-email --agree-tos -d mydomain.com
 ```
 
-Copy generated SSL keys and certificates in services/nginx/certs folder. Run the following commands providing your domain name:
+Copy generated SSL keys and certificates in `services/nginx/certs` folder. Run the following commands providing your domain name:
 
 ```
 export MYDOMAIN=mydomain.com
