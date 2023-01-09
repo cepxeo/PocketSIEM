@@ -1,7 +1,6 @@
 TargetFilename="*\\AppData\\Roaming\\Microsoft\\Word\\STARTUP\\*" NOT (TargetFilename IN ("*.docx", "*.docm", "*.dotx", "*.dotm", "*.docb", "*.pdf", "*.wll", "*.wwl"))
 TargetFilename="C:\\Windows\\System32\\wpbbin.exe"
 TargetFilename="*\\AppData\\Local\\Microsoft\\CLR*" TargetFilename="*\\UsageLogs\\*" TargetFilename IN ("*mshta*", "*cscript*", "*wscript*", "*regsvr32*", "*wmic*", "*rundll32*", "*svchost*")
-TargetFilename="*.cmdline"
 TargetFilename IN ("*C:\\Windows\\system32\\physmem.sys*", "*C:\\Windows\\System32\\IME\\IMEJP\\imjpueact.dll*", "*C:\\Windows\\system32\\ime\\IMETC\\IMTCPROT.DLL*", "*C:\\Windows\\system32\\ime\\SHARED\\imecpmeid.dll*", "*C:\\Windows\\system32\\config\\spp\\ServiceState\\Recovery\\pac.dat*", "*C:\\Windows\\system32\\config\\cy-GB\\Setup\\SKB\\InputMethod\\TupTask.dat*", "*C:\\Windows\\system32\\config\\config\\startwus.dat*", "*C:\\Windows\\system32\\ime\\SHARED\\WimBootConfigurations.ini*", "*C:\\Windows\\system32\\ime\\IMEJP\\WimBootConfigurations.ini*", "*C:\\Windows\\system32\\ime\\IMETC\\WimBootConfigurations.ini*")
 TargetFilename="C:\\Windows\\System32\\spool\\drivers\\color\\*" TargetFilename IN ("*.dll", "*.exe", "*.sys")
 TargetFilename IN ("*\\lsass.dmp", "*\\lsass.zip", "*\\lsass.rar", "*\\Temp\\dumpert.dmp", "*\\Andrew.dmp", "*\\Coredump.dmp") OR TargetFilename IN ("*\\lsass_2*", "*\\lsassdump*", "*\\lsassdmp*") OR (TargetFilename="*\\lsass*" TargetFilename="*.dmp*") OR (TargetFilename="*SQLDmpr*" TargetFilename="*.mdmp") OR (TargetFilename="nanodump*" TargetFilename="*.dmp")

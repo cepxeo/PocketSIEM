@@ -19,8 +19,15 @@
 - 'netsh*firewall'
 - 'ADMIN$'
 - 'copy*C$'
+- 'copy*C:\Program'
+- 'move*C:\Program'
 - 'ping*0:0'
 - 'ping*0x'
+# accesschk:
+- '-uws "'
+# Privesc over writable SYSTEM Path
+- 'WptsExtensions.dll'
+- 'wlanapi.dll'
 
 # Powershell
 # https://threathunterplaybook.com/
@@ -49,6 +56,9 @@
 - 'ForEach'
 - 'Xor'
 - 'TCPClient('
+- 'GzipStream'
+- 'FromBase64String'
+- 'Get-NetIPAddress'
 
 # Service modification
 
@@ -57,7 +67,7 @@
 - 'sc*binpath='
 - 'sc*config*auto'
 - 'sc*sdshow'
-- 'schtasks*/create*/sc'
+- 'schtasks*create*sc'
 - 'WevtUtil*cl*Security'
 
 # LoL bins 

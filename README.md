@@ -22,7 +22,7 @@ Current functionality includes:
 
 ### Server setup
 
-* Ensure you have [Docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/other/) installed.
+* Ensure you have [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/other/) installed.
 * Run from the PocketSIEM folder:
 
 ```

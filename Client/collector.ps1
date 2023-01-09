@@ -99,10 +99,10 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4625} -ErrorAction Stop | 
     | foreach{$postParams = @{`
         date=$_.TimeCreated;`
         host=$hostname;`
-        event=$event;`
-        image=$_.e_TargetUserName;`
-        details=$_.e_LogonType};`
-        Invoke-WebRequest -Uri $url/events -Method POST -Body $postParams -Headers $Headers} | Out-Null;` 
+        osuser=$_.e_TargetUserName;`
+        logon_type=$_.e_LogonType;`
+        process_name=$event};`
+        Invoke-WebRequest -Uri $url/logins -Method POST -Body $postParams -Headers $Headers} | Out-Null;` 
         Write-Host $event "events sent"
     }
 catch {}
