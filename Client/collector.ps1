@@ -431,7 +431,7 @@ catch {}
 # Event ID 25: ProcessTampering (Process image change) TODO
 try { 
     $event = "Process Tampering"
-    Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=25} -ErrorAction Stop -ErrorAction Stop | Get-WinEventData `
+    Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=25} -ErrorAction Stop | Get-WinEventData `
     | foreach {
         $data.events += @{
             date=$_.TimeCreated
@@ -444,7 +444,7 @@ try {
     Write-Host $event "events parsed"
     }
 catch {}
-
+try {
 Write-Host "Sending parsed events ..."
 Invoke-RestMethod -Uri $url/winlog -Method POST -Body ($data | ConvertTo-Json) -Headers $Headers -ContentType "application/json"
 Write-Host "Events successfully sent"
@@ -452,7 +452,8 @@ Write-Host "Events successfully sent"
 # Cleaning the logs locally to prevent duplication on upload
 WevtUtil cl "Microsoft-Windows-Sysmon/Operational"
 WevtUtil cl "Security"
-
+    }
+catch {}
 # To list properties: Get-WinEventData | Format-List -Property *
 # Select -Property TimeCreated, e_Image, e_DestinationIP, e_DestinationPort
 # Get-WinEvent -FilterHashtable @{LogName='Security'; StartTime="2022-10-30 05:10:20"; EndTime="2022-11-10 16:00:00"}
