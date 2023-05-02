@@ -36,3 +36,11 @@ def insert_win_logs():
     win_logs = WinLog.parse_obj(request.get_json())
     win_logs.save_log()
     return ""
+
+# Logins logs
+@api.route('/sshlogin', methods=['POST'])
+@token_required
+def insert_login_logs():
+    sshlogin = SSHLoginLog.parse_obj(request.form)
+    sshlogin.save_log()
+    return ""

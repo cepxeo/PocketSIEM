@@ -179,9 +179,8 @@ Image="*\\te.exe" OR ParentImage="*\\te.exe" OR OriginalFileName="\\te.exe"
 Image="*\\cmdl32.exe" OR OriginalFileName="CMDL32.EXE" CommandLine="*/vpn *" CommandLine="*/lan *"
 Image="*\\link.exe" CommandLine="*LINK /*" NOT (ParentImage IN ("C:\\Program Files\\Microsoft Visual Studio\\*", "C:\\Program Files (x86)\\Microsoft Visual Studio\\*") ParentImage="*\\VC\\Tools\\MSVC\\*")
 Image="*\\certutil.exe" OR OriginalFileName="CertUtil.exe" CommandLine="* -syncwithWU *" CommandLine="* \\\\*"
-Hashes="*6834B1B94E49701D77CCB3C0895E1AFD*" NOT Image="*\\dctask64.exe"
 (Image="*\\rundll32.exe" CommandLine="*,dll_u") OR CommandLine="* -export dll_u *"
-Image="*\\curl.exe" OR Product="The curl executable" CommandLine IN ("* -F *", "* --form*", "* -T *", "* --upload-file *", "* -d *", "* --data *", "* --data-*")
+Image="*\\curl.exe"
 (ParentImage IN ("*\\WmiPrvSE.exe", "*\\svchost.exe", "*\\dllhost.exe") Image IN ("*\\wab.exe", "*\\wabmig.exe")) OR ParentImage IN ("*\\wab.exe", "*\\wabmig.exe")
 Image="*\\control.exe" ParentImage IN ("*\\winword.exe", "*\\powerpnt.exe", "*\\excel.exe") NOT (CommandLine IN ("*\\control.exe input.dll", "*\\control.exe\" input.dll"))
 (Image="C:\\Program Files\\Windows Media Player\\osk.exe" IntegrityLevel IN ("High", "System")) OR (Image="C:\\Windows\\System32\\cmd.exe" ParentCommandLine="\"C:\\Windows\\system32\\mmc.exe\" \"C:\\Windows\\system32\\eventvwr.msc\" /s" IntegrityLevel IN ("High", "System"))
