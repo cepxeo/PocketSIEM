@@ -1,76 +1,93 @@
 from pydantic import BaseModel
 from database.models import db, Login, Process, File, Event
 from detect import tasks
+import re
+from datetime import datetime
 
 class WinLog(BaseModel):
-    date: str
-    host: str
-
-class SysmonLog(WinLog):
-    image: str
-
-class WinLoginLog(WinLog):
-    osuser: str
-    logon_type: str
-    process_name: str
+    logins: list
+    processes: list
+    nets: list
+    files: list
+    events: list
 
     def save_log(self) -> None:
-        login = Login(date=self.date, host=self.host, image=self.osuser, field4=self.logon_type, field5=self.process_name)
-        db.session.add(login)
-        db.session.commit()
+        if self.logins:
+            for login in self.logins:
+                epoch_time = re.search(r"\((.*)\)", login["date"]).group(1)[:10]
+                converted_time = datetime.fromtimestamp(int(epoch_time))
+                save_login = Login(date=converted_time, host=login["host"], image=login["osuser"], field4=login["logon_type"], field5=login["process_name"])
+                db.session.add(save_login)
+                db.session.commit()
+        if self.processes:
+            for process in self.processes:
+                epoch_time = re.search(r"\((.*)\)", process["date"]).group(1)[:10]
+                converted_time = datetime.fromtimestamp(int(epoch_time))
 
-class SysmonProcessLog(SysmonLog):
-    company: str
-    command_line: str
-    parent_image: str
-    parent_command_line: str
-    description: str
-    product: str
-    original_file_name: str
-    process_user: str
+                date=converted_time
+                host=process["host"]
+                image=process["image"]
+                command_line=process["command_line"]
+                parent_image=process["parent_image"]
+                parent_command_line=process["parent_command_line"]
+                description=process["description"]
+                original_file_name=process["original_file_name"]
+                process_user=process["process_user"]
+                company=process["company"]
 
-    def check_log(self) -> None:
-        tasks.check_log.delay(self.date, self.host, self.image, self.command_line)
-        tasks.check_process.delay(self.date, self.host, self.image, self.command_line, self.parent_image, 
-            self.parent_command_line, self.description, self.product, self.original_file_name, self.process_user)
-        
-    def save_log(self) -> None:
-        process = Process(date=self.date, host=self.host, image=self.image, field4=self.company, field5=self.command_line,
-            parent_image=self.parent_image, parent_command_line=self.parent_command_line, description=self.description,
-            product=self.product, original_file_name=self.original_file_name, process_user=self.process_user)
-        db.session.add(process)
-        db.session.commit()
-        
-class SysmonFileLog(SysmonLog):
-    filename: str
-    osuser: str
+                tasks.check_log.delay(date, host, image, command_line)
+                tasks.check_process.delay(date, host, image, command_line, parent_image, 
+                    parent_command_line, description, original_file_name, process_user)
+                
+                process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
+                    parent_image=parent_image, parent_command_line=parent_command_line, description=description, 
+                    original_file_name=original_file_name, process_user=process_user)
+                db.session.add(process_save)
+                db.session.commit()
+        if self.nets:
+            for net in self.nets:
+                epoch_time = re.search(r"\((.*)\)", net["date"]).group(1)[:10]
+                converted_time = datetime.fromtimestamp(int(epoch_time))
 
-    def check_log(self) -> None:
-        tasks.check_log.delay(self.date, self.host, self.image, self.filename)
-        tasks.check_files.delay(self.date, self.host, self.image, self.filename, self.osuser)
+                date=converted_time
+                host=net["host"]
+                image=net["image"]
+                dest_ip=net["dest_ip"]
+                dest_port=net["dest_port"]
 
-    def save_log(self) -> None:
-        file = File(date=self.date, host=self.host, image=self.image, field4=self.filename, field5=self.osuser)
-        db.session.add(file)
-        db.session.commit()
+                tasks.check_network.delay(date, host, image, dest_ip, dest_port)
+                tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
+        if self.files:
+            for file in self.files:
+                epoch_time = re.search(r"\((.*)\)", file["date"]).group(1)[:10]
+                converted_time = datetime.fromtimestamp(int(epoch_time))
 
-class SysmonNetLog(SysmonLog):
-    dest_ip: str
-    dest_port: str
+                date=converted_time
+                host=file["host"]
+                image=file["image"]
+                filename=file["filename"]
+                osuser=file["osuser"]
 
-    def check_log(self) -> None:
-        tasks.check_network.delay(self.date, self.host, self.image, self.dest_ip, self.dest_port)
-        tasks.check_whois.delay(self.date, self.host, self.image, self.dest_ip, self.dest_port)
+                tasks.check_log.delay(date, host, image, filename)
+                tasks.check_files.delay(date, host, image, filename, osuser)
 
-class SysmonEventLog(SysmonLog):
-    event: str
-    details: str
+                file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
+                db.session.add(file_save)
+                db.session.commit()
+        if self.events:
+            for event in self.events:
+                epoch_time = re.search(r"\((.*)\)", event["date"]).group(1)[:10]
+                converted_time = datetime.fromtimestamp(int(epoch_time))
 
-    def check_log(self) -> None:
-        tasks.check_log.delay(self.date, self.host, self.image, self.details)
-        tasks.check_registry.delay(self.date, self.host, self.image, self.details)
+                date=converted_time
+                host=event["host"]
+                image=event["image"]
+                event_value=event["event"]
+                details=event["details"]
 
-    def save_log(self) -> None:
-        event = Event(date=self.date, host=self.host, image=self.image, field4=self.event, field5=self.details)
-        db.session.add(event)
-        db.session.commit()
+                tasks.check_log.delay(date, host, image, details)
+                tasks.check_registry.delay(date, host, image, details)
+
+                event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
+                db.session.add(event_save)
+                db.session.commit()

@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, request, abort
 from functools import wraps
 import jwt
 
-from api.winlog import WinLoginLog, SysmonProcessLog, SysmonFileLog, SysmonNetLog, SysmonEventLog
+from api.winlog import WinLog
 from database.models import User
 
 api = Blueprint('api', __name__)
@@ -29,45 +29,10 @@ def token_required(f):
 def healthcheck():
     return ""
 
-# Logins logs
-@api.route('/logins', methods=['POST'])
+# Windows logs
+@api.route('/winlog', methods=['POST'])
 @token_required
-def insert_login_logs():
-    login = WinLoginLog.parse_obj(request.form)
-    login.save_log()
-    return ""
-
-# Process creation logs
-@api.route('/processes', methods=['POST'])
-@token_required
-def insert_process_logs():
-    process = SysmonProcessLog.parse_obj(request.form)
-    process.check_log()
-    process.save_log()
-    return ""
-
-# Files
-@api.route('/files', methods=['POST'])
-@token_required
-def insert_files_logs():
-    file = SysmonFileLog.parse_obj(request.form)
-    file.check_log()
-    file.save_log()
-    return ""
-
-# Network logs
-@api.route('/net', methods=['POST'])
-@token_required
-def insert_net_logs():
-    net = SysmonNetLog.parse_obj(request.form)
-    net.check_log()
-    return ""
-
-# Events
-@api.route('/events', methods=['POST'])
-@token_required
-def insert_events_logs():
-    event = SysmonEventLog.parse_obj(request.form)
-    event.check_log()
-    event.save_log()
+def insert_win_logs():
+    win_logs = WinLog.parse_obj(request.get_json())
+    win_logs.save_log()
     return ""

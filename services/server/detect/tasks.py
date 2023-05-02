@@ -107,9 +107,9 @@ def _run_check(rules_dict, field_names, date, host, image, details) -> None:
             break
 
 @shared_task
-def check_process(date, host, image, command_line, parent_image, parent_command_line, description, product, original_file_name, process_user) -> None:
+def check_process(date, host, image, command_line, parent_image, parent_command_line, description, original_file_name, process_user) -> None:
     field_names = {'ParentCommandLine':parent_command_line, 'ParentImage':parent_image, 'Image':image, 'CommandLine':command_line, 
-        'OriginalFileName':original_file_name,'Description':description,'Product':product,'User':process_user}
+        'OriginalFileName':original_file_name,'Description':description,'User':process_user}
     _run_check(proc_creation_patterns, field_names, date, host, image, command_line)
 
 @shared_task
