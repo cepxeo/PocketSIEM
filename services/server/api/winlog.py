@@ -30,17 +30,16 @@ class WinLog(BaseModel):
                 command_line=process["command_line"]
                 parent_image=process["parent_image"]
                 parent_command_line=process["parent_command_line"]
-                description=process["description"]
                 original_file_name=process["original_file_name"]
                 process_user=process["process_user"]
                 company=process["company"]
 
                 tasks.check_log.delay(date, host, image, command_line)
                 tasks.check_process.delay(date, host, image, command_line, parent_image, 
-                    parent_command_line, description, original_file_name, process_user)
+                    parent_command_line, original_file_name, process_user)
                 
                 process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
-                    parent_image=parent_image, parent_command_line=parent_command_line, description=description, 
+                    parent_image=parent_image, parent_command_line=parent_command_line, 
                     original_file_name=original_file_name, process_user=process_user)
                 db.session.add(process_save)
                 db.session.commit()
