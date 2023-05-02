@@ -1,11 +1,12 @@
-## Windows security events monitoring and alerting
+## Windows and Linux security events monitoring and alerting
 
  The SIEM (security information and event management) implementation for research / CTF usage as an alternative to a full blown ELK / winlogbeat etc setups. The main purpose of the tool is to evaluate the optimal logs volume and malicious patterns sufficient to detect common TTPs, which is often the problem of full size SIEM.
 
 Current functionality includes:
 
 * Powershell agent parses logon attempts and Sysmon events (check Client/collector.ps1 for details).
-* Sends logs to the API over HTTPS with JWT authentication.
+* Python agent parses SSH logon attempts on Linux
+* Agents send logs to the API over HTTPS with JWT authentication.
 * Nice web application to work with received logs, grouped by the event type with the host filtering and appropriate date range.
 * User sign up and log in possible to view the logs.
 
@@ -37,7 +38,7 @@ cat services/server/pocketsiem.log | grep password
 
 * Login to the website with `admin` user and obtain client JWT by visiting `/token`
 
-### Client setup:
+### Windows client setup:
 
 * Download [Sysmon](https://download.sysinternals.com/files/Sysmon.zip)
 * Install `Sysmon64.exe -i Client\sysmonconfig.xml`
@@ -47,6 +48,15 @@ cat services/server/pocketsiem.log | grep password
 
 ```
 SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Path\Client\collector.ps1" /RL HIGHEST
+```
+
+### Linux client setup:
+
+* Add the server url and token to Client\ssh_logins_psiem.py
+* Add the following cron job for sudo user:
+
+```
+python3 /your_path/ssh_logins_psiem.py all all off
 ```
 
 ### (Optional) Generate server SSL keys

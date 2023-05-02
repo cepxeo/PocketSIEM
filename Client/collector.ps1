@@ -88,7 +88,7 @@ $data = [pscustomobject]@{
 try { 
 $event = "Login successful"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -ErrorAction Stop | Get-WinEventData `
-    | ? { ($_.e_TargetUserName -notmatch '^system.*')}`
+    | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne '7')}`
     | foreach {
         $data.logins += @{
             date=$_.TimeCreated
@@ -149,9 +149,8 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4698} -ErrorAction Stop | 
     Write-Host $event "events parsed"
     }
 catch {}
-
 # Sched task deleted
-try { 
+try {
 $event = "Scheduled task deleted"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4699} -ErrorAction Stop | Get-WinEventData `
     | foreach {
@@ -161,6 +160,22 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4699} -ErrorAction Stop | 
             event=$event
             image=$_.e_TaskName
             details=$_.e_SubjectUserName
+        }
+    }
+    Write-Host $event "events parsed"
+    }
+catch {}
+# AD object accessed
+try {
+$event = "AD object accessed"
+Get-WinEvent -FilterHashtable @{Logname='security';id=4662} -ErrorAction Stop | Get-WinEventData `
+    | foreach {
+        $data.events += @{
+            date=$_.TimeCreated
+            host=$hostname
+            event=$event
+            image=$_.e_SubjectDomainName+$_.e_SubjectUserName
+            details=$_.e_ObjectType+$_.e_ObjectName
         }
     }
     Write-Host $event "events parsed"

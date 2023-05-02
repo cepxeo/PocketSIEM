@@ -23,7 +23,7 @@ def usage():
     sys.exit()
 
 def send_log(date, osuser, logon_type, process_name):
-    response = requests.post(HOSTNAME + "/logins", verify=False, data={
+    response = requests.post(HOSTNAME + "/sshlogin", verify=False, data={
         "date": date,
         "host": str(socket.gethostname()),
         "osuser": osuser,

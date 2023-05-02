@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, request, abort
 from functools import wraps
 import jwt
 
-from api.winlog import WinLog
+from api.winlog import WinLog, SSHLoginLog
 from database.models import User
 
 api = Blueprint('api', __name__)
