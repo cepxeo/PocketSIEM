@@ -58,7 +58,8 @@ def sign_up():
         username = request.form['username']
         password = request.form['password']
         error = None
-
+        if not current_app.config['USER_SIGNUP']:
+            error = 'User registration disabled.'
         if not username:
             error = 'Username is required.'
         elif not password:
