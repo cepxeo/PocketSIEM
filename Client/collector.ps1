@@ -83,12 +83,16 @@ $data = [pscustomobject]@{
     files = @()
     events = @()
 }
+if ($Env:LastSysmonRecordId){$PrevSysmonRecordId = $Env:LastSysmonRecordId} else {$PrevSysmonRecordId = 0}
+if ($Env:LastSecurityRecordId){$PrevSecurityRecordId = $Env:LastSecurityRecordId} else {$PrevSecurityRecordId = 0}
+$LastSysmonRecordId = (Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational'} -max 1).RecordId
+$LastSecurityRecordId = (Get-WinEvent -FilterHashtable @{Logname='security'} -max 1).RecordId
 ## Windows Security events
 # Successful Logins
 try { 
 $event = "Login successful"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -ErrorAction Stop | Get-WinEventData `
-    | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne '7')}`
+    | ? { ($_.e_TargetUserName -notmatch '^system.*')}`
     | foreach {
         $data.logins += @{
             date=$_.TimeCreated
@@ -105,7 +109,7 @@ catch {}
 try { 
 $event = "Login failed"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4625} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSecurityRecordId)} | foreach {
         $data.logins += @{
             date=$_.TimeCreated
             host=$hostname
@@ -121,7 +125,7 @@ catch {}
 try { 
 $event = "User Account Created"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4720} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSecurityRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -137,7 +141,7 @@ catch {}
 try { 
 $event = "Scheduled task created"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4698} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSecurityRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -149,33 +153,18 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4698} -ErrorAction Stop | 
     Write-Host $event "events parsed"
     }
 catch {}
+
 # Sched task deleted
-try {
+try { 
 $event = "Scheduled task deleted"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4699} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSecurityRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
             event=$event
             image=$_.e_TaskName
             details=$_.e_SubjectUserName
-        }
-    }
-    Write-Host $event "events parsed"
-    }
-catch {}
-# AD object accessed
-try {
-$event = "AD object accessed"
-Get-WinEvent -FilterHashtable @{Logname='security';id=4662} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
-        $data.events += @{
-            date=$_.TimeCreated
-            host=$hostname
-            event=$event
-            image=$_.e_SubjectDomainName+$_.e_SubjectUserName
-            details=$_.e_ObjectType+$_.e_ObjectName
         }
     }
     Write-Host $event "events parsed"
@@ -185,7 +174,7 @@ catch {}
 try { 
 $event = "Created processes"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.processes += @{
             date=$_.TimeCreated
             host=$hostname
@@ -193,7 +182,6 @@ Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';i
             parent_command_line=$_.e_ParentCommandLine
             image=$_.e_Image
             company=$_.e_Company
-            description=$_.e_Description
             original_file_name=$_.e_OriginalFileName
             process_user=$_.e_User
             command_line=$_.e_CommandLine
@@ -206,7 +194,7 @@ catch {}
 try { 
 $event = "Network connections"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=3} -max 3000 -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.nets += @{
             date=$_.TimeCreated
             host=$hostname
@@ -223,7 +211,7 @@ try {
 $event = "Sysmon state changed"
 $image = ""
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=4} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -239,7 +227,7 @@ catch {}
 try { 
 $event = "Not signed driver loaded"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=6} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -255,7 +243,7 @@ catch {}
 try { 
 $event = "Not signed DLL loaded"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=7} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -271,7 +259,7 @@ catch {}
 try { 
 $event = "Proc Inj CreateRemoteThread"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=8} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -287,7 +275,7 @@ catch {}
 try { 
 $event = "File created"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=11} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.files += @{
             date=$_.TimeCreated
             host=$hostname
@@ -303,7 +291,7 @@ catch {}
 try { 
 $event = "Registry object added or deleted"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=12} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -319,7 +307,7 @@ catch {}
 try { 
 $event = "Registry object modified"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=13} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -335,7 +323,7 @@ catch {}
 try { 
 $event = "File downloaded"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=15} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -351,7 +339,7 @@ catch {}
 try { 
 $event = "Sysmon config changed"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=16} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -367,7 +355,7 @@ catch {}
 try { 
 $event = "Pipe Created"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=17} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -383,7 +371,7 @@ catch {}
 try { 
 $event = "Pipe Connected"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=18} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -399,7 +387,7 @@ catch {}
 try { 
 $event = "WmiEventFilter activity"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=19} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -415,7 +403,7 @@ catch {}
 try { 
 $event = "WmiEventConsumer activity"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=20} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -431,7 +419,7 @@ catch {}
 try { 
 $event = "WmiEventConsumerToFilter activity"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=21} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -447,7 +435,7 @@ catch {}
 try { 
     $event = "Process Tampering"
     Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=25} -ErrorAction Stop | Get-WinEventData `
-    | foreach {
+    | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
         $data.events += @{
             date=$_.TimeCreated
             host=$hostname
@@ -461,12 +449,10 @@ try {
 catch {}
 try {
 Write-Host "Sending parsed events ..."
-Invoke-RestMethod -Uri $url/winlog -Method POST -Body ($data | ConvertTo-Json) -Headers $Headers -ContentType "application/json"
+Invoke-RestMethod -Uri $url/winlog -Method POST -Body ($data | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -ErrorAction Stop
 Write-Host "Events successfully sent"
-
-# Cleaning the logs locally to prevent duplication on upload
-WevtUtil cl "Microsoft-Windows-Sysmon/Operational"
-WevtUtil cl "Security"
+$Env:LastSysmonRecordId = $LastSysmonRecordId
+$Env:LastSecurityRecordId = $LastSecurityRecordId
     }
 catch {}
 # To list properties: Get-WinEventData | Format-List -Property *
