@@ -74,7 +74,6 @@ If ($status.StatusCode -ne 200) {
 }
 
 $hostname = hostname
-Write-Host "Sending logs to the server ..."
 
 $data = [pscustomobject]@{
     logins = @()
@@ -92,7 +91,7 @@ $LastSecurityRecordId = (Get-WinEvent -FilterHashtable @{Logname='security'} -ma
 try { 
 $event = "Login successful"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -ErrorAction Stop | Get-WinEventData `
-    | ? { ($_.e_TargetUserName -notmatch '^system.*')}`
+    | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne '7') -and ($_.RecordId -gt $PrevSecurityRecordId) }`
     | foreach {
         $data.logins += @{
             date=$_.TimeCreated
@@ -138,7 +137,7 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4720} -ErrorAction Stop | 
     }
 catch {}
 # Sched task created
-try { 
+try {
 $event = "Scheduled task created"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4698} -ErrorAction Stop | Get-WinEventData `
     | ? { ($_.RecordId -gt $PrevSecurityRecordId)} | foreach {
@@ -454,7 +453,7 @@ Write-Host "Events successfully sent"
 $Env:LastSysmonRecordId = $LastSysmonRecordId
 $Env:LastSecurityRecordId = $LastSecurityRecordId
     }
-catch {}
+catch {Write-Warning $Error[0]}
 # To list properties: Get-WinEventData | Format-List -Property *
 # Select -Property TimeCreated, e_Image, e_DestinationIP, e_DestinationPort
 # Get-WinEvent -FilterHashtable @{LogName='Security'; StartTime="2022-10-30 05:10:20"; EndTime="2022-11-10 16:00:00"}
