@@ -26,13 +26,12 @@
 # Powershell
 # https://threathunterplaybook.com/
 
-- '-ep*Bypass'
 - '-exec*Bypass'
 - 'Set*ExecutionPolicy'
 - '-EncodedCommand'
 - 'hidden*-e'
 - '-Nop'
-- 'Sys*tem*Net*Web*Cli*ent'
+- 'Sys*tem*Net*Web*Cli*ent%.dll'
 - 'System.Reflection.Assembly'
 - 'I`E`X'
 - 'Import-Module'
@@ -133,7 +132,6 @@
 - 'Infdefaultinstall.exe'
 - 'Installutil.exe'
 - 'Jsc.exe'
-- 'Makecab.exe'
 - 'Mavinject.exe'
 - 'Microsoft.Workflow.Compiler.exe'
 # 'Mmc.exe*.msc%services'
@@ -297,7 +295,6 @@
 - 'PsExec'
 - 'accepteula'
 - 'hound'
-- '-CollectionMethod'
 - 'UserSPN'
 - 'rundll32*StartW'
 - 'Rubeus'
