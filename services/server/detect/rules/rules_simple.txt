@@ -16,9 +16,7 @@
 - 'netsh*firewall'
 - 'ADMIN$'
 - 'copy*C$'
-- 'copy*C:\Program'
 - 'ping*0:0'
-- 'ping*0x'
 # accesschk:
 - '-uws "'
 # Privesc over writable SYSTEM Path
@@ -126,7 +124,6 @@
 - 'Forfiles.exe'
 - 'Ftp.exe'
 - 'fsutil.exe*deletejournal'
-- 'GfxDownloadWrapper.exe'
 - 'Gpscript.exe'
 - 'Hh.exe'
 - 'IMEWDBLD.exe'
@@ -147,7 +144,6 @@
 - 'Netsh.exe*.dll'
 - 'Odbcconf.exe'
 - 'OfflineScannerShell.exe'
-- 'OneDriveStandaloneUpdater.exe'
 - 'Pcalua.exe'
 - 'Pcwrun.exe'
 - 'Pktmon.exe'
@@ -197,7 +193,6 @@
 - 'Shdocvw.dll'
 - 'Shell32.dll*Control_RunDLL'
 - 'Syssetup.dll'
-- 'Url.dll'
 - 'Zipfldr.dll'
 - 'Comsvcs.dll'
 - 'AccCheckConsole.exe'
@@ -230,7 +225,6 @@
 - 'Squirrel.exe*download'
 - 'Squirrel.exe*update'
 - 'te.exe*wsc'
-- 'Tracker.exe'
 - 'VSIISExeLauncher.exe'
 - 'VisualUiaVerifyNative.exe'
 - 'vsjitdebugger.exe'
@@ -275,7 +269,6 @@
 - 'PortMonitor*dll'
 - 'TimeProv*dll'
 - 'PrintMon*dll'
-- 'DisableAntiVirus'
 
 # Common evil paths
 
@@ -288,7 +281,6 @@
 - 'System32\spool\SERVERS'
 - '\Excel\XLStart\'
 - 'Programs\Startup'
-- '.lnk%Desktop*Downloads*Start Menu\Programs*AppData\Roaming'
 - '.rar%Desktop*Downloads'
 
 # Known evil tools
