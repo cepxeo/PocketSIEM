@@ -26,15 +26,11 @@
 # Powershell
 # https://threathunterplaybook.com/
 
-- '-exec*Bypass'
 - 'Set*ExecutionPolicy'
 - '-EncodedCommand'
-- 'hidden*-e'
-- '-Nop'
 - 'Sys*tem*Net*Web*Cli*ent%.dll'
 - 'System.Reflection.Assembly'
 - 'I`E`X'
-- 'Import-Module'
 - 'Invoke-'
 - 'PSSession'
 - 'Get-WmiObject'
@@ -46,7 +42,6 @@
 - 'ExclusionPath'
 - 'Automation.AmsiUtils'
 - 'rename-item*path'
-- 'ForEach'
 - 'Xor'
 - 'TCPClient('
 - 'GzipStream'
@@ -86,7 +81,6 @@
 - 'cmd.exe*http'
 - 'cmd.exe*ftp'
 - 'cmd.exe*scp'
-- 'powershell.exe*http'
 - 'powershell.exe*ftp'
 - 'powershell.exe*scp'
 - 'spoolsv.exe*.dll'
