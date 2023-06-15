@@ -11,6 +11,6 @@ class FalcoLog(BaseModel):
     rule: str
     priority: str
     def save_log(self) -> None:
-        newAlert = Alert(date=time, host=hostname, image=priority, field4=rule, field5=output)
+        newAlert = Alert(date=self.time, host=self.hostname, image=self.priority, field4=self.rule, field5=self.output)
         db.session.add(newAlert)
         db.session.commit()
