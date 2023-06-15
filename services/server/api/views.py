@@ -1,8 +1,10 @@
 from flask import Blueprint, current_app, request, abort
 from functools import wraps
+import logging
 import jwt
 
 from api.winlog import WinLog, SSHLoginLog
+from api.falcolog import FalcoLog
 from database.models import User
 
 api = Blueprint('api', __name__)
@@ -43,4 +45,11 @@ def insert_win_logs():
 def insert_login_logs():
     sshlogin = SSHLoginLog.parse_obj(request.form)
     sshlogin.save_log()
+    return ""
+
+@api.route('/falcolog', methods=['POST'])
+def falco_logs():
+    logging.info(request.get_json())
+    falco_logs = FalcoLog.parse_obj(request.get_json())
+    falco_logs.save_log()
     return ""
