@@ -4,16 +4,14 @@
 
 Current functionality includes:
 
-* Powershell agent parses logon attempts and Sysmon events (check Client/collector.ps1 for details).
-* Python agent parses SSH logon attempts on Linux
-* Agents send logs to the API over HTTPS with JWT authentication.
-* Nice web application to work with received logs, grouped by the event type with the host filtering and appropriate date range.
-* User sign up and log in possible to view the logs.
+* Aggregating and alerting on suspicious Windows Secuity and Sysmon events (check Client/collector.ps1 for details).
+* Logging and monitoring SSH logon attempts on Linux (Client/ssh_logins_psiem.py)
+* [Falco](https://falco.org/) alerts visualization
+* Functional web interface to work with received logs, grouped by the event type with the host filtering,  appropriate date range, hiding false positives and many more.
 
 ![](img/network-logs.png)
 
-* Incoming logs are checked against known evil patterns and an alert is generated on match.
-* Sigma and custom rules are currently supported. Check `Tweaking alerts` section for details.
+* Various detection rules are currently supported. Check `Tweaking alerts` section for details.
 
 ![](img/alerts.png)
 
@@ -52,6 +50,20 @@ SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Pa
 
 ### Linux client setup:
 
+Configure [Falco](https://falco.org/docs/getting-started/try-falco/try-falco-on-ubuntu/) on your host. Amend the following `/etc/falco/falco.yaml` params:
+
+```
+json_output: true
+...
+http_output:
+  enabled: true
+  url: https://YOUR_DOMAIN/falcolog
+  user_agent: "falcosecurity/falco"
+  # Tell Falco to not verify the remote server.
+  insecure: true
+```
+
+To send SSH successful/failed attempts from your hosts:
 * Add the server url and token to Client\ssh_logins_psiem.py
 * Add the following cron job for sudo user:
 
