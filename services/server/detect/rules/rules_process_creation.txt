@@ -17,7 +17,7 @@ Image IN ("*\\svchost.exe", "*\\rundll32.exe", "*\\services.exe", "*\\powershell
 CommandLine IN ("*\\msdt.exe*", "*\\installutil.exe*", "*\\regsvcs.exe*", "*\\regasm.exe*", "*\\msbuild.exe*", "*\\ieexec.exe*")
 ParentImage="C:\\Windows\\explorer.exe" CommandLine IN ("*powershell.exe\" *", "*mshta.exe\" *", "*rundll32.exe\" *", "*wscript.exe\" *", "*cscript.exe\" *")
 Image="*\\bitsadmin.exe" CommandLine IN ("* /transfer *", "* /create *", "* /addfile *")
-Image="*\\nltest.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*", "*/user*")
+Image="*\\nltest.exe" (CommandLine="*/server*" CommandLine="*/query*") OR CommandLine IN ("*/dclist:*", "*/parentdomain*", "*/domain_trusts*", "*/trusted_domains*")
 Image="*\\mshta.exe"
 Image IN ("*\\wscript.exe", "*\\cscript.exe") CommandLine IN ("*C:\\Users\\*", "*C:\\ProgramData*", "*spool\\drivers\\color*", "*\\Temp*") CommandLine IN ("*.jse", "*.vbe", "*.js", "*.vba", "*.vbs")
 Image="*\\certutil.exe" CommandLine IN ("* -decode *", "* -decodehex *", "* -urlcache *", "* -verifyctl *", "* -encode *", "* -exportPFX *", "* /decode *", "* /decodehex *", "* /urlcache *", "* /verifyctl *", "* /encode *", "* /exportPFX *", "*http*")

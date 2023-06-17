@@ -55,7 +55,6 @@
 - 'sc*binpath='
 - 'sc*config*auto'
 - 'sc*sdshow'
-- 'schtasks*create*sc'
 - 'WevtUtil*cl*Security'
 
 # LoL bins 
@@ -294,8 +293,6 @@
 - 'Rubeus'
 - 'Mimik'
 - 'ngrok'
-- ' /u* /p'
-- ' /u* /d'
 - 'dc-ip'
 - 'impersonateuser'
 - 'kerberoast'
