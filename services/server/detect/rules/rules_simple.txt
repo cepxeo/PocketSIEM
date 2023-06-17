@@ -147,7 +147,6 @@
 - 'rdrleakdiag.exe'
 - 'Reg.exe*save'*hklm
 - 'Regasm.exe'
-- 'Regedit.exe'
 - 'Regini.exe*:'
 - 'Register-cimprovider.exe'
 - 'Regsvcs.exe'

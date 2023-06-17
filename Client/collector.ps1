@@ -91,7 +91,8 @@ $LastSecurityRecordId = (Get-WinEvent -FilterHashtable @{Logname='security'} -ma
 try { 
 $event = "Login successful"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -ErrorAction Stop | Get-WinEventData `
-    | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne '7') -and ($_.RecordId -gt $PrevSecurityRecordId) }`
+    # Logon events for System user as well as local logons and unlocks are not collected
+    | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne 2) -and ($_.e_LogonType -ne 7) -and ($_.RecordId -gt $PrevSecurityRecordId) }`
     | foreach {
         $data.logins += @{
             date=$_.TimeCreated

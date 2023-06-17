@@ -42,10 +42,17 @@ cat services/server/pocketsiem.log | grep password
 * Install `Sysmon64.exe -i Client\sysmonconfig.xml`
 * Amend the `$url` to your API server IP / Address in `Client\collector.ps1`
 * Fill in the generated JWT value.
-* Create scheduled task to periodically run `Client\collector.ps1`. Tick "Run with highest privileges" in the created task. From command line might be quicker, don't forget to start cmd as administrator:
+* Add the user to the `Event Log Readers` group:
 
 ```
-SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Path\Client\collector.ps1" /RL HIGHEST
+net localgroup "Event Log Readers" YOUR_USER /add
+```
+
+* Give the user read permissions to the Security registry hive regedit -> Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\EventLog\Security -> Right click on Security -> Permissions -> Add your user
+* Create scheduled task to periodically run `Client\collector.ps1`. From command line might be quicker:
+
+```
+SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Path\Client\collector.ps1"
 ```
 
 ### Linux client setup:
