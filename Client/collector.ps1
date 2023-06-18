@@ -82,8 +82,8 @@ $data = [pscustomobject]@{
     files = @()
     events = @()
 }
-if ($Env:LastSysmonRecordId){$PrevSysmonRecordId = $Env:LastSysmonRecordId} else {$PrevSysmonRecordId = 0}
-if ($Env:LastSecurityRecordId){$PrevSecurityRecordId = $Env:LastSecurityRecordId} else {$PrevSecurityRecordId = 0}
+if ([Environment]::GetEnvironmentVariable("LastSecurityRecordId", "User")){$PrevSecurityRecordId = [Environment]::GetEnvironmentVariable("LastSecurityRecordId", "User")} else {$PrevSecurityRecordId = 0}
+if ([Environment]::GetEnvironmentVariable("LastSysmonRecordId", "User")){$PrevSysmonRecordId = [Environment]::GetEnvironmentVariable("LastSysmonRecordId", "User")} else {$PrevSysmonRecordId = 0}
 $LastSysmonRecordId = (Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational'} -max 1).RecordId
 $LastSecurityRecordId = (Get-WinEvent -FilterHashtable @{Logname='security'} -max 1).RecordId
 ## Windows Security events
@@ -451,8 +451,8 @@ try {
 Write-Host "Sending parsed events ..."
 Invoke-RestMethod -Uri $url/winlog -Method POST -Body ($data | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -ErrorAction Stop
 Write-Host "Events successfully sent"
-$Env:LastSysmonRecordId = $LastSysmonRecordId
-$Env:LastSecurityRecordId = $LastSecurityRecordId
+[Environment]::SetEnvironmentVariable("LastSecurityRecordId", $LastSecurityRecordId, "User")
+[Environment]::SetEnvironmentVariable("LastSysmonRecordId", $LastSysmonRecordId, "User")
     }
 catch {Write-Warning $Error[0]}
 # To list properties: Get-WinEventData | Format-List -Property *
