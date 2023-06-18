@@ -66,7 +66,7 @@ Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sShortDate -Val
 Set-ItemProperty -Path "HKCU:\Control Panel\International" -Name sTimeFormat -Value "HH:mm:ss"
 
 # Check connectivity
-$status = Invoke-WebRequest -Uri $url/healthcheck -Headers $Headers | select-object StatusCode
+$status = Invoke-WebRequest -Uri $url/healthcheck -UseBasicParsing -Headers $Headers | select-object StatusCode
 
 If ($status.StatusCode -ne 200) {
     Write-Host "Server is not reachable!"
@@ -91,7 +91,6 @@ $LastSecurityRecordId = (Get-WinEvent -FilterHashtable @{Logname='security'} -ma
 try { 
 $event = "Login successful"
 Get-WinEvent -FilterHashtable @{Logname='security';id=4624} -ErrorAction Stop | Get-WinEventData `
-    # Logon events for System user as well as local logons and unlocks are not collected
     | ? { ($_.e_TargetUserName -notmatch '^system.*') -and ($_.e_LogonType -ne 2) -and ($_.e_LogonType -ne 7) -and ($_.RecordId -gt $PrevSecurityRecordId) }`
     | foreach {
         $data.logins += @{
@@ -175,13 +174,15 @@ try {
 $event = "Created processes"
 Get-WinEvent -FilterHashtable @{Logname='Microsoft-Windows-Sysmon/Operational';id=1} -ErrorAction Stop | Get-WinEventData `
     | ? { ($_.RecordId -gt $PrevSysmonRecordId)} | foreach {
+        $compan=""
+        if ($_.e_Company.Contains("Intel")) {$compan="Intel Corporation"} else {$compan=$_.e_Company} 
         $data.processes += @{
             date=$_.TimeCreated
             host=$hostname
             parent_image=$_.e_ParentImage
             parent_command_line=$_.e_ParentCommandLine
             image=$_.e_Image
-            company=$_.e_Company
+            company=$compan
             original_file_name=$_.e_OriginalFileName
             process_user=$_.e_User
             command_line=$_.e_CommandLine
