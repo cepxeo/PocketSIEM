@@ -84,7 +84,6 @@
 - 'powershell.exe*scp'
 - 'spoolsv.exe*.dll'
 - 'svchost.exe*dll'
-- 'AppInstaller.exe'
 - 'Aspnet_Compiler.exe'
 - 'At.exe*interactive'
 - 'Atbroker.exe*start'
