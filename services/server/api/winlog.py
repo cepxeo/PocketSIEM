@@ -91,12 +91,12 @@ class WinLog(BaseModel):
                 db.session.add(event_save)
                 db.session.commit()
 class SSHLoginLog(BaseModel):
-    date: str
-    host: str
-    osuser: str
-    logon_type: str
-    process_name: str
+    date: list
+    host: list
+    osuser: list
+    logon_type: list
+    process_name: list
     def save_log(self) -> None:
-        login = Login(date=self.date, host=self.host, image=self.osuser, field4=self.logon_type, field5=self.process_name)
+        login = Login(date=self.date[0], host=self.host[0], image=self.osuser[0], field4=self.logon_type[0], field5=self.process_name[0])
         db.session.add(login)
         db.session.commit()

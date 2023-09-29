@@ -67,8 +67,9 @@ http_output:
 ```
 
 To send SSH logon attempts from your hosts:
+* Change rsyslog date format as adviced in ssh_logins_psiem.py
 * Add the server url and token to Client\ssh_logins_psiem.py
-* Add the following cron job for sudo user on the monitored host:
+* Add the following cron job for the user on the monitored host:
 
 ```
 python3 /your_path/ssh_logins_psiem.py all all off
