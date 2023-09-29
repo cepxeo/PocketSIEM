@@ -84,7 +84,6 @@
 - 'powershell.exe*scp'
 - 'spoolsv.exe*.dll'
 - 'svchost.exe*dll'
-- 'AppInstaller.exe'
 - 'Aspnet_Compiler.exe'
 - 'At.exe*interactive'
 - 'Atbroker.exe*start'
@@ -209,7 +208,6 @@
 - 'Procdump'
 - 'rcsi.exe'
 - 'Remote.exe'
-- 'Sqldumper.exe'
 - 'Sqlps.exe'
 - 'SQLToolsPS.exe'
 - 'Squirrel.exe*download'
@@ -237,8 +235,6 @@
 
 - 'C:\Users*.chm'
 - 'C:\ProgramData*.chm'
-# 'C:\Users*.tmp'
-- 'Content.Outlook*.exe'
 
 # Registry keys (https://github.com/mandiant/SharPersist)
 

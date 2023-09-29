@@ -663,7 +663,6 @@
 			<TargetObject name="T1103" condition="begin with">HKLM\Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Windows\Appinit_Dlls\</TargetObject> <!--Windows: Feature disabled by default [ https://attack.mitre.org/wiki/Technique/T1103 ] -->
 			<TargetObject condition="begin with">HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\AppCertDlls\</TargetObject> <!--Windows: Credit to @Hexacorn [ http://www.hexacorn.com/blog/2013/01/19/beyond-good-ol-run-key-part-3/ ] [ https://blog.comodo.com/malware/trojware-win32-trojanspy-volisk-a/ ] -->
 			<!--Office-->
-			<TargetObject name="T1137" condition="contains">\Microsoft\Office\</TargetObject> <!--Microsoft:Office: Outlook add-ins, access to sensitive data and often cause issues-->
 			<TargetObject name="T1137" condition="contains">Office Test\</TargetObject> <!-- Microsoft:Office: Persistence method [ http://www.hexacorn.com/blog/2014/04/16/beyond-good-ol-run-key-part-10/ ] | Credit @Hexacorn -->
 			<TargetObject name="Context,ProtectedModeExitOrMacrosUsed" condition="contains">Security\Trusted Documents\TrustRecords</TargetObject> <!--Microsoft:Office: Monitor when "Enable editing" or "Enable macros" is used | Credit @OutflankNL | [ https://outflank.nl/blog/2018/01/16/hunting-for-evil-detect-macros-being-executed/ ] -->
 			<!--IE-->
@@ -789,6 +788,10 @@
 			<TargetObject condition="begin with">HKCR\iTunes.</TargetObject> <!--Apple: iTunes update noise-->
 			<!--WINEVT publishers noise-->
 			<TargetObject condition="is">HKLM\Software\Microsoft\Windows\CurrentVersion\WINEVT\Publishers\{945a8954-c147-4acd-923f-40c45405a658}</TargetObject> <!--Windows update-->
+			<TargetObject condition="contains">Office\16.0\Common\</TargetObject> <!--SE Modified office noise-->
+			<TargetObject condition="contains">Microsoft\Office\Common\</TargetObject> <!--SE Modified office noise-->
+			<TargetObject condition="contains">Windows\CurrentVersion\WINEVT\</TargetObject> <!--SE Modified wevtutil noise-->
+			<TargetObject condition="contains">Root\InventoryApplicationFile\</TargetObject> <!--SE Modified CompatTelRunner noise-->
 		</RegistryEvent>
 	</RuleGroup>
 

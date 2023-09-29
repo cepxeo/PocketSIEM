@@ -15,10 +15,6 @@ Current functionality includes:
 
 ![](img/alerts.png)
 
-* Log records could be added to or excluded from the false positives filter. Just click on the unwanted binary, user or destination IP.
-
-![](img/false-positives.png)
-
 ### Server setup
 
 * Ensure you have [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/other/) installed.
@@ -70,9 +66,9 @@ http_output:
   insecure: true
 ```
 
-To send SSH successful/failed attempts from your hosts:
+To send SSH logon attempts from your hosts:
 * Add the server url and token to Client\ssh_logins_psiem.py
-* Add the following cron job for sudo user:
+* Add the following cron job for sudo user on the monitored host:
 
 ```
 python3 /your_path/ssh_logins_psiem.py all all off
