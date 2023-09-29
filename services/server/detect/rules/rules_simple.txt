@@ -264,7 +264,7 @@
 
 - 'Windows\Tasks\%sa.dat'
 # 'Windows\System32\Tasks\%Microsoft'
-- 'Users\Public\'
+- 'Users\Public\%lnk'
 # 'AppData\Roaming*.exe'
 - 'AppData\Roaming*.dll'
 - 'Microsoft\Crypto\RSA\MachineKeys'
