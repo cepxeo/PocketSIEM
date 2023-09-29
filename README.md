@@ -53,7 +53,7 @@ SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Pa
 
 ### Linux client setup:
 
-Configure [Falco](https://falco.org/docs/getting-started/try-falco/try-falco-on-ubuntu/) on your host. Amend the following `/etc/falco/falco.yaml` params:
+Configure [Falco](https://falco.org/docs/getting-started/falco-linux-quickstart/) on your host. Amend the following `/etc/falco/falco.yaml` params:
 
 ```
 json_output: true
@@ -69,7 +69,7 @@ http_output:
 To send SSH logon attempts from your hosts:
 * Change rsyslog date format as adviced in ssh_logins_psiem.py
 * Add the server url and token to Client\ssh_logins_psiem.py
-* Add the following cron job for the user on the monitored host:
+* Add the following cron job for the root user on the monitored host:
 
 ```
 python3 /your_path/ssh_logins_psiem.py all all off
