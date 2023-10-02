@@ -113,7 +113,7 @@ Get-WinEvent -FilterHashtable @{Logname='security';id=4625} -ErrorAction Stop | 
             date=$_.TimeCreated
             host=$hostname
             osuser=$_.e_TargetUserName
-            logon_type=$_.e_LogonType
+            logon_type=$_.e_LogonType + " failed"
             process_name=$_.e_ProcessName
         }
     }
