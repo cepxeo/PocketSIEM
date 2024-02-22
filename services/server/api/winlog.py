@@ -38,11 +38,11 @@ class WinLog(BaseModel):
                 tasks.check_process.delay(date, host, image, command_line, parent_image, 
                     parent_command_line, original_file_name, process_user)
                 
-                process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
-                    parent_image=parent_image, parent_command_line=parent_command_line, 
-                    original_file_name=original_file_name, process_user=process_user)
-                db.session.add(process_save)
-                db.session.commit()
+                # process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
+                #     parent_image=parent_image, parent_command_line=parent_command_line, 
+                #     original_file_name=original_file_name, process_user=process_user)
+                # db.session.add(process_save)
+                # db.session.commit()
         if self.nets:
             for net in self.nets:
                 epoch_time = re.search(r"\((.*)\)", net["date"]).group(1)[:10]
@@ -70,9 +70,9 @@ class WinLog(BaseModel):
                 tasks.check_log.delay(date, host, image, filename)
                 tasks.check_files.delay(date, host, image, filename, osuser)
 
-                file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
-                db.session.add(file_save)
-                db.session.commit()
+                # file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
+                # db.session.add(file_save)
+                # db.session.commit()
         if self.events:
             for event in self.events:
                 epoch_time = re.search(r"\((.*)\)", event["date"]).group(1)[:10]

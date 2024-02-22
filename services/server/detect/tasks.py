@@ -1,5 +1,4 @@
-from celery import shared_task, Celery
-from flask import current_app
+from celery import shared_task
 import whois
 import logging
 
@@ -152,38 +151,30 @@ def check_whois(date, host, image, dest_ip, dest_port) -> None:
         db.session.add(newNetwork)
         db.session.commit()
 
-#--------------------------------------
+# # Celery task to clean old records
+# @shared_task
+# def clean_old_records():
+#     one_month_ago = datetime.utcnow() - timedelta(days=30)
 
-celery = Celery(
-            current_app.name,
-            broker=current_app.config["CELERY_BROKER_URL"],
-            backend=current_app.config["CELERY_RESULT_BACKEND"],
-        )
+#     old_records = Process.query.filter(Process.created_at < one_month_ago).all()
+#     for record in old_records:
+#         db.session.delete(record)
 
-# Celery task to clean old records
-@shared_task
-def clean_old_records():
-    one_month_ago = datetime.utcnow() - timedelta(days=30)
+#     old_records = File.query.filter(Process.created_at < one_month_ago).all()
+#     for record in old_records:
+#         db.session.delete(record)
 
-    old_records = Process.query.filter(Process.created_at < one_month_ago).all()
-    for record in old_records:
-        db.session.delete(record)
+#     old_records = Network.query.filter(Process.created_at < one_month_ago).all()
+#     for record in old_records:
+#         db.session.delete(record)
 
-    old_records = File.query.filter(Process.created_at < one_month_ago).all()
-    for record in old_records:
-        db.session.delete(record)
+#     old_records = Event.query.filter(Process.created_at < one_month_ago).all()
+#     for record in old_records:
+#         db.session.delete(record)
 
-    old_records = Network.query.filter(Process.created_at < one_month_ago).all()
-    for record in old_records:
-        db.session.delete(record)
+#     db.session.commit()
 
-    old_records = Event.query.filter(Process.created_at < one_month_ago).all()
-    for record in old_records:
-        db.session.delete(record)
-
-    db.session.commit()
-
-# Schedule task to execute every day
-@celery.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(timedelta(days=1), clean_old_records.s(), name='clean_old_records_task')
+# # Schedule task to execute every day
+# @celery.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
+#     sender.add_periodic_task(timedelta(days=1), clean_old_records.s(), name='clean_old_records_task')
