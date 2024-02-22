@@ -87,9 +87,9 @@ class WinLog(BaseModel):
                 tasks.check_log.delay(date, host, image, details)
                 tasks.check_registry.delay(date, host, image, details)
 
-                event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
-                db.session.add(event_save)
-                db.session.commit()
+                # event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
+                # db.session.add(event_save)
+                # db.session.commit()
 class SSHLoginLog(BaseModel):
     date: list
     host: list

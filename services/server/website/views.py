@@ -359,4 +359,5 @@ def save_filter():
 @require_login
 def clear_alerts():
     Alert.query.delete()
+    print("Table Alerts cleared")
     return redirect(url_for('website.alerts'))
