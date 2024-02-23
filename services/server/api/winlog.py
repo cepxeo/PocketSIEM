@@ -121,5 +121,5 @@ class SSHLoginLog(BaseModel):
         db.session.add(login)
         db.session.commit()
         conn_logs_save = ConnLog(date=self.date[0], host=self.host[0], log_type="SSH Login")
-            db.session.add(process_save)
-            db.session.commit()
+        db.session.add(process_save)
+        db.session.commit()
