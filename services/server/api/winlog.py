@@ -20,7 +20,7 @@ class WinLog(BaseModel):
                 db.session.add(save_login)
                 db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Login")
-            db.session.add(process_save)
+            db.session.add(conn_logs_save)
             db.session.commit()
 
         if self.processes:
@@ -48,7 +48,7 @@ class WinLog(BaseModel):
                 # db.session.add(process_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Process")
-            db.session.add(process_save)
+            db.session.add(conn_logs_save)
             db.session.commit()
 
         if self.nets:
@@ -65,7 +65,7 @@ class WinLog(BaseModel):
                 tasks.check_network.delay(date, host, image, dest_ip, dest_port)
                 tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
             conn_logs_save = ConnLog(date=date, host=host, log_type="Net")
-            db.session.add(process_save)
+            db.session.add(conn_logs_save)
             db.session.commit()
 
         if self.files:
@@ -86,7 +86,7 @@ class WinLog(BaseModel):
                 # db.session.add(file_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="File")
-            db.session.add(process_save)
+            db.session.add(conn_logs_save)
             db.session.commit()
 
         if self.events:
@@ -107,7 +107,7 @@ class WinLog(BaseModel):
                 # db.session.add(event_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Event")
-            db.session.add(process_save)
+            db.session.add(conn_logs_save)
             db.session.commit()
 
 class SSHLoginLog(BaseModel):
@@ -121,5 +121,5 @@ class SSHLoginLog(BaseModel):
         db.session.add(login)
         db.session.commit()
         conn_logs_save = ConnLog(date=self.date[0], host=self.host[0], log_type="SSH Login")
-        db.session.add(process_save)
+        db.session.add(conn_logs_save)
         db.session.commit()
