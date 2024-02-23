@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash
 from flask_celeryext import FlaskCeleryExt
 from waitress import serve
@@ -12,12 +13,15 @@ from celery_utils import make_celery
 logging.basicConfig(
         filename="pocketsiem.log",
         format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+
+migrate = Migrate()
         
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile(config_filename)
     app.app_context().push()
     db.init_app(app)
+    migrate.init_app(app, db)
     db.create_all()
     db.session.commit()
     register_blueprints(app)

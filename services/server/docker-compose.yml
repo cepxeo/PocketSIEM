@@ -17,6 +17,8 @@ services:
     command: python -m pytest -v --disable-warnings
     volumes:
       - .:/app
+    env_file:
+      - .env
     ports:
       - 8443:8443
     depends_on:

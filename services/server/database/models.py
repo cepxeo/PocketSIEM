@@ -73,3 +73,10 @@ class Filter(db.Model):
     __tablename__ = 'false_filter'
     id = db.Column(db.Integer, primary_key=True)
     item = db.Column(db.Text)
+
+class ConnLog(db.Model):
+    __tablename__ = 'conn_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+    host = db.Column(db.String(200))
+    log_type = db.Column(db.String(50))

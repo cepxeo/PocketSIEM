@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from database.models import db, Login, Process, File, Event
+from database.models import db, Login, Process, File, Event, ConnLog
 from detect import tasks
 import re
 from datetime import datetime
@@ -19,6 +19,7 @@ class WinLog(BaseModel):
                 save_login = Login(date=converted_time, host=login["host"], image=login["osuser"], field4=login["logon_type"], field5=login["process_name"])
                 db.session.add(save_login)
                 db.session.commit()
+            conn_logs_save = ConnLog(date=date, host=host, log_type="Login")
         if self.processes:
             for process in self.processes:
                 epoch_time = re.search(r"\((.*)\)", process["date"]).group(1)[:10]
@@ -43,6 +44,7 @@ class WinLog(BaseModel):
                 #     original_file_name=original_file_name, process_user=process_user)
                 # db.session.add(process_save)
                 # db.session.commit()
+            conn_logs_save = ConnLog(date=date, host=host, log_type="Process")
         if self.nets:
             for net in self.nets:
                 epoch_time = re.search(r"\((.*)\)", net["date"]).group(1)[:10]
@@ -56,6 +58,7 @@ class WinLog(BaseModel):
 
                 tasks.check_network.delay(date, host, image, dest_ip, dest_port)
                 tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
+            conn_logs_save = ConnLog(date=date, host=host, log_type="Net")
         if self.files:
             for file in self.files:
                 epoch_time = re.search(r"\((.*)\)", file["date"]).group(1)[:10]
@@ -73,6 +76,7 @@ class WinLog(BaseModel):
                 # file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
                 # db.session.add(file_save)
                 # db.session.commit()
+            conn_logs_save = ConnLog(date=date, host=host, log_type="File")
         if self.events:
             for event in self.events:
                 epoch_time = re.search(r"\((.*)\)", event["date"]).group(1)[:10]
@@ -90,6 +94,7 @@ class WinLog(BaseModel):
                 # event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
                 # db.session.add(event_save)
                 # db.session.commit()
+            conn_logs_save = ConnLog(date=date, host=host, log_type="Event")
 class SSHLoginLog(BaseModel):
     date: list
     host: list
@@ -100,3 +105,4 @@ class SSHLoginLog(BaseModel):
         login = Login(date=self.date[0], host=self.host[0], image=self.osuser[0], field4=self.logon_type[0], field5=self.process_name[0])
         db.session.add(login)
         db.session.commit()
+        conn_logs_save = ConnLog(date=self.date[0], host=self.host[0], log_type="SSH Login")

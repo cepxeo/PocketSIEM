@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, g, url_for, render_template, redi
 from datetime import datetime, timedelta
 from functools import wraps
 
-from database.models import db, User, Login, Process, File, Network, Event, Alert, Filter
+from database.models import db, User, Login, Process, File, Network, Event, Alert, Filter, ConnLog
 from sqlalchemy import not_, or_
 
 website = Blueprint('website', __name__)
@@ -312,6 +312,51 @@ def host_alerts(host):
         template, logs=logs, hosts=hosts, currenthost = host,
         header1="Date", header2="Host", header3="Image", header4="Rule", header5="Details", 
         hostroute='website.host_alerts', selfroute='website.host_alerts')
+
+# Connection logs
+@website.route('/connlogs', methods=['GET'])
+@require_login
+def conn_logs():
+    range = request.args.get('range', None)
+    if range:
+        template = 'conn_logs_range.html'
+    else:
+        range = DEFAULT_DATE_RANGE
+        template = 'conn_logs.html'
+
+    page = request.args.get('page', 1, type=int)
+
+    logs = ConnLog.query.filter(
+        ConnLog.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(ConnLog.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+
+    hosts = [x[0] for x in db.session.query(ConnLog.host).distinct()]
+    return render_template(
+            template, logs=logs, hosts=hosts,
+            header1="Date", header2="Host", header3="Type", 
+            hostroute='website.host_conn_logs', selfroute='website.conn_logs')
+
+@website.route("/connlogs/<host>", methods=["GET"])
+@require_login
+def host_conn_logs(host):
+    range = request.args.get('range', None)
+    if range:
+        template = 'conn_logs_range.html'
+    else:
+        range = DEFAULT_DATE_RANGE
+        template = 'conn_logs.html'
+    
+    page = request.args.get('page', 1, type=int)
+
+    logs = ConnLog.query.filter(ConnLog.host == host).filter(
+        ConnLog.date >= datetime.today() - timedelta(days=int(range))
+        ).order_by(ConnLog.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    
+    hosts = [x[0] for x in db.session.query(ConnLog.host).distinct()]
+    return render_template(
+        template, logs=logs, hosts=hosts, currenthost = host,
+        header1="Date", header2="Host", header3="Type", 
+        hostroute='website.host_conn_logs', selfroute='website.conn_logs')
 
 # False positives filter
 @website.route("/false", methods=["GET"])

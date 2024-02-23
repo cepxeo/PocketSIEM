@@ -1,0 +1,64 @@
+<table class="table is-hoverable">
+  <thead>
+    <tr>
+      <th>{{ header1 }}</th>
+      <th>
+        <div class="dropdown">
+          <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu3">
+              <span>Hosts</span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+            <div class="dropdown-content">
+              {% for host in hosts %}
+                <a href="{{url_for(hostroute, host=host)}}" class="dropdown-item">
+                  {{ host }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </th>
+      <th>{{ header3 }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs.items %}
+      <tr>
+        <th>{{ log.date }}</th>
+        <td>{{ log.host }}</td>
+        <td>{{ log.type }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="container"><p class="mt-6 mb-6"> </p></div>
+
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+  <ul class="pagination-list">
+      <!-- Loop through the number of pages to display a link for each-->
+      {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+      <!-- Check for the active page and set the link to "Active"-->
+            {% if logs.page == page_num %}
+            <li><a href="{{ url_for(selfroute, page=page_num, host=currenthost) }}" class="pagination-link is-current">
+              {{ page_num }}
+            </a></li>
+            {% else %}
+            <li><a href="{{ url_for(selfroute, page=page_num, host=currenthost) }}" class="pagination-link">
+              {{ page_num }}
+            </a></li>
+            {% endif %}
+          {% else %}
+              ...
+          {% endif %}
+      {% endfor %}
+  </ul>
+</nav>
+
+<div class="container"><p class="mt-6 mb-6"> </p></div>

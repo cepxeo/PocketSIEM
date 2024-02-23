@@ -11,3 +11,4 @@ redis
 flower
 Flask-CeleryExt==0.3.4
 pytest
+Flask-Migrate
