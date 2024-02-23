@@ -20,6 +20,9 @@ class WinLog(BaseModel):
                 db.session.add(save_login)
                 db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Login")
+            db.session.add(process_save)
+            db.session.commit()
+
         if self.processes:
             for process in self.processes:
                 epoch_time = re.search(r"\((.*)\)", process["date"]).group(1)[:10]
@@ -45,6 +48,9 @@ class WinLog(BaseModel):
                 # db.session.add(process_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Process")
+            db.session.add(process_save)
+            db.session.commit()
+
         if self.nets:
             for net in self.nets:
                 epoch_time = re.search(r"\((.*)\)", net["date"]).group(1)[:10]
@@ -59,6 +65,9 @@ class WinLog(BaseModel):
                 tasks.check_network.delay(date, host, image, dest_ip, dest_port)
                 tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
             conn_logs_save = ConnLog(date=date, host=host, log_type="Net")
+            db.session.add(process_save)
+            db.session.commit()
+
         if self.files:
             for file in self.files:
                 epoch_time = re.search(r"\((.*)\)", file["date"]).group(1)[:10]
@@ -77,6 +86,9 @@ class WinLog(BaseModel):
                 # db.session.add(file_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="File")
+            db.session.add(process_save)
+            db.session.commit()
+
         if self.events:
             for event in self.events:
                 epoch_time = re.search(r"\((.*)\)", event["date"]).group(1)[:10]
@@ -95,6 +107,9 @@ class WinLog(BaseModel):
                 # db.session.add(event_save)
                 # db.session.commit()
             conn_logs_save = ConnLog(date=date, host=host, log_type="Event")
+            db.session.add(process_save)
+            db.session.commit()
+
 class SSHLoginLog(BaseModel):
     date: list
     host: list
@@ -106,3 +121,5 @@ class SSHLoginLog(BaseModel):
         db.session.add(login)
         db.session.commit()
         conn_logs_save = ConnLog(date=self.date[0], host=self.host[0], log_type="SSH Login")
+            db.session.add(process_save)
+            db.session.commit()
