@@ -403,6 +403,11 @@ def save_filter():
 @website.route("/clearalerts", methods=["GET"])
 @require_login
 def clear_alerts():
-    Alert.query.delete()
-    print("Table Alerts cleared")
-    return redirect(url_for('website.alerts'))
+    try:
+        db.session.query(Alert).delete()
+        db.session.commit()
+        return redirect(url_for('website.alerts'))
+    except Exception as e:
+        db.session.rollback()
+        print (f'Failed to clean alerts table. {str(e)}')
+        return redirect(url_for('website.alerts'))

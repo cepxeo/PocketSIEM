@@ -38,6 +38,9 @@ class WinLog(BaseModel):
                 process_user=process["process_user"]
                 company=process["company"]
 
+                if "domain" in command_line or "whoami" in command_line:
+                    print (command_line)
+
                 tasks.check_log.delay(date, host, image, command_line)
                 tasks.check_process.delay(date, host, image, command_line, parent_image, 
                     parent_command_line, original_file_name, process_user)
@@ -63,7 +66,7 @@ class WinLog(BaseModel):
                 dest_port=net["dest_port"]
 
                 tasks.check_network.delay(date, host, image, dest_ip, dest_port)
-                tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
+                # tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
             conn_logs_save = ConnLog(date=date, host=host, log_type="Net")
             db.session.add(conn_logs_save)
             db.session.commit()
