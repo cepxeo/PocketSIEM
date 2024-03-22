@@ -10,10 +10,10 @@ EOL'
 sudo apt-get update -y
 sudo apt-get install -y dkms make linux-headers-$(uname -r) dialog
 sudo apt-get install -y falco
-
+sudo systemctl enable falco-bpf
 wget https://raw.githubusercontent.com/cepxeo/PocketSIEM/main/Client/falco.yaml
 echo "Enter psiem domain name:"
 read domainname
 sed -i "s/MYDOMAIN.COM/${domainname}/" falco.yaml
 sudo mv falco.yaml /etc/falco/
-echo "Run sudo systemctl status falco"
+echo "Run sudo cat /etc/shadow > /dev/null"
