@@ -53,27 +53,12 @@ SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Pa
 
 ### Linux client setup:
 
-Configure [Falco](https://falco.org/docs/getting-started/falco-linux-quickstart/) on your host. Amend the following `/etc/falco/falco.yaml` params:
+Configure [Falco](https://falco.org/docs/getting-started/falco-linux-quickstart/) on your host.
 
-```
-json_output: true
-...
-http_output:
-  enabled: true
-  url: https://YOUR_DOMAIN/falcolog
-  user_agent: "falcosecurity/falco"
-  # Tell Falco to not verify the remote server.
-  insecure: true
-```
+Alternalively execute `falco-psiem.sh` from the Client folder. Check the script contents to understand what it does.
 
 To send SSH logon attempts from your hosts:
-* Change rsyslog date format as adviced in ssh_logins_psiem.py
-* Add the server url and token to Client\ssh_logins_psiem.py
-* Add the following cron job for the root user on the monitored host:
-
-```
-python3 /your_path/ssh_logins_psiem.py all all off
-```
+* Execute `ssh-psiem.sh` from the Client folder.
 
 ### (Optional) Generate server SSL keys
 

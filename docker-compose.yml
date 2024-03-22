@@ -20,7 +20,7 @@ services:
   celery_worker:
     build: ./services/server
     image: celery_worker
-    command: celery -A app.celery worker --loglevel=info
+    command: celery -A app.celery worker --loglevel=warning
     volumes:
       - ./services/server:/app
     env_file:
