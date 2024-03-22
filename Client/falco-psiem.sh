@@ -9,7 +9,6 @@ EOL'
 
 sudo apt-get update -y
 sudo apt-get install -y dkms make linux-headers-$(uname -r) dialog
-echo "Choose Kmod"
 sudo apt-get install -y falco
 
 wget https://raw.githubusercontent.com/cepxeo/PocketSIEM/main/Client/falco.yaml

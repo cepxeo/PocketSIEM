@@ -55,7 +55,7 @@ SCHTASKS /CREATE /SC HOURLY /TN "PocketSIEM" /TR "powershell.exe -w hidden C:\Pa
 
 Configure [Falco](https://falco.org/docs/getting-started/falco-linux-quickstart/) on your host.
 
-Alternalively execute `falco-psiem.sh` from the Client folder. Check the script contents to understand what it does.
+Alternalively execute `falco-psiem.sh` from the Client folder. Check the script contents to understand what it does and consult Falco documentation for the setup parameters.
 
 To send SSH logon attempts from your hosts:
 * Execute `ssh-psiem.sh` from the Client folder.
