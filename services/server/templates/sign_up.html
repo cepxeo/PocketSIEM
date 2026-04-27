@@ -1,40 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <section class="auth-layout">
+    <div class="auth-panel">
+      <p class="eyebrow">New Analyst</p>
+      <h1>Sign Up</h1>
+      <p class="page-summary">Create an account for the Pocket SIEM console.</p>
 
-<div class="columns is-desktop">
-  <div class="column"></div>
-  <div class="column is-half-desktop">
-    <h2 class="is-size-3">Sign Up</h2>
-
-    <form method="post" action="{{ url_for('auth.sign_up') }}">
-      <div class="field">
-        <label class="label" for="username">Username</label>
-        <div class="control">
-          <input name="username" type="input" class="input" required></input>
+      <form method="post" action="{{ url_for('auth.sign_up') }}" class="auth-form">
+        <div class="field-group">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required>
         </div>
-      </div>
 
-      <div class="field">
-        <label class="label" for="password">Password</label>
-        <div class="control">
-          <input name="password" type="password" class="input" required></input>
+        <div class="field-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" required>
         </div>
-      </div>
 
-      <div class="field is-grouped">
-        <div class="control">
-          <input type="submit" value="Sign Up" class="button is-link" />
+        <div class="form-actions">
+          <button type="submit" class="button-primary">Sign Up</button>
+          <a href="{{ url_for('auth.log_in') }}" class="button-link">Log in instead</a>
         </div>
-        <div class="control">
-          <a href="{{ url_for('auth.log_in') }}" class="button is-text">
-            Already have an account? Log In.
-          </a>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="column"></div>
-</div>
-
+      </form>
+    </div>
+  </section>
 {% endblock %}

@@ -14,6 +14,21 @@ if false_positives == []:
 DEFAULT_DATE_RANGE = '7'
 ROWS_PER_PAGE = 100
 
+def page_template(full_template, range_template):
+    wants_partial = (
+        request.args.get('partial') == '1' or
+        request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    )
+    if request.args.get('range') and wants_partial:
+        return range_template
+    return full_template
+
+@website.context_processor
+def inject_frontend_state():
+    return {
+        'current_range': request.args.get('range', DEFAULT_DATE_RANGE),
+    }
+
 @website.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
@@ -43,11 +58,9 @@ def index():
 @require_login
 def login():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
     logs = Login.query.filter(
@@ -65,11 +78,9 @@ def login():
 @require_login
 def login_host_logs(host):
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
 
@@ -89,11 +100,9 @@ def login_host_logs(host):
 @require_login
 def process():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
 
@@ -113,11 +122,9 @@ def process():
 def process_host_logs(host):
     page = request.args.get('page', 1, type=int)
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'    
     
     logs = Process.query.filter(Process.host == host).filter(
         Process.date >= datetime.today() - timedelta(days=int(range))
@@ -135,11 +142,9 @@ def process_host_logs(host):
 @require_login
 def files():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
     logs = File.query.filter(
@@ -158,11 +163,9 @@ def files():
 @require_login
 def files_host_logs(host): 
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
 
@@ -182,11 +185,9 @@ def files_host_logs(host):
 @require_login
 def net():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
     logs = Network.query.filter(
@@ -204,11 +205,9 @@ def net():
 @require_login
 def net_host_logs(host):
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
     logs = Network.query.filter(Network.host == host).filter(
@@ -227,11 +226,9 @@ def net_host_logs(host):
 @require_login
 def events():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
     logs = Event.query.filter(
@@ -249,11 +246,9 @@ def events():
 @require_login
 def events_host_logs(host):
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
 
@@ -273,11 +268,9 @@ def events_host_logs(host):
 @require_login
 def alerts():
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
 
     page = request.args.get('page', 1, type=int)
 
@@ -295,11 +288,9 @@ def alerts():
 @require_login
 def host_alerts(host):
     range = request.args.get('range', None)
-    if range:
-        template = 'events_range.html'
-    else:
+    template = page_template('events.html', 'events_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'events.html'
     
     page = request.args.get('page', 1, type=int)
 
@@ -318,11 +309,9 @@ def host_alerts(host):
 @require_login
 def conn_logs():
     range = request.args.get('range', None)
-    if range:
-        template = 'conn_logs_range.html'
-    else:
+    template = page_template('conn_logs.html', 'conn_logs_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'conn_logs.html'
 
     page = request.args.get('page', 1, type=int)
 
@@ -340,11 +329,9 @@ def conn_logs():
 @require_login
 def host_conn_logs(host):
     range = request.args.get('range', None)
-    if range:
-        template = 'conn_logs_range.html'
-    else:
+    template = page_template('conn_logs.html', 'conn_logs_range.html')
+    if not range:
         range = DEFAULT_DATE_RANGE
-        template = 'conn_logs.html'
     
     page = request.args.get('page', 1, type=int)
 

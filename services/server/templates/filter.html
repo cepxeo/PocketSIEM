@@ -1,28 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-  <nav class="level">
-    <div class="level-item has-text-centered">  
-      <div class="table-container" id="events_id">
-        <table class="table is-hoverable">
+  <section class="page-hero">
+    <div>
+      <p class="eyebrow">False Positives</p>
+      <h1>Filter List</h1>
+      <p class="page-summary">Review and remove patterns currently excluded from standard log views.</p>
+    </div>
+    <div class="metric-strip" aria-label="Current filter count">
+      <span class="metric-value">{{ items|length }}</span>
+      <span class="metric-label">patterns</span>
+    </div>
+  </section>
+
+  <section class="table-panel">
+    {% if items %}
+      <div class="table-scroll">
+        <table class="data-table compact-table">
           <thead>
             <tr>
-              <th>False Positives</th>
+              <th scope="col">Pattern</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
             {% for item in items %}
-            <tr>
-              <td>
-                <a href="{{url_for('website.remove_item', item=item)}}">{{ item }}</a>
-              </td>
-            </tr>
+              <tr>
+                <td class="path-cell">{{ item }}</td>
+                <td>
+                  <a class="table-action danger-action" href="{{ url_for('website.remove_item', item=item) }}">Remove</a>
+                </td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
-    </div>
-  </nav>
-</div>
+    {% else %}
+      <div class="empty-state">
+        <h2>No filters saved</h2>
+        <p>False-positive patterns will appear here after they are added from a log table.</p>
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}

@@ -1,102 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pocket SIEM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
   <body>
-    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="{{ url_for('website.alerts') }}">
-            <img src="{{ url_for('static', filename='pocketsiem-logo.png') }}" width="112" height="28">
-          </a>
+    <div class="app-shell">
+      <header class="app-header">
+        <a class="brand" href="{{ url_for('website.alerts') }}" aria-label="Pocket SIEM home">
+          <img src="{{ url_for('static', filename='pocketsiem-logo.png') }}" alt="Pocket SIEM">
+        </a>
+
+        <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-navigation">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span class="sr-only">Toggle navigation</span>
+        </button>
+
+        <nav class="primary-nav" id="primary-navigation" aria-label="Main navigation">
           {% if g.user %}
-          <a class="navbar-item" href="{{ url_for('website.login') }}">Logins</a>
-          <!-- <a class="navbar-item" href="{{ url_for('website.process') }}">Processes</a>
-          <a class="navbar-item" href="{{ url_for('website.events') }}">Events</a>
-          <a class="navbar-item" href="{{ url_for('website.files') }}">Files</a> -->
-          <a class="navbar-item" href="{{ url_for('website.net') }}">Network</a>
-          <a class="navbar-item" href="{{ url_for('website.alerts') }}">Alerts</a>
-          <a class="navbar-item" href="{{ url_for('website.conn_logs') }}">System Logs</a>
+            {% set endpoint = request.endpoint or '' %}
+            <a class="nav-link{% if 'alert' in endpoint %} is-active{% endif %}" href="{{ url_for('website.alerts') }}">Alerts</a>
+            <a class="nav-link{% if 'login' in endpoint %} is-active{% endif %}" href="{{ url_for('website.login') }}">Logins</a>
+            <a class="nav-link{% if 'net' in endpoint %} is-active{% endif %}" href="{{ url_for('website.net') }}">Network</a>
+            <a class="nav-link{% if 'conn' in endpoint %} is-active{% endif %}" href="{{ url_for('website.conn_logs') }}">System Logs</a>
+            <a class="nav-link{% if 'process' in endpoint %} is-active{% endif %}" href="{{ url_for('website.process') }}">Processes</a>
+            <a class="nav-link{% if 'files' in endpoint %} is-active{% endif %}" href="{{ url_for('website.files') }}">Files</a>
+            <a class="nav-link{% if 'events' in endpoint %} is-active{% endif %}" href="{{ url_for('website.events') }}">Events</a>
           {% endif %}
-          <div class="navbar-burger" data-target="navMenu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-        <div class="navbar-menu" id="navMenu">
-          <div class="navbar-end">
-            {% if g.user %}
+        </nav>
 
-              <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                  False Positives
-                </a>
-        
-                <div class="navbar-dropdown">
-                  <a class="navbar-item" href="{{url_for('website.show_filter')}}">
-                    View Filter
-                  </a>
-                  <a class="navbar-item" href="{{url_for('website.save_filter')}}">
-                    Save Filter
-                  </a>
-                  <a class="navbar-item" href="{{url_for('website.clear_filter')}}">
-                    Clear Filter
-                  </a>
-                  <a class="navbar-item" href="{{url_for('website.clear_alerts')}}">
-                    Clear Alerts
-                  </a>
-                </div>
+        <div class="header-actions">
+          {% if g.user %}
+            <details class="action-menu">
+              <summary>False Positives</summary>
+              <div class="action-menu-panel">
+                <a href="{{ url_for('website.show_filter') }}">View Filter</a>
+                <a href="{{ url_for('website.save_filter') }}">Save Filter</a>
+                <a href="{{ url_for('website.clear_filter') }}">Clear Filter</a>
+                <a class="danger-action" href="{{ url_for('website.clear_alerts') }}">Clear Alerts</a>
               </div>
-
-              <a class="navbar-item">Logged as:  {{ g.user.username }} </a>
-              <a class="navbar-item"  href="{{ url_for('auth.log_out') }}">
-                Log Out
-              </a>
-            {% else %}
-              <a class="navbar-item" href="{{ url_for('auth.log_in') }}">
-                Log In
-              </a>
-              <a class="navbar-item" href="{{ url_for('auth.sign_up') }}">
-                Sign Up
-              </a>
-            {% endif %}
-          </div>
+            </details>
+            <span class="user-chip">Logged in as <strong>{{ g.user.username }}</strong></span>
+            <a class="button-link" href="{{ url_for('auth.log_out') }}">Log Out</a>
+          {% else %}
+            <a class="button-link" href="{{ url_for('auth.log_in') }}">Log In</a>
+            <a class="button-primary" href="{{ url_for('auth.sign_up') }}">Sign Up</a>
+          {% endif %}
         </div>
-    </nav>
-    {% if get_flashed_messages() %}
-      <div class="container">
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-          <div id="message{{ loop.index }}">
-            {% if category %}
-              {% if category == 'error' %}
-                <div class="notification is-danger">
-              {% elif category == 'warning' %}
-                <div class="notification is-warning">
-              {% elif category == 'success' %}
-                <div class="notification is-success">
-              {% else %}
-                <div class="notification">
-              {% endif %}
-            {% else %}
-              <div class="notification">
-            {% endif %}
-              <button class="delete" data-target="message{{ loop.index }}" aria-label="delete"></button>
-              {{ message }}
+      </header>
+
+      {% if get_flashed_messages() %}
+        <section class="flash-stack" aria-label="Messages">
+          {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="flash-message{% if category %} is-{{ category }}{% endif %}" id="message{{ loop.index }}">
+              <span>{{ message }}</span>
+              <button class="flash-dismiss" type="button" data-dismiss="message{{ loop.index }}" aria-label="Dismiss message"></button>
             </div>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-    <section class="section" id="events_view">
+          {% endfor %}
+        </section>
+      {% endif %}
+
+      <main class="app-main" id="events_view">
         {% block content %}
         {% endblock %}
-    </section>
-    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+      </main>
+    </div>
+
     <script src="{{ url_for('static', filename='app.js') }}"></script>
   </body>
 </html>

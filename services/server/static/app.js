@@ -1,44 +1,66 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const header = document.querySelector('.app-header');
+  const navToggle = document.querySelector('[data-nav-toggle]');
 
-  // Get all "navbar-burger" elements
-  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-
-  // Add a click event on each of them
-  $navbarBurgers.forEach( el => {
-    el.addEventListener('click', () => {
-
-      // Get the target from the "data-target" attribute
-      const target = el.dataset.target;
-      const $target = document.getElementById(target);
-
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      el.classList.toggle('is-active');
-      $target.classList.toggle('is-active');
-
+  if (header && navToggle) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = header.classList.toggle('is-open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
     });
+  }
+
+  document.addEventListener('click', (event) => {
+    const dismissButton = event.target.closest('[data-dismiss]');
+    if (!dismissButton) {
+      return;
+    }
+
+    const message = document.getElementById(dismissButton.dataset.dismiss);
+    if (message) {
+      message.remove();
+    }
   });
 
-  const $radioButtons = Array.prototype.slice.call(document.querySelectorAll('input[name="days"]'), 0);
+  document.addEventListener('click', async (event) => {
+    const rangeLink = event.target.closest('[data-range-link]');
+    const dataRegion = document.getElementById('events_id');
 
-  $radioButtons.forEach( el => {
-    el.addEventListener('click', () => {
-      $.ajax({
-        url:window.location.href,
-        method:"GET",
-        data:{range:el.value},
-        success:function(data)
-        {
-          $('#events_id').html(data);
-          $('#events_id').append(data.events_range);
+    if (!rangeLink || !dataRegion) {
+      return;
+    }
+
+    event.preventDefault();
+    dataRegion.classList.add('is-loading');
+
+    const fragmentUrl = new URL(rangeLink.href, window.location.origin);
+    fragmentUrl.searchParams.set('partial', '1');
+
+    try {
+      const response = await fetch(fragmentUrl.toString(), {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-      })
-    });
-  });
+      });
 
-  var dropdown = document.querySelector('.dropdown');
-  dropdown.addEventListener('click', function(event) {
-    event.stopPropagation();
-    dropdown.classList.toggle('is-active');
-  });
+      if (!response.ok) {
+        throw new Error(`Unexpected response: ${response.status}`);
+      }
 
+      dataRegion.innerHTML = await response.text();
+      window.history.pushState({}, '', rangeLink.href);
+      updateRangeState(rangeLink.dataset.rangeValue);
+    } catch (error) {
+      window.location.href = rangeLink.href;
+    } finally {
+      dataRegion.classList.remove('is-loading');
+    }
+  });
 });
+
+function updateRangeState(activeValue) {
+  document.querySelectorAll('[data-range-link]').forEach((link) => {
+    const isActive = link.dataset.rangeValue === activeValue;
+    link.classList.toggle('is-active', isActive);
+    link.setAttribute('aria-current', String(isActive));
+  });
+}

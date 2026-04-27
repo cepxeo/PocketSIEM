@@ -4,6 +4,21 @@ from detect import tasks
 import re
 from datetime import datetime
 
+
+def _event_datetime(raw_date):
+    epoch_match = re.search(r"\((\d+)", str(raw_date))
+    if not epoch_match:
+        raise ValueError(f"Unsupported Windows log date format: {raw_date}")
+    epoch_time = epoch_match.group(1)[:10]
+    return datetime.fromtimestamp(int(epoch_time))
+
+
+def _save_conn_log(date, host, log_type):
+    conn_logs_save = ConnLog(date=date, host=host, log_type=log_type)
+    db.session.add(conn_logs_save)
+    db.session.commit()
+
+
 class WinLog(BaseModel):
     logins: list
     processes: list
@@ -14,19 +29,17 @@ class WinLog(BaseModel):
     def save_log(self) -> None:
         if self.logins:
             for login in self.logins:
-                epoch_time = re.search(r"\((.*)\)", login["date"]).group(1)[:10]
-                converted_time = datetime.fromtimestamp(int(epoch_time))
+                converted_time = _event_datetime(login["date"])
+                date = converted_time
+                host = login["host"]
                 save_login = Login(date=converted_time, host=login["host"], image=login["osuser"], field4=login["logon_type"], field5=login["process_name"])
                 db.session.add(save_login)
                 db.session.commit()
-            conn_logs_save = ConnLog(date=date, host=host, log_type="Login")
-            db.session.add(conn_logs_save)
-            db.session.commit()
+            _save_conn_log(date, host, "Login")
 
         if self.processes:
             for process in self.processes:
-                epoch_time = re.search(r"\((.*)\)", process["date"]).group(1)[:10]
-                converted_time = datetime.fromtimestamp(int(epoch_time))
+                converted_time = _event_datetime(process["date"])
 
                 date=converted_time
                 host=process["host"]
@@ -45,19 +58,16 @@ class WinLog(BaseModel):
                 tasks.check_process.delay(date, host, image, command_line, parent_image, 
                     parent_command_line, original_file_name, process_user)
                 
-                # process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
-                #     parent_image=parent_image, parent_command_line=parent_command_line, 
-                #     original_file_name=original_file_name, process_user=process_user)
-                # db.session.add(process_save)
-                # db.session.commit()
-            conn_logs_save = ConnLog(date=date, host=host, log_type="Process")
-            db.session.add(conn_logs_save)
-            db.session.commit()
+                process_save = Process(date=date, host=host, image=image, field4=company, field5=command_line, 
+                    parent_image=parent_image, parent_command_line=parent_command_line, 
+                    original_file_name=original_file_name, process_user=process_user)
+                db.session.add(process_save)
+                db.session.commit()
+            _save_conn_log(date, host, "Process")
 
         if self.nets:
             for net in self.nets:
-                epoch_time = re.search(r"\((.*)\)", net["date"]).group(1)[:10]
-                converted_time = datetime.fromtimestamp(int(epoch_time))
+                converted_time = _event_datetime(net["date"])
 
                 date=converted_time
                 host=net["host"]
@@ -67,14 +77,11 @@ class WinLog(BaseModel):
 
                 tasks.check_network.delay(date, host, image, dest_ip, dest_port)
                 # tasks.check_whois.delay(date, host, image, dest_ip, dest_port)
-            conn_logs_save = ConnLog(date=date, host=host, log_type="Net")
-            db.session.add(conn_logs_save)
-            db.session.commit()
+            _save_conn_log(date, host, "Net")
 
         if self.files:
             for file in self.files:
-                epoch_time = re.search(r"\((.*)\)", file["date"]).group(1)[:10]
-                converted_time = datetime.fromtimestamp(int(epoch_time))
+                converted_time = _event_datetime(file["date"])
 
                 date=converted_time
                 host=file["host"]
@@ -85,17 +92,14 @@ class WinLog(BaseModel):
                 tasks.check_log.delay(date, host, image, filename)
                 tasks.check_files.delay(date, host, image, filename, osuser)
 
-                # file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
-                # db.session.add(file_save)
-                # db.session.commit()
-            conn_logs_save = ConnLog(date=date, host=host, log_type="File")
-            db.session.add(conn_logs_save)
-            db.session.commit()
+                file_save = File(date=date, host=host, image=image, field4=filename, field5=osuser)
+                db.session.add(file_save)
+                db.session.commit()
+            _save_conn_log(date, host, "File")
 
         if self.events:
             for event in self.events:
-                epoch_time = re.search(r"\((.*)\)", event["date"]).group(1)[:10]
-                converted_time = datetime.fromtimestamp(int(epoch_time))
+                converted_time = _event_datetime(event["date"])
 
                 date=converted_time
                 host=event["host"]
@@ -106,12 +110,10 @@ class WinLog(BaseModel):
                 tasks.check_log.delay(date, host, image, details)
                 tasks.check_registry.delay(date, host, image, details)
 
-                # event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
-                # db.session.add(event_save)
-                # db.session.commit()
-            conn_logs_save = ConnLog(date=date, host=host, log_type="Event")
-            db.session.add(conn_logs_save)
-            db.session.commit()
+                event_save = Event(date=date, host=host, image=image, field4=event_value, field5=details)
+                db.session.add(event_save)
+                db.session.commit()
+            _save_conn_log(date, host, "Event")
 
 class SSHLoginLog(BaseModel):
     date: list

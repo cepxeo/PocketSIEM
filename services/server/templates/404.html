@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="is-size-3 title">Page Note Found</h1>
-<p>We can't find the content that you're looking for.</p>
+  <section class="empty-state standalone-state">
+    <p class="eyebrow">404</p>
+    <h1>Page Not Found</h1>
+    <p>We cannot find the content that you are looking for.</p>
+    <a class="button-primary" href="{{ url_for('website.alerts') }}">Back to Alerts</a>
+  </section>
 {% endblock %}

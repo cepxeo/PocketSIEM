@@ -64,6 +64,8 @@ def test_urls_auth_user(test_client, login_default_user):
 
     response = test_client.get('/alerts')
     assert response.status_code == 200
+    assert b'app-shell' in response.data
+    assert b'Alerts' in response.data
 
     response = test_client.get('/events')
     assert response.status_code == 200
@@ -88,6 +90,36 @@ def test_urls_auth_user(test_client, login_default_user):
     response = test_client.get('/token')
     assert response.status_code == 200
     assert b'Access denied' in response.data
+
+# Range filters should preserve full-page rendering for normal navigation
+# and return a table fragment only when JavaScript asks for one.
+def test_range_filter_full_page_and_partial(test_client, login_default_user):
+
+    response = test_client.get('/alerts', query_string={"range": "1"})
+    assert response.status_code == 200
+    assert b'app-shell' in response.data
+    assert b'data-range-value="1"' in response.data
+
+    response = test_client.get(
+        '/alerts',
+        query_string={"range": "1", "partial": "1"},
+        headers={'X-Requested-With': 'XMLHttpRequest'})
+    assert response.status_code == 200
+    assert b'app-shell' not in response.data
+    assert b'table-panel' in response.data or b'empty-state' in response.data
+
+    response = test_client.get('/connlogs', query_string={"range": "30"})
+    assert response.status_code == 200
+    assert b'app-shell' in response.data
+    assert b'System Logs' in response.data
+
+    response = test_client.get(
+        '/connlogs',
+        query_string={"range": "30", "partial": "1"},
+        headers={'X-Requested-With': 'XMLHttpRequest'})
+    assert response.status_code == 200
+    assert b'app-shell' not in response.data
+    assert b'table-panel' in response.data or b'empty-state' in response.data
    
 # Admin should access next routes and see respective data
 def test_urls_auth_admin(test_client, login_default_admin):
