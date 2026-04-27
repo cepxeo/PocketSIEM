@@ -1,2 +1,2 @@
-{% from '_partials/tables.html' import conn_log_table %}
+{% from '_partials/tables.html' import conn_log_table with context %}
 {{ conn_log_table(logs, header1, header2, header3) }}

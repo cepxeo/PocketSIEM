@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% from '_partials/filters.html' import date_filter, host_filter %}
-{% from '_partials/tables.html' import conn_log_table %}
+{% from '_partials/filters.html' import date_filter, host_filter, search_filter with context %}
+{% from '_partials/tables.html' import conn_log_table with context %}
 
 {% block content %}
   {% set active_host = currenthost|default(none) %}
@@ -21,6 +21,7 @@
 
   <section class="toolbar" aria-label="Filters">
     {{ date_filter() }}
+    {{ search_filter('Search system logs') }}
     {{ host_filter(hosts, hostroute, active_host) }}
   </section>
 

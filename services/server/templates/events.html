@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% from '_partials/filters.html' import date_filter, host_filter %}
-{% from '_partials/tables.html' import standard_log_table %}
+{% from '_partials/filters.html' import date_filter, host_filter, search_filter with context %}
+{% from '_partials/tables.html' import standard_log_table with context %}
 
 {% block content %}
   {% set endpoint = request.endpoint or '' %}
@@ -23,6 +23,7 @@
 
   <section class="toolbar" aria-label="Filters">
     {{ date_filter() }}
+    {{ search_filter('Search ' ~ page_title|lower) }}
     {{ host_filter(hosts, hostroute, active_host) }}
   </section>
 

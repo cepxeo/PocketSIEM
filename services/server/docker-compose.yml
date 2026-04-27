@@ -1,26 +1,13 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:13-alpine
-    volumes:
-      - postgres_data_test:/var/lib/postgresql/data/
-    environment:
-      POSTGRES_DB: ${PS_DATABASE_NAME}
-      POSTGRES_USER: ${PS_DATABASE_USER}
-      POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
-    ports:
-      - 5432:5432
-
   web:
     build: .
-    command: python -m pytest -v --disable-warnings
+    command: python app.py
     volumes:
       - .:/app
-    env_file:
-      - .env
     ports:
-      - 8443:8443
+      - 5000:5000
     depends_on:
       - postgres
       - redis
@@ -33,7 +20,7 @@ services:
   celery_worker:
     build: .
     image: celery_worker
-    command: celery -A app.celery worker --loglevel=info
+    command: celery -A app.celery worker --loglevel=warning
     volumes:
       - .:/app
     env_file:
@@ -42,5 +29,54 @@ services:
       - redis
       - postgres
 
+  # celery_beat:
+  #   build: ./services/server
+  #   image: celery_beat
+  #   command: rm -f './celerybeat.pid' && celery -A app.celery beat -l info
+  #   volumes:
+  #     - ./services/server:/app
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - redis
+  #     - postgres
+
+  # flower:
+  #   build: ./services/server
+  #   image: celery_flower
+  #   command: celery -A app.celery --broker="redis://redis:6379/0" flower
+  #   volumes:
+  #     - ./services/server:/app
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 5557:5555
+  #   depends_on:
+  #     - redis
+  #     - postgres
+
+  postgres:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${PS_DATABASE_NAME}
+      POSTGRES_USER: ${PS_DATABASE_USER}
+      POSTGRES_PASSWORD: ${PS_DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+
+  nginx:
+    image: nginx
+    volumes:
+     - ./nginx:/etc/nginx/templates
+     - ./nginx/certs:/etc/nginx/certs
+    ports:
+     - "443:443"
+     - "80:80"
+    links:
+     - web
+    depends_on:
+     - web
 volumes:
-  postgres_data_test:
+  postgres_data:

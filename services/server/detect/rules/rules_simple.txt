@@ -26,7 +26,7 @@
 # Powershell
 # https://threathunterplaybook.com/
 
-- 'Set*ExecutionPolicy'
+- 'Set*ExecutionPolicy*Byp'
 - '-EncodedCommand'
 - 'Sys*tem*Net*Web*Cli*ent%.dll'
 - 'System.Reflection.Assembly'

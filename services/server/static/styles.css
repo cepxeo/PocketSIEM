@@ -406,6 +406,28 @@ h1 {
   gap: 0.5rem;
 }
 
+.search-form {
+  display: flex;
+  flex: 1 1 320px;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.search-input {
+  width: min(100%, 420px);
+  min-height: 38px;
+  padding: 0.55rem 0.75rem;
+  color: var(--dark-navy);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.search-input::placeholder {
+  color: var(--gray-text);
+}
+
 .range-pill {
   color: var(--gray-text);
   background: var(--surface);
@@ -627,6 +649,7 @@ h1 {
 }
 
 .field-group input:focus,
+.search-input:focus,
 .range-pill:focus,
 .nav-link:focus,
 .button-primary:focus,
@@ -710,8 +733,14 @@ h1 {
   }
 
   .host-filter summary,
-  .host-filter {
+  .host-filter,
+  .search-form,
+  .search-input {
     width: 100%;
+  }
+
+  .search-form {
+    justify-content: stretch;
   }
 
   .host-filter summary {

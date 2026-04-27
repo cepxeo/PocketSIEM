@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 from database.models import db, User, Login, Process, File, Network, Event, Alert, Filter, ConnLog
-from sqlalchemy import not_, or_
+from sqlalchemy import String, cast, not_, or_
 
 website = Blueprint('website', __name__)
 
@@ -19,14 +19,95 @@ def page_template(full_template, range_template):
         request.args.get('partial') == '1' or
         request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     )
-    if request.args.get('range') and wants_partial:
+    if wants_partial:
         return range_template
     return full_template
+
+def current_date_range():
+    selected_range = request.args.get('range', DEFAULT_DATE_RANGE)
+    try:
+        if int(selected_range) < 1:
+            raise ValueError
+    except (TypeError, ValueError):
+        selected_range = DEFAULT_DATE_RANGE
+    return selected_range
+
+def current_search():
+    return request.args.get('q', '').strip()
+
+def route_query_args(**updates):
+    route_values = dict(request.view_args or {})
+    query_values = {
+        key: value
+        for key, value in request.args.items()
+        if key not in ('page', 'partial')
+    }
+
+    for key, value in updates.items():
+        if value in (None, ''):
+            query_values.pop(key, None)
+        else:
+            query_values[key] = value
+
+    route_values.update(query_values)
+    return route_values
+
+def escaped_like(term):
+    return (
+        term
+        .replace('\\', '\\\\')
+        .replace('%', '\\%')
+        .replace('_', '\\_')
+    )
+
+def apply_search_filter(query, model):
+    search = current_search()
+    if not search:
+        return query
+
+    pattern = f'%{escaped_like(search)}%'
+    search_filters = [
+        cast(column, String).ilike(pattern, escape='\\')
+        for column in model.__table__.columns
+    ]
+    return query.filter(or_(*search_filters))
+
+def apply_false_positive_filter(query, model):
+    if not hasattr(model, 'image'):
+        return query
+
+    filters = [
+        model.image.like(item)
+        for item in false_positives
+        if item is not None
+    ]
+    if not filters:
+        return query
+    return query.filter(not_(or_(*filters)))
+
+def paginated_logs(model, host=None, apply_false_positives=True):
+    page = request.args.get('page', 1, type=int)
+    query = model.query
+
+    if host is not None:
+        query = query.filter(model.host == host)
+
+    query = query.filter(
+        model.date >= datetime.today() - timedelta(days=int(current_date_range()))
+    )
+
+    if apply_false_positives:
+        query = apply_false_positive_filter(query, model)
+
+    query = apply_search_filter(query, model)
+    return query.order_by(model.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
 
 @website.context_processor
 def inject_frontend_state():
     return {
-        'current_range': request.args.get('range', DEFAULT_DATE_RANGE),
+        'current_range': current_date_range(),
+        'current_search': current_search(),
+        'route_query_args': route_query_args,
     }
 
 @website.errorhandler(404)
@@ -57,16 +138,8 @@ def index():
 @website.route('/logins', methods=['GET'])
 @require_login
 def login():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-    logs = Login.query.filter(
-        Login.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Login.image.like(item) for item in false_positives]))
-        ).order_by(Login.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Login)
 
     hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
@@ -77,17 +150,8 @@ def login():
 @website.route("/logins/<host>", methods=["GET"])
 @require_login
 def login_host_logs(host):
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-
-    logs = Login.query.filter(Login.host == host).filter(
-        Login.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Login.image.like(item) for item in false_positives]))
-        ).order_by(Login.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Login, host)
 
     hosts = [x[0] for x in db.session.query(Login.host).distinct()]
     return render_template(
@@ -99,17 +163,8 @@ def login_host_logs(host):
 @website.route('/processes', methods=['GET'])
 @require_login
 def process():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-
-    logs = Process.query.filter(
-        Process.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Process.image.like(item) for item in false_positives]))
-        ).order_by(Process.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Process)
 
     hosts = [x[0] for x in db.session.query(Process.host).distinct()]
     return render_template(
@@ -120,16 +175,8 @@ def process():
 @website.route("/processes/<host>", methods=["GET"])
 @require_login
 def process_host_logs(host):
-    page = request.args.get('page', 1, type=int)
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-    
-    logs = Process.query.filter(Process.host == host).filter(
-        Process.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Process.image.like(item) for item in false_positives]))
-        ).order_by(Process.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Process, host)
 
     hosts = [x[0] for x in db.session.query(Process.host).distinct()]    
     return render_template(
@@ -141,16 +188,8 @@ def process_host_logs(host):
 @website.route('/files', methods=['GET'])
 @require_login
 def files():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-    logs = File.query.filter(
-        File.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[File.image.like(item) for item in false_positives]))
-        ).order_by(File.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(File)
 
     hosts = [x[0] for x in db.session.query(File.host).distinct()]
 
@@ -162,17 +201,8 @@ def files():
 @website.route("/files/<host>", methods=["GET"])
 @require_login
 def files_host_logs(host): 
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-    
-    page = request.args.get('page', 1, type=int)
-
-    logs = File.query.filter(File.host == host).filter(
-        File.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[File.image.like(item) for item in false_positives]))
-        ).order_by(File.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(File, host)
 
     hosts = [x[0] for x in db.session.query(File.host).distinct()]
     return render_template(
@@ -184,16 +214,8 @@ def files_host_logs(host):
 @website.route('/net', methods=['GET'])
 @require_login
 def net():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-    logs = Network.query.filter(
-        Network.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Network.image.like(item) for item in false_positives]))
-        ).order_by(Network.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Network)
 
     hosts = [x[0] for x in db.session.query(Network.host).distinct()]
     return render_template(
@@ -204,16 +226,8 @@ def net():
 @website.route("/net/<host>", methods=["GET"])
 @require_login
 def net_host_logs(host):
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-    logs = Network.query.filter(Network.host == host).filter(
-        Network.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Network.image.like(item) for item in false_positives]))
-        ).order_by(Network.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Network, host)
 
     hosts = [x[0] for x in db.session.query(Network.host).distinct()]
     return render_template(
@@ -225,16 +239,8 @@ def net_host_logs(host):
 @website.route('/events', methods=['GET'])
 @require_login
 def events():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-    logs = Event.query.filter(
-        Event.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Event.image.like(item) for item in false_positives]))
-        ).order_by(Event.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Event)
 
     hosts = [x[0] for x in db.session.query(Event.host).distinct()]
     return render_template(
@@ -245,17 +251,8 @@ def events():
 @website.route("/events/<host>", methods=["GET"])
 @require_login
 def events_host_logs(host):
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-    
-    page = request.args.get('page', 1, type=int)
-
-    logs = Event.query.filter(Event.host == host).filter(
-        Event.date >= datetime.today() - timedelta(days=int(range))
-        ).filter(not_(or_(*[Event.image.like(item) for item in false_positives]))
-        ).order_by(Event.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Event, host)
 
     hosts = [x[0] for x in db.session.query(Event.host).distinct()]
     return render_template(
@@ -267,16 +264,8 @@ def events_host_logs(host):
 @website.route('/alerts', methods=['GET'])
 @require_login
 def alerts():
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-
-    logs = Alert.query.filter(
-        Alert.date >= datetime.today() - timedelta(days=int(range))
-        ).order_by(Alert.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Alert, apply_false_positives=False)
 
     hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
     return render_template(
@@ -287,16 +276,8 @@ def alerts():
 @website.route("/alerts/<host>", methods=["GET"])
 @require_login
 def host_alerts(host):
-    range = request.args.get('range', None)
     template = page_template('events.html', 'events_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-    
-    page = request.args.get('page', 1, type=int)
-
-    logs = Alert.query.filter(Alert.host == host).filter(
-        Alert.date >= datetime.today() - timedelta(days=int(range))
-        ).order_by(Alert.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(Alert, host, apply_false_positives=False)
     
     hosts = [x[0] for x in db.session.query(Alert.host).distinct()]
     return render_template(
@@ -308,16 +289,8 @@ def host_alerts(host):
 @website.route('/connlogs', methods=['GET'])
 @require_login
 def conn_logs():
-    range = request.args.get('range', None)
     template = page_template('conn_logs.html', 'conn_logs_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-
-    page = request.args.get('page', 1, type=int)
-
-    logs = ConnLog.query.filter(
-        ConnLog.date >= datetime.today() - timedelta(days=int(range))
-        ).order_by(ConnLog.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(ConnLog, apply_false_positives=False)
 
     hosts = [x[0] for x in db.session.query(ConnLog.host).distinct()]
     return render_template(
@@ -328,16 +301,8 @@ def conn_logs():
 @website.route("/connlogs/<host>", methods=["GET"])
 @require_login
 def host_conn_logs(host):
-    range = request.args.get('range', None)
     template = page_template('conn_logs.html', 'conn_logs_range.html')
-    if not range:
-        range = DEFAULT_DATE_RANGE
-    
-    page = request.args.get('page', 1, type=int)
-
-    logs = ConnLog.query.filter(ConnLog.host == host).filter(
-        ConnLog.date >= datetime.today() - timedelta(days=int(range))
-        ).order_by(ConnLog.date.desc()).paginate(page=page, per_page=ROWS_PER_PAGE)
+    logs = paginated_logs(ConnLog, host, apply_false_positives=False)
     
     hosts = [x[0] for x in db.session.query(ConnLog.host).distinct()]
     return render_template(
@@ -352,10 +317,18 @@ def false_process():
     image  = request.args.get('image', None)
     send_to  = request.args.get('send_to', None)
     host  = request.args.get('host', None)
+    selected_range = request.args.get('range', None)
+    search = request.args.get('q', None)
+    redirect_args = {}
+    if selected_range:
+        redirect_args['range'] = selected_range
+    if search:
+        redirect_args['q'] = search
+
     false_positives.append("%" + image.split('\\')[-1])
     if 'host' in send_to:
-        return redirect(url_for(send_to, host = host))
-    return redirect(url_for(send_to.split('_')[0]))
+        return redirect(url_for(send_to, host=host, **redirect_args))
+    return redirect(url_for(send_to.split('_')[0], **redirect_args))
 
 @website.route("/clearfilter", methods=["GET"])
 @require_login
