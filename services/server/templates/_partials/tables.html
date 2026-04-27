@@ -1,0 +1,77 @@
+{% from '_partials/pagination.html' import pagination with context %}
+
+{% macro standard_log_table(logs, header1, header2, header3, header4, header5, selfroute, currenthost=None) %}
+  <div class="table-panel">
+    {% if logs.items %}
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ header1 }}</th>
+              <th scope="col">{{ header2 }}</th>
+              <th scope="col">{{ header3 }}</th>
+              <th scope="col">{{ header4 }}</th>
+              <th scope="col">{{ header5 }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs.items %}
+              <tr>
+                <td class="timestamp">{{ log.date }}</td>
+                <td class="host-cell">{{ log.host }}</td>
+                <td class="path-cell">
+                  {% if currenthost %}
+                    <a class="path-action" href="{{ url_for('website.false_process', image=log.image, send_to=selfroute, host=currenthost, range=current_range, q=current_search) }}" title="Mark as false positive">{{ log.image }}</a>
+                  {% else %}
+                    <a class="path-action" href="{{ url_for('website.false_process', image=log.image, send_to=selfroute, range=current_range, q=current_search) }}" title="Mark as false positive">{{ log.image }}</a>
+                  {% endif %}
+                </td>
+                <td class="detail-cell">{{ log.field4 }}</td>
+                <td class="detail-cell">{{ log.field5 }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {{ pagination(logs) }}
+    {% else %}
+      <div class="empty-state">
+        <h2>No records found</h2>
+        <p>No matching events are available for the selected host, date range, and search.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro conn_log_table(logs, header1, header2, header3) %}
+  <div class="table-panel">
+    {% if logs.items %}
+      <div class="table-scroll">
+        <table class="data-table compact-table">
+          <thead>
+            <tr>
+              <th scope="col">{{ header1 }}</th>
+              <th scope="col">{{ header2 }}</th>
+              <th scope="col">{{ header3 }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs.items %}
+              <tr>
+                <td class="timestamp">{{ log.date }}</td>
+                <td class="host-cell">{{ log.host }}</td>
+                <td class="detail-cell">{{ log.log_type }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {{ pagination(logs) }}
+    {% else %}
+      <div class="empty-state">
+        <h2>No records found</h2>
+        <p>No connection logs are available for the selected host, date range, and search.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}

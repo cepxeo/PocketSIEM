@@ -1,0 +1,19 @@
+{% macro pagination(logs) %}
+  {% if logs.pages > 1 %}
+    <nav class="pager" aria-label="Pagination">
+      {% for page_num in logs.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if page_num %}
+          <a
+            class="pager-link{% if logs.page == page_num %} is-current{% endif %}"
+            href="{{ url_for(request.endpoint, **route_query_args(page=page_num)) }}"
+            {% if logs.page == page_num %}aria-current="page"{% endif %}
+          >
+            {{ page_num }}
+          </a>
+        {% else %}
+          <span class="pager-gap" aria-hidden="true">...</span>
+        {% endif %}
+      {% endfor %}
+    </nav>
+  {% endif %}
+{% endmacro %}

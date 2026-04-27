@@ -1,0 +1,59 @@
+{% macro date_filter() %}
+  {% set ranges = [('1', 'Today'), ('7', 'Last 7 days'), ('30', 'Last 30 days')] %}
+  <div class="filter-group" aria-label="Date range">
+    {% for value, label in ranges %}
+      <a
+        class="range-pill{% if current_range == value %} is-active{% endif %}"
+        href="{{ url_for(request.endpoint, **route_query_args(range=value)) }}"
+        data-range-link
+        data-range-value="{{ value }}"
+        aria-current="{% if current_range == value %}true{% else %}false{% endif %}"
+      >
+        {{ label }}
+      </a>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro host_filter(hosts, hostroute, currenthost=None) %}
+  <details class="host-filter">
+    <summary>
+      <span>Host</span>
+      <strong>{{ currenthost or 'All hosts' }}</strong>
+    </summary>
+    <div class="host-filter-menu">
+      {% if hosts %}
+        {% for host in hosts %}
+          <a
+            class="host-filter-item{% if currenthost == host %} is-active{% endif %}"
+            href="{{ url_for(hostroute, **route_query_args(host=host)) }}"
+          >
+            {{ host }}
+          </a>
+        {% endfor %}
+      {% else %}
+        <span class="host-filter-empty">No hosts found</span>
+      {% endif %}
+    </div>
+  </details>
+{% endmacro %}
+
+{% macro search_filter(placeholder='Search records') %}
+  <form class="search-form" method="get" action="{{ request.path }}" role="search">
+    <label class="sr-only" for="event-search">Search</label>
+    <input
+      id="event-search"
+      class="search-input"
+      type="search"
+      name="q"
+      value="{{ current_search }}"
+      placeholder="{{ placeholder }}"
+      autocomplete="off"
+    >
+    <input type="hidden" name="range" value="{{ current_range }}">
+    <button class="button-primary" type="submit">Search</button>
+    {% if current_search %}
+      <a class="button-link" href="{{ url_for(request.endpoint, **route_query_args(q=None)) }}">Clear</a>
+    {% endif %}
+  </form>
+{% endmacro %}
